@@ -1,5 +1,8 @@
 package io;
 
+import kotlin.Pair;
+
+import javax.imageio.IIOException;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.File;
@@ -18,40 +21,26 @@ public class IOUtil {
     public static int skipToNextHash(DataInput in) throws IOException {
         int numBytes = 0;
 
-        // each of the utf strings we skip is the length indicated by the length info, plus 2 for the short itself
+        // each string we skip adds the length of the string plus the length of the info needed to derive that length
 
         // the cite
         //   author
-        short length = in.readShort();
-        in.skipBytes(length);
-        numBytes += length + 2;
+        Pair<Integer,Short> lengthInfo = findStringLength(in);
+        in.skipBytes(lengthInfo.getFirst());
+        numBytes += lengthInfo.getFirst() + lengthInfo.getSecond();
         //   date
-        length = in.readShort();
-        in.skipBytes(length);
-        numBytes += length + 2;
+        lengthInfo = findStringLength(in);
+        in.skipBytes(lengthInfo.getFirst());
+        numBytes += lengthInfo.getFirst() + lengthInfo.getSecond();
         //   additionalInfo
-        length = in.readShort();
-        in.skipBytes(length);
-        numBytes += length + 2;
+        lengthInfo = findStringLength(in);
+        in.skipBytes(lengthInfo.getFirst());
+        numBytes += lengthInfo.getFirst() + lengthInfo.getSecond();
 
         // the text
-        // Sign of the first byte gives us the information about the number of bytes to use for the length information.
-        byte firstByte = in.readByte();
-        int strlen;
-        if (firstByte >= 0) {
-            // we have 4 bytes of length information
-            numBytes+=2;
-            byte[] lengthBytes = new byte[3];
-            in.readFully(lengthBytes);
-            strlen = firstByte << 24 | lengthBytes[0] << 16 | lengthBytes[1] << 8 | lengthBytes[2];
-            numBytes += strlen + 4;
-        }else{
-            // only two bytes of information
-            byte secondByte = in.readByte();
-            strlen = firstByte << 8 | secondByte;
-            numBytes += strlen + 2;
-        }
-        in.skipBytes(strlen);
+        lengthInfo = findStringLength(in);
+        in.skipBytes(lengthInfo.getFirst());
+        numBytes += lengthInfo.getFirst() + lengthInfo.getSecond();
 
 
 
@@ -72,7 +61,8 @@ public class IOUtil {
 
     /**
      * The DataOutput writeUTF method does not allow us to write strings larger than 64KB. To work around that potential
-     * limit, we have a custom serialization and writing method.
+     * limit, we have a custom serialization and writing method. This also lets us add ie a null byte to add protection
+     * from users.
      * <p>
      * The idea is to still use shorts to represent length data for small enough strings, but now we use the sign of the
      * number to indicate whether that short is the actual length of the string, or whether to interpret it as the most
@@ -108,6 +98,8 @@ public class IOUtil {
             System.arraycopy(stringBytes, 0, retSeq, 4, stringBytes.length);
             out.write(retSeq);
         }
+        // write null terminating byte
+        out.writeByte(0);
     }
 
     /**
@@ -121,24 +113,45 @@ public class IOUtil {
      * @return
      */
     public static String readDeserializeString(DataInput in) throws IOException {
+        int len = findStringLength(in).getFirst();
+        byte[] stringBytes = new byte[len];
+        in.readFully(stringBytes);
+        byte nullTerm = in.readByte();
+        if (nullTerm!=0){
+            throw new IIOException("String missing null terminator");
+        }
+        String string = new String(stringBytes, StandardCharsets.UTF_8);
+        return string;
+    }
+
+    /**
+     *
+     * @param in DataInput pointed at the start of a serialized string
+     * @return a Pair containing first the length of the string's byte array, followed by the number of bytes of length
+     *              information contained (either 2 or 4 bytes of length information)
+     * @throws IOException
+     */
+    public static Pair<Integer, Short> findStringLength(DataInput in) throws IOException {
+
         // Sign of the first byte gives us the information about the number of bytes to use for the length information.
         byte firstByte = in.readByte();
         int len;
+        short numInfoBytes;
         if (firstByte >= 0) {
             // we have 4 bytes of length information
+            numInfoBytes = 4;
             byte[] lengthBytes = new byte[3];
             in.readFully(lengthBytes);
             len = firstByte << 24 | lengthBytes[0] << 16 | lengthBytes[1] << 8 | lengthBytes[2];
         }else{
             // only two bytes of information
+            numInfoBytes = 2;
             byte secondByte = in.readByte();
             len = firstByte << 8 | (secondByte&0xff);
             // the short is always read as a negative
             len*=-1;
         }
-        byte[] stringBytes = new byte[len];
-        in.readFully(stringBytes);
-        String string = new String(stringBytes, StandardCharsets.UTF_8);
-        return string;
+
+        return new Pair(len,numInfoBytes);
     }
 }

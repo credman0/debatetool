@@ -1,5 +1,7 @@
 package core;
 
+import io.IOUtil;
+
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
@@ -35,18 +37,18 @@ public class Cite {
     }
 
     public void writeToOutput(DataOutput out) throws IOException {
-        out.writeUTF(author);
-        out.writeUTF(date);
-        out.writeUTF(additionalInfo);
+        IOUtil.writeSerializeString(getAuthor(),out);
+        IOUtil.writeSerializeString(getDate(),out);
+        IOUtil.writeSerializeString(getAdditionalInfo(),out);
     }
 
     public void loadFromInput(DataInput in) throws IOException{
-        author = in.readUTF();
-        date = in.readUTF();
-        additionalInfo = in.readUTF();
+        author = IOUtil.readDeserializeString(in);
+        date = IOUtil.readDeserializeString(in);
+        additionalInfo = IOUtil.readDeserializeString(in);
     }
 
     public String toString(){
-        return getAuthor()+getDate();
+        return getAuthor()+getDate()+getAdditionalInfo();
     }
 }

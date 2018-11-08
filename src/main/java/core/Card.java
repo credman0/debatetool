@@ -4,11 +4,16 @@ import io.IOUtil;
 
 import javax.imageio.IIOException;
 import java.io.*;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
 
 public class Card {
     protected Cite cite;
     protected String text;
-    protected int hash = 0;
+    protected byte[] hash = null;
     /**
      * The time the card text was last modified.
      */
@@ -30,13 +35,13 @@ public class Card {
     public void setCite(Cite cite) {
         this.cite = cite;
         // set the hash to be recalculated
-        hash = 0;
+        hash = null;
     }
 
     public void setCite(String author, String date, String additionalInfo){
         this.cite = new Cite(author, date, additionalInfo);
         // set the hash to be recalculated
-        hash = 0;
+        hash = null;
     }
 
     public String getText() {
@@ -48,11 +53,11 @@ public class Card {
         formatText();
         timeStamp = System.currentTimeMillis();
         // set the hash to be recalculated
-        hash = 0;
+        hash = null;
     }
 
     public void writeToOutput(DataOutput out) throws IOException {
-        out.writeInt(hash);
+        out.write(getHash());
         out.writeLong(timeStamp);
         cite.writeToOutput(out);
         IOUtil.writeSerializeString(text,out);
@@ -61,7 +66,8 @@ public class Card {
     }
 
     public void loadFromInput(DataInput in, boolean checkHash) throws IOException{
-        hash = in.readInt();
+        hash = new byte[16];
+        in.readFully(hash);
         timeStamp = in.readLong();
         cite = new Cite(in);
         text = IOUtil.readDeserializeString(in);
@@ -70,38 +76,34 @@ public class Card {
             throw new IIOException("Card missing null terminator");
         }
         if (checkHash){
-            int validHash = generateHash();
-            if (hash!=validHash){
+            byte[] validHash = generateHash();
+            if (!Arrays.equals(hash,validHash)){
                 hash = validHash;
                 throw new IIOException("Hash validation failed for card load");
             }
         }
     }
 
-    // adapted from String.hashCode()
-    protected int generateHash(){
-        int h = 0;
-        for (int i = 0; i < text.length(); i++) {
-            h = 31 * h + text.charAt(i);
+    protected byte[] generateHash(){MessageDigest dg = null;
+        try {
+            dg = MessageDigest.getInstance("MD5");
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
         }
-        for (int i = 0; i < getCite().getAuthor().length(); i++) {
-            h = 31 * h + getCite().getAuthor().charAt(i);
-        }
-        for (int i = 0; i < getCite().getDate().length(); i++) {
-            h = 31 * h + getCite().getDate().charAt(i);
-        }
-        for (int i = 0; i < getCite().getAdditionalInfo().length(); i++) {
-            h = 31 * h + getCite().getAdditionalInfo().charAt(i);
-        }
-        return h;
+        return dg.digest((text+cite.toString()).getBytes(StandardCharsets.UTF_8));
     }
 
-    @Override
-    public int hashCode() {
-        if (hash == 0) {
+    public byte[] getHash(){
+        if (hash == null){
             hash = generateHash();
         }
         return hash;
+    }
+
+
+    @Override
+    public int hashCode() {
+        return Arrays.hashCode(getHash());
     }
 
     protected void formatText(){
