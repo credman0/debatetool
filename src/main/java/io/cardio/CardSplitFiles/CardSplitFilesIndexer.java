@@ -1,59 +1,54 @@
-package io.cardio;
+package io.cardio.CardSplitFiles;
 
-import core.Card;
+import gnu.trove.map.custom_hash.TObjectLongCustomHashMap;
+import gnu.trove.map.hash.TCustomHashMap;
 import gnu.trove.map.hash.TIntLongHashMap;
+import gnu.trove.strategy.HashingStrategy;
+import io.IOUtil;
+import javafx.util.Pair;
 
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import io.IOUtil;
-import javafx.util.Pair;
+public class CardSplitFilesIndexer {
 
 
-/**
- * Card io system based on a number of files each containing a relatively small number of cards, so that each can be
- * written and rewritten relatively easily.
- *
- * The file structure is files with a set prefix, and a postfix that defines their identification (an integer).
- *
- * Each file is simply a series of serialized Cards.
- */
-public class CardSplitFilesStreamer implements CardIOManager {
     /**
      * Soft limit on the number of bytes that should be contained in each file. Note that in general files will be
      * slightly larger than this size, because it does not check whether a write will take it over the max size, but
      * rather does the checks when the next data would be written.
      */
     protected int maxSize;
+
+
+    protected ArrayList<File> filesList;
+    protected TObjectLongCustomHashMap<byte[]> index;
+
     protected File baseDirectory;
     protected String baseName;
 
     protected int currentWriteFile = 0;
 
-    /**
-     * The key is the hash of the card. The value is a long where the most significant 4 bytes correspond to the file
-     * identifier, and the least significant 4 bytes refer to the position in the file.
-     */
-    protected TIntLongHashMap index;
-    protected ArrayList<File> filesList;
-
-    public CardSplitFilesStreamer(int maxSize, File baseDirectory, String baseName) {
-        this.maxSize = maxSize;
-        this.baseDirectory = baseDirectory;
-        this.baseName = baseName;
+    public CardSplitFilesIndexer(int maxSize, File baseDirectory, String baseName){
         if (!baseDirectory.exists()) {
             baseDirectory.mkdirs();
         }
+        this.maxSize = maxSize;
+        this.baseDirectory = baseDirectory;
+        this.baseName = baseName;
+
+        index = new TObjectLongCustomHashMap<byte[]>(new CardHashingStrategy());
         // Initialize the file map
         Pattern relevantFilesPattern = Pattern.compile(baseName+"(d+).dcd");
         File[] files = baseDirectory.listFiles(
                 (File dir, String name) -> relevantFilesPattern.matcher(name).matches()
         );
-        if (files == null){
+        if (files == null || files.length==0){
             filesList = new ArrayList<>();
         }else {
             filesList = new ArrayList<>(files.length);
@@ -61,6 +56,7 @@ public class CardSplitFilesStreamer implements CardIOManager {
                 Matcher fileMatcher = relevantFilesPattern.matcher(file.getName());
                 fileMatcher.find();
                 int fileIdentifier = Integer.parseInt(fileMatcher.group(1));
+                // TODO: I'm pretty sure this depends on OS sorting, which seems bad. Fix.
                 filesList.add(fileIdentifier, file);
             }
             File indexFile = new File(baseDirectory, baseName + ".index");
@@ -76,48 +72,12 @@ public class CardSplitFilesStreamer implements CardIOManager {
         }
     }
 
-    @Override
-    public Card retrieveCard(int hash) throws IOException {
-        Pair<File, Integer> indexLocation = fetchIndexLocation(hash);
-        Card card;
-        try (DataInputStream in = new DataInputStream(new BufferedInputStream(new FileInputStream(indexLocation.getKey())))){
-            in.skipBytes(indexLocation.getValue());
-            card = new Card(in);
-        }
-        return card;
-    }
-
-    @Override
-    public ArrayList<Card> retrieveCards(int[] hashes) throws IOException {
-        // TODO: Make this more efficient at fetching several cards
-        ArrayList<Card> cards = new ArrayList<>(hashes.length);
-        for (int i = 0; i < hashes.length; i++){
-            cards.add(retrieveCard(hashes[i]));
-        }
-        return cards;
-    }
-
-    @Override
-    public void storeCard(Card card) throws IOException {
-        if (index.containsKey(card.hashCode())){
-            return;
-        }
-        int currentFile = getWriteFile();
-        File file = new File(baseDirectory,baseName+currentFile);
-        // FileOutputStream opened in append mode, so we write to end of file
-        try (DataOutputStream out = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(file, true)))){
-            // Add to the index the current location of the end of the file before we do the write
-            writeToIndex(card.hashCode(),currentFile,(int)file.length());
-            card.writeToOutput(out);
-        }
-    }
-
     /**
      * Find the file that should be written to next. This will either be the current file that was last written to, or
      * it will be a new file if the last file was full.
      * @return The file that should be written to by the next write operation.
      */
-    protected int getWriteFile() throws IOException {
+    protected Pair<Integer, File> getWriteFile() throws IOException {
         File file = new File(baseDirectory,baseName+currentWriteFile);
 
         while (file.length()>maxSize){
@@ -128,6 +88,10 @@ public class CardSplitFilesStreamer implements CardIOManager {
             file = new File(baseDirectory,baseName+currentWriteFile);
         }
 
+        if (currentWriteFile>=filesList.size()) {
+            filesList.add(currentWriteFile,file);
+        }
+
         if (!file.exists()){
             file.createNewFile();
             if (currentWriteFile>=filesList.size()) {
@@ -135,24 +99,11 @@ public class CardSplitFilesStreamer implements CardIOManager {
             }
         }
 
-        return currentWriteFile;
+        return new Pair(currentWriteFile,file);
     }
 
-    @Override
-    public void deleteCard(int hash) throws IOException {
-        throw new UnsupportedOperationException("deleteCard not implemented");
-    }
-
-    protected Pair<File, Integer> fetchIndexLocation(int hash){
-        long value = index.get(hash);
-        int fileIdentifier = (int) (value >> 32);
-        int filePosition = (int) (value);
-        return new Pair<>(filesList.get(fileIdentifier), filePosition);
-    }
-
-    @Override
     public void generateIndex() throws IOException {
-        TIntLongHashMap index = new TIntLongHashMap();
+        index.clear();
 
         for (int fileIdentifier = 0; fileIdentifier < filesList.size(); fileIdentifier++) {
             File file = filesList.get(fileIdentifier);
@@ -160,14 +111,12 @@ public class CardSplitFilesStreamer implements CardIOManager {
                 int filePosition = 0;
                 int skipDistance;
                 do {
-                    int hash;
-                    try {
-                        hash = in.readInt();
-                    }catch(EOFException e){
-                        // so this looks like an anti-pattern, but it seems like the best way to exit on EOF
+                    byte[] hash = new byte[16];
+                    if (in.read(hash)<hash.length){
+                        // this means there is not another card left in the file
                         break;
                     }
-                    writeToIndex(hash,fileIdentifier,filePosition);
+                    addToIndex(hash);
 
                     skipDistance = IOUtil.skipToNextHash(in);
 
@@ -176,36 +125,39 @@ public class CardSplitFilesStreamer implements CardIOManager {
                 } while (skipDistance > 0);
             }
         }
-        this.index = index;
     }
 
-    protected void writeToIndex(int hash, int fileIdentifier, int filePosition){
+    public File addToIndex(byte[] hash) throws IOException {
+        Pair<Integer, File> fileInfo = getWriteFile();
+        int fileIdentifier = fileInfo.getKey();
+        long filePosition = fileInfo.getValue().length();
         // convert the file identifier and file position to a single long for storage in the hashmap
         long value = fileIdentifier << 32 | filePosition & 0xFFFFFFFFL;
         long exValue = index.put(hash, value);
+        return fileInfo.getValue();
     }
 
-    @Override
     public void retrieveIndex() throws IOException {
+        index.clear();
         File indexFile = new File(baseDirectory,baseName+".index");
         try (DataInputStream in = new DataInputStream(new BufferedInputStream(new FileInputStream(indexFile)))){
             int size = in.readInt();
-            index = new TIntLongHashMap(size);
             for (int i = 0; i < size; i++){
-                int hash= in.readInt();
+                byte[] hash= new byte[16];
+                in.readFully(hash);
                 long value = in.readLong();
                 index.put(hash,value);
             }
         }
     }
 
-    @Override
     public void storeIndex() throws IOException {
         File tempFile = new File(baseDirectory,baseName+".index.temp");
         try (DataOutputStream out = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(tempFile)))){
             out.writeInt(index.size());
-            for (int hash:index.keys()){
-                out.writeInt(hash);
+            for (Object hash:index.keys()){
+                byte[] hashBytes = (byte[]) hash;
+                out.write(hashBytes);
                 out.writeLong(index.get(hash));
             }
         }
@@ -215,8 +167,29 @@ public class CardSplitFilesStreamer implements CardIOManager {
         Files.move(tempFile.toPath(), indexFile.toPath(), StandardCopyOption.ATOMIC_MOVE);
     }
 
-    @Override
-    public void close() throws IOException {
-        storeIndex();
+    public Pair<File, Integer> fetchIndexLocation(byte[] hash){
+        if (!index.containsKey(hash)){
+            return null;
+        }
+        long value = index.get(hash);
+        int fileIdentifier = (int) (value >> 32);
+        int filePosition = (int) (value);
+        return new Pair<File, Integer>(filesList.get(fileIdentifier), filePosition);
+    }
+
+    public boolean containsKey(byte[] hash){
+        return index.containsKey(hash);
+    }
+
+    private class CardHashingStrategy implements HashingStrategy<byte[]> {
+        @Override
+        public int computeHashCode(byte[] bytes) {
+            return Arrays.hashCode(bytes);
+        }
+
+        @Override
+        public boolean equals(byte[] bytes, byte[] t1) {
+            return Arrays.equals(bytes, t1);
+        }
     }
 }

@@ -1,6 +1,6 @@
 package io;
 
-import kotlin.Pair;
+import javafx.util.Pair;
 
 import javax.imageio.IIOException;
 import java.io.DataInput;
@@ -26,21 +26,21 @@ public class IOUtil {
         // the cite
         //   author
         Pair<Integer,Short> lengthInfo = findStringLength(in);
-        in.skipBytes(lengthInfo.getFirst());
-        numBytes += lengthInfo.getFirst() + lengthInfo.getSecond();
+        in.skipBytes(lengthInfo.getKey());
+        numBytes += lengthInfo.getKey() + lengthInfo.getValue();
         //   date
         lengthInfo = findStringLength(in);
-        in.skipBytes(lengthInfo.getFirst());
-        numBytes += lengthInfo.getFirst() + lengthInfo.getSecond();
+        in.skipBytes(lengthInfo.getKey());
+        numBytes += lengthInfo.getKey() + lengthInfo.getValue();
         //   additionalInfo
         lengthInfo = findStringLength(in);
-        in.skipBytes(lengthInfo.getFirst());
-        numBytes += lengthInfo.getFirst() + lengthInfo.getSecond();
+        in.skipBytes(lengthInfo.getKey());
+        numBytes += lengthInfo.getKey() + lengthInfo.getValue();
 
         // the text
         lengthInfo = findStringLength(in);
-        in.skipBytes(lengthInfo.getFirst());
-        numBytes += lengthInfo.getFirst() + lengthInfo.getSecond();
+        in.skipBytes(lengthInfo.getKey());
+        numBytes += lengthInfo.getKey() + lengthInfo.getValue();
 
 
 
@@ -110,10 +110,10 @@ public class IOUtil {
      * explanation of the motivation and format.
      *
      * @param in DataInput point to the start of a serialized String's bytes.
-     * @return
+     * @return deserialized String
      */
     public static String readDeserializeString(DataInput in) throws IOException {
-        int len = findStringLength(in).getFirst();
+        int len = findStringLength(in).getKey();
         byte[] stringBytes = new byte[len];
         in.readFully(stringBytes);
         byte nullTerm = in.readByte();

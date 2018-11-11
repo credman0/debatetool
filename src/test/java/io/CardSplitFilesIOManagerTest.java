@@ -2,7 +2,7 @@ package io;
 
 import core.Card;
 import core.Cite;
-import io.cardio.CardSplitFilesStreamer;
+import io.cardio.CardSplitFiles.CardSplitFilesStreamer;
 import org.testng.Assert;
 import org.testng.annotations.*;
 
@@ -38,7 +38,7 @@ class CardSplitFilesIOManagerTest {
     public void writeReadTest (){
         try (CardSplitFilesStreamer manager = new CardSplitFilesStreamer(0x100000,baseDirectory, baseName)) {
             manager.storeCard(card);
-            Card recoveredCard = manager.retrieveCard(card.hashCode());
+            Card recoveredCard = manager.retrieveCard(card.getHash());
             Assert.assertEquals(card.getText(), recoveredCard.getText());
             manager.storeCard(card);
         } catch (IOException e) {
@@ -51,8 +51,8 @@ class CardSplitFilesIOManagerTest {
         try (CardSplitFilesStreamer manager = new CardSplitFilesStreamer(0x100000,baseDirectory, baseName)) {
             manager.storeCard(card);
             manager.storeCard(card2);
-            Card recoveredCard = manager.retrieveCard(card.hashCode());
-            Card recoveredCard2 = manager.retrieveCard(card2.hashCode());
+            Card recoveredCard = manager.retrieveCard(card.getHash());
+            Card recoveredCard2 = manager.retrieveCard(card2.getHash());
             Assert.assertEquals(card.getText(), recoveredCard.getText());
             Assert.assertEquals(card2.getText(), recoveredCard2.getText());
         } catch (IOException e) {

@@ -3,7 +3,7 @@ package gui;
 import core.Card;
 import core.Cite;
 import io.cardio.CardIOManager;
-import io.cardio.CardSplitFilesStreamer;
+import io.cardio.CardSplitFiles.CardSplitFilesStreamer;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
