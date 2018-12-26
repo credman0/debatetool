@@ -2,9 +2,8 @@ package io;
 
 import core.Card;
 import core.Cite;
-import io.cardio.CardIOManager;
-import io.cardio.CardSplitFiles.CardSplitFilesStreamer;
-import io.cardio.mongodb.MongoDBCardIOManager;
+import io.componentio.ComponentIOManager;
+import io.componentio.mongodb.MongoDBComponentIOManager;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -33,11 +32,11 @@ class MongoDBCardIOManagerTest {
 
     @Test
     public void writeReadTest (){
-        try (CardIOManager manager = new MongoDBCardIOManager()) {
-            manager.storeCard(card);
-            Card recoveredCard = manager.retrieveCard(card.getHash());
+        try (ComponentIOManager manager = new MongoDBComponentIOManager()) {
+            manager.storeSpeechComponent(card);
+            Card recoveredCard = (Card) manager.retrieveSpeechComponent(card.getHash());
             Assert.assertEquals(card.getText(), recoveredCard.getText());
-            manager.storeCard(card);
+            manager.storeSpeechComponent(card);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -45,11 +44,11 @@ class MongoDBCardIOManagerTest {
 
     @Test
     public void doubleWriteReadTest(){
-        try (CardIOManager manager = new MongoDBCardIOManager()) {
-            manager.storeCard(card);
-            manager.storeCard(card2);
-            Card recoveredCard = manager.retrieveCard(card.getHash());
-            Card recoveredCard2 = manager.retrieveCard(card2.getHash());
+        try (ComponentIOManager manager = new MongoDBComponentIOManager()) {
+            manager.storeSpeechComponent(card);
+            manager.storeSpeechComponent(card2);
+            Card recoveredCard = (Card) manager.retrieveSpeechComponent(card.getHash());
+            Card recoveredCard2 = (Card) manager.retrieveSpeechComponent(card2.getHash());
             Assert.assertEquals(card.getText(), recoveredCard.getText());
             Assert.assertEquals(card2.getText(), recoveredCard2.getText());
         } catch (IOException e) {

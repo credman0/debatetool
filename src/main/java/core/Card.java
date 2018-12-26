@@ -4,20 +4,24 @@ import io.IOUtil;
 
 import javax.imageio.IIOException;
 import java.io.*;
-import java.nio.charset.Charset;
+import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.Arrays;
 
-public class Card {
+public class Card extends SpeechComponent {
     protected Cite cite;
     protected String text;
-    protected byte[] hash = null;
     /**
      * The time the card text was last modified.
      */
     protected long timeStamp;
+
+    public Card(){
+
+    }
 
     public Card(Cite cite, String text) {
         setCite(cite);
@@ -84,20 +88,42 @@ public class Card {
         }
     }
 
-    protected byte[] generateHash(){MessageDigest dg = null;
-        try {
-            dg = MessageDigest.getInstance("MD5");
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        }
-        return dg.digest((text+cite.toString()).getBytes(StandardCharsets.UTF_8));
+    @Override
+    public ArrayList<String>[] toLabelledLists() {
+        ArrayList<String>[] labelledLists = new ArrayList[2];
+        labelledLists[0] = new ArrayList<String>(5);
+        labelledLists[1] = new ArrayList<String>(5);
+
+        labelledLists[0].add("Author");
+        labelledLists[0].add("Date");
+        labelledLists[0].add("Info");
+        labelledLists[0].add("Text");
+        labelledLists[0].add("Timestamp");
+
+        labelledLists[1].add(getCite().getAuthor());
+        labelledLists[1].add(getCite().getDate());
+        labelledLists[1].add(getCite().getAdditionalInfo());
+        labelledLists[1].add(getText());
+        labelledLists[1].add(new String(IOUtil.longToBytes(timeStamp)));
+
+        return labelledLists;
     }
 
-    public byte[] getHash(){
-        if (hash == null){
-            hash = generateHash();
-        }
-        return hash;
+    @Override
+    public void importFromLabelledLists(ArrayList<String> labels, ArrayList<String> values) {
+        String author = values.get(0);
+        String date = values.get(1);
+        String info = values.get(2);
+        String text = values.get(3);
+        String timestampString = values.get(4);
+        timeStamp = IOUtil.bytesToLong(timestampString.getBytes());
+        setCite(author,date,info);
+        setText(text);
+    }
+
+    @Override
+    public String getHashedString() {
+        return text+cite.toString();
     }
 
 

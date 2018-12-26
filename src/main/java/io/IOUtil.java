@@ -7,6 +7,7 @@ import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.File;
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 
@@ -153,5 +154,23 @@ public class IOUtil {
         }
 
         return new Pair(len,numInfoBytes);
+    }
+
+    public static byte[] longToBytes(long l) {
+        byte[] result = new byte[Long.BYTES];
+        for (int i = 7; i >= 0; i--) {
+            result[i] = (byte)(l & 0xFF);
+            l >>= Long.BYTES;
+        }
+        return result;
+    }
+
+    public static long bytesToLong(byte[] b) {
+        long result = 0;
+        for (int i = 0; i < Long.BYTES; i++) {
+            result <<= Long.BYTES;
+            result |= (b[i] & 0xFF);
+        }
+        return result;
     }
 }

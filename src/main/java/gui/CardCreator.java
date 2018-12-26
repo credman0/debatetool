@@ -2,8 +2,8 @@ package gui;
 
 import core.Card;
 import core.Cite;
-import io.cardio.CardIOManager;
-import io.cardio.CardSplitFiles.CardSplitFilesStreamer;
+import io.componentio.ComponentIOManager;
+import io.componentio.mongodb.MongoDBComponentIOManager;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -24,7 +24,7 @@ public class CardCreator extends Application {
     @FXML protected TextField additionalField;
     @FXML protected TextArea cardTextArea;
 
-    CardIOManager ioManager;
+    ComponentIOManager ioManager;
 
     public static void main(String[] args) {
         launch(args);
@@ -35,7 +35,7 @@ public class CardCreator extends Application {
         try {
             File baseDirectory = new File("data/db/");
             String baseName = "carddb";
-            ioManager = new CardSplitFilesStreamer(0x100000,baseDirectory, baseName);
+            ioManager = new MongoDBComponentIOManager();
             Parent root = FXMLLoader.load(getClass().getClassLoader().getResource("card_creator.fxml"));
             Scene scene = new Scene(root);
 
@@ -53,7 +53,7 @@ public class CardCreator extends Application {
     public void saveCard(ActionEvent actionEvent) {
         Card card = new Card(new Cite(authorField.getText(), dateField.getText(), additionalField.getText()), cardTextArea.getText());
         try {
-            ioManager.storeCard(card);
+            ioManager.storeSpeechComponent(card);
         } catch (IOException e) {
             e.printStackTrace();
         }
