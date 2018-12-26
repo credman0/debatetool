@@ -49,7 +49,7 @@ public class MongoDBComponentIOManager implements ComponentIOManager {
 
     @Override
     public void deleteSpeechComponent(byte[] hash) throws IOException {
-
+        collection.findOneAndDelete(Filters.eq("Hash", hash));
     }
 
     @Override

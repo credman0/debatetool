@@ -3,6 +3,7 @@ package core;
 import core.blockcontents.BlockComponent;
 import io.componentio.ComponentIOManager;
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableArray;
 import javafx.collections.ObservableList;
 
@@ -16,6 +17,12 @@ public class Block extends SpeechComponent {
 
     public Block (){
         contents = FXCollections.observableArrayList();
+        contents.addListener(new ListChangeListener<BlockComponent>() {
+            @Override
+            public void onChanged(Change<? extends BlockComponent> change) {
+                hash = null;
+            }
+        });
     }
 
     public void addComponent(BlockComponent component){
@@ -26,9 +33,15 @@ public class Block extends SpeechComponent {
         return contents.get(i);
     }
 
+    public int size(){
+        return contents.size();
+    }
+
     @Override
     public ArrayList<String>[] toLabelledLists() {
         ArrayList<String>[] labelledLists = new ArrayList[2];
+        labelledLists[0] = new ArrayList<>(contents.size());
+        labelledLists[1] = new ArrayList<>(contents.size());
         for (BlockComponent component:contents){
             labelledLists[0].add(component.getClass().getName());
             labelledLists[1].add(component.getBlockStorageString());
@@ -53,7 +66,13 @@ public class Block extends SpeechComponent {
 
     @Override
     public String getHashedString() {
-        return null;
+        StringBuilder builder = new StringBuilder();
+        // add some uniqueness in case all the contents are the same on blocks of different length
+        builder.append(contents.size());
+        for (BlockComponent component:contents){
+            builder.append(component.getBlockStorageString());
+        }
+        return builder.toString();
     }
 
     @Override

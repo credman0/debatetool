@@ -158,9 +158,9 @@ public class IOUtil {
 
     public static byte[] longToBytes(long l) {
         byte[] result = new byte[Long.BYTES];
-        for (int i = 7; i >= 0; i--) {
+        for (int i = Long.BYTES-1; i >= 0; i--) {
             result[i] = (byte)(l & 0xFF);
-            l >>= Long.BYTES;
+            l >>= 8;
         }
         return result;
     }
@@ -168,7 +168,7 @@ public class IOUtil {
     public static long bytesToLong(byte[] b) {
         long result = 0;
         for (int i = 0; i < Long.BYTES; i++) {
-            result <<= Long.BYTES;
+            result <<= 8;
             result |= (b[i] & 0xFF);
         }
         return result;

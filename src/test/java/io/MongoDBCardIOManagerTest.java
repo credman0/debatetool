@@ -33,10 +33,12 @@ class MongoDBCardIOManagerTest {
     @Test
     public void writeReadTest (){
         try (ComponentIOManager manager = new MongoDBComponentIOManager()) {
+            manager.deleteSpeechComponent(card.getHash());
             manager.storeSpeechComponent(card);
             Card recoveredCard = (Card) manager.retrieveSpeechComponent(card.getHash());
             Assert.assertEquals(card.getText(), recoveredCard.getText());
-            manager.storeSpeechComponent(card);
+            Assert.assertEquals(card.getCite().toString(),recoveredCard.getCite().toString());
+            Assert.assertEquals(card.getTimeStamp(), recoveredCard.getTimeStamp());
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -45,6 +47,8 @@ class MongoDBCardIOManagerTest {
     @Test
     public void doubleWriteReadTest(){
         try (ComponentIOManager manager = new MongoDBComponentIOManager()) {
+            manager.deleteSpeechComponent(card.getHash());
+            manager.deleteSpeechComponent(card2.getHash());
             manager.storeSpeechComponent(card);
             manager.storeSpeechComponent(card2);
             Card recoveredCard = (Card) manager.retrieveSpeechComponent(card.getHash());

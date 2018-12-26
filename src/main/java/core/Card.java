@@ -15,6 +15,11 @@ import java.util.Arrays;
 public class Card extends SpeechComponent {
     protected Cite cite;
     protected String text;
+
+    public long getTimeStamp() {
+        return timeStamp;
+    }
+
     /**
      * The time the card text was last modified.
      */
@@ -105,7 +110,11 @@ public class Card extends SpeechComponent {
         labelledLists[1].add(getCite().getDate());
         labelledLists[1].add(getCite().getAdditionalInfo());
         labelledLists[1].add(getText());
-        labelledLists[1].add(new String(IOUtil.longToBytes(timeStamp)));
+        try {
+            labelledLists[1].add(new String(IOUtil.longToBytes(timeStamp),"IBM437"));
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
 
         return labelledLists;
     }
@@ -117,9 +126,14 @@ public class Card extends SpeechComponent {
         String info = values.get(2);
         String text = values.get(3);
         String timestampString = values.get(4);
-        timeStamp = IOUtil.bytesToLong(timestampString.getBytes());
+        try {
+            timeStamp = IOUtil.bytesToLong(timestampString.getBytes("IBM437"));
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
         setCite(author,date,info);
-        setText(text);
+        // update text without changing timestamp
+        this.text = text;
     }
 
     @Override

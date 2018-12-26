@@ -4,6 +4,7 @@ import core.Card;
 import io.componentio.ComponentIOManager;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 
 public class BlockCardPlaceholder implements BlockComponent {
     protected byte[] hash;
@@ -11,7 +12,15 @@ public class BlockCardPlaceholder implements BlockComponent {
 
 
     public BlockCardPlaceholder(String hashString){
-        hash = hashString.getBytes();
+        try {
+            hash = hashString.getBytes("IBM437");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public BlockCardPlaceholder (Card card){
+        this.cardContent = card;
     }
 
     @Override
@@ -25,11 +34,24 @@ public class BlockCardPlaceholder implements BlockComponent {
 
     @Override
     public String getBlockStorageString() {
-        return new String(hash);
+        try {
+            return new String(getHash(), "IBM437");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public byte[] getHash(){
+        if (cardContent==null) {
+            return hash;
+        }else{
+            return cardContent.getHash();
+        }
     }
 
     @Override
     public void loadExternal(ComponentIOManager manager) throws IOException {
-        cardContent = (Card) manager.retrieveSpeechComponent(hash);
+        cardContent = (Card) manager.retrieveSpeechComponent(getHash());
     }
 }
