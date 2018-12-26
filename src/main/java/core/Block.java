@@ -20,7 +20,7 @@ public class Block extends SpeechComponent {
         contents.addListener(new ListChangeListener<BlockComponent>() {
             @Override
             public void onChanged(Change<? extends BlockComponent> change) {
-                hash = null;
+                setModified(true);
             }
         });
     }

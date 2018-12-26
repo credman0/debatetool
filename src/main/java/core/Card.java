@@ -13,6 +13,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 public class Card extends SpeechComponent {
+    /**
+     * "tags" here used in the debate sense
+     */
+    protected ArrayList<String> tags = new ArrayList<>();
+    protected int tagIndex = 0;
     protected Cite cite;
     protected String text;
 
@@ -44,14 +49,12 @@ public class Card extends SpeechComponent {
 
     public void setCite(Cite cite) {
         this.cite = cite;
-        // set the hash to be recalculated
-        hash = null;
+        setModified(true);
     }
 
     public void setCite(String author, String date, String additionalInfo){
         this.cite = new Cite(author, date, additionalInfo);
-        // set the hash to be recalculated
-        hash = null;
+        setModified(true);
     }
 
     public String getText() {
@@ -62,8 +65,7 @@ public class Card extends SpeechComponent {
         this.text = text;
         formatText();
         timeStamp = System.currentTimeMillis();
-        // set the hash to be recalculated
-        hash = null;
+        setModified(true);
     }
 
     public void writeToOutput(DataOutput out) throws IOException {
@@ -98,7 +100,7 @@ public class Card extends SpeechComponent {
     public ArrayList<String>[] toLabelledLists() {
         ArrayList<String>[] labelledLists = new ArrayList[2];
         labelledLists[0] = new ArrayList<>(5);
-        labelledLists[1] = new ArrayList<>(5);
+        labelledLists[1] = new ArrayList<>(5+tags.size());
 
         labelledLists[0].add("Author");
         labelledLists[0].add("Date");
@@ -114,6 +116,9 @@ public class Card extends SpeechComponent {
             labelledLists[1].add(new String(IOUtil.longToBytes(timeStamp),"IBM437"));
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
+        }
+        for (String tag:tags){
+            labelledLists[1].add(tag);
         }
 
         return labelledLists;
@@ -134,6 +139,36 @@ public class Card extends SpeechComponent {
         setCite(author,date,info);
         // update text without changing timestamp
         this.text = text;
+        // now the rest should be tags
+        for (int i = 5; i < values.size(); i++){
+            tags.add(values.get(i));
+        }
+    }
+
+    public int getTagIndex(){
+        return tagIndex;
+    }
+
+    public void setTagIndex(int i){
+        tagIndex = i;
+    }
+
+    public String getActiveTag(){
+        return tags.get(tagIndex);
+    }
+
+    public String getTag(int i){
+        return tags.get(i);
+    }
+
+    /**
+     * adds a tag but only if it does not already exist
+     * @param tag
+     */
+    public void addTag(String tag){
+        if (!tags.contains(tag)){
+            tags.add(tag);
+        }
     }
 
     @Override

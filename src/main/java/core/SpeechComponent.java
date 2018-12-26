@@ -10,6 +10,18 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 
 public abstract class SpeechComponent {
+    private boolean modified = false;
+    public boolean isModified() {
+        return modified;
+    }
+
+    protected void setModified(boolean modified) {
+        this.modified = modified;
+        if (modified){
+            hash =null;
+        }
+    }
+
     protected byte[] hash = null;
     public abstract ArrayList<String>[] toLabelledLists();
     public abstract void importFromLabelledLists(ArrayList<String> labels, ArrayList<String> values);
@@ -37,7 +49,7 @@ public abstract class SpeechComponent {
         }
         return dg.digest(getHashedString().getBytes(StandardCharsets.UTF_8));
     }
-    public byte[] getHash(){
+    public final byte[] getHash(){
         if (hash == null){
             hash = generateHash();
         }

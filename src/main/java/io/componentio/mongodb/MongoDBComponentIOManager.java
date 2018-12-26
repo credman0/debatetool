@@ -5,6 +5,7 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Indexes;
+import com.mongodb.client.model.Updates;
 import core.SpeechComponent;
 import core.Cite;
 import io.componentio.ComponentIOManager;
@@ -43,8 +44,13 @@ public class MongoDBComponentIOManager implements ComponentIOManager {
         // check if we already have the document
         if (collection.countDocuments(Filters.eq("Hash",speechComponent.getHash()))<1){
             collection.insertOne(toDocument(speechComponent));
-        };
-
+        }else{
+            if (speechComponent.isModified()) {
+                ArrayList<String>[] labelledArray = speechComponent.toLabelledLists();
+                collection.updateOne(Filters.eq("Hash", speechComponent.getHash()), Updates.addEachToSet("Labels", labelledArray[0]));
+                collection.updateOne(Filters.eq("Hash", speechComponent.getHash()), Updates.addEachToSet("Values", labelledArray[1]));
+            }
+        }
     }
 
     @Override
