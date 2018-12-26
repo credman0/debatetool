@@ -1,6 +1,7 @@
 package core;
 
 import io.IOUtil;
+import io.componentio.ComponentIOManager;
 
 import javax.imageio.IIOException;
 import java.io.*;
@@ -91,8 +92,8 @@ public class Card extends SpeechComponent {
     @Override
     public ArrayList<String>[] toLabelledLists() {
         ArrayList<String>[] labelledLists = new ArrayList[2];
-        labelledLists[0] = new ArrayList<String>(5);
-        labelledLists[1] = new ArrayList<String>(5);
+        labelledLists[0] = new ArrayList<>(5);
+        labelledLists[1] = new ArrayList<>(5);
 
         labelledLists[0].add("Author");
         labelledLists[0].add("Date");
@@ -122,8 +123,20 @@ public class Card extends SpeechComponent {
     }
 
     @Override
+    public void load(ComponentIOManager manager) throws IOException {
+        if (!isLoaded()){
+            throw new UnsupportedOperationException("Dynamic card loading is not implemented");
+        }
+    }
+
+    @Override
     public String getHashedString() {
         return text+cite.toString();
+    }
+
+    @Override
+    public boolean isLoaded() {
+        return !(text==null);
     }
 
 
