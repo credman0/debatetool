@@ -1,4 +1,4 @@
-package core.locationtree;
+package gui.locationtree;
 
 import javafx.collections.ObservableList;
 import javafx.scene.control.TreeItem;
