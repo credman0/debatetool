@@ -7,7 +7,6 @@ import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Indexes;
 import com.mongodb.client.model.Updates;
 import core.SpeechComponent;
-import core.Cite;
 import io.componentio.ComponentIOManager;
 import org.bson.Document;
 
