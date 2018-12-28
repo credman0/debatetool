@@ -5,10 +5,6 @@ import io.componentio.ComponentIOManager;
 
 import javax.imageio.IIOException;
 import java.io.*;
-import java.nio.ByteBuffer;
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -94,6 +90,11 @@ public class Card extends SpeechComponent {
                 throw new IIOException("Hash validation failed for card load");
             }
         }
+    }
+
+    @Override
+    public String getLabel() {
+        return getCite().author+" "+getCite().getDate();
     }
 
     @Override

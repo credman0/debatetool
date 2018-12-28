@@ -1,34 +1,34 @@
 package gui.locationtree;
 
-import core.Card;
+import core.SpeechComponent;
 
 /**
  * For use inside database trees. When card is null, the display is used instead.
  */
 public class LocationTreeItemContent {
-    final protected Card card;
+    final protected SpeechComponent component;
     final protected String display;
 
 
-    public LocationTreeItemContent(Card card) {
-        this.card = card;
+    public LocationTreeItemContent(SpeechComponent component) {
+        this.component = component;
         display = null;
     }
 
     public LocationTreeItemContent(String display) {
-        card = null;
+        component = null;
         this.display = display;
     }
 
     public String toString(){
-        if (card == null){
+        if (component == null){
             return display;
         }else{
-            return card.getCite().toString();
+            return component.getLabel();
         }
     }
 
-    public Card getCard(){
-        return card;
+    public SpeechComponent getSpeechComponent(){
+        return component;
     }
 }

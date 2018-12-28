@@ -4,13 +4,13 @@ import core.blockcontents.BlockComponent;
 import io.componentio.ComponentIOManager;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
-import javafx.collections.ObservableArray;
 import javafx.collections.ObservableList;
 
 import java.io.IOException;
 import java.util.ArrayList;
 
 public class Block extends SpeechComponent {
+    protected String name;
     protected ObservableList<BlockComponent> contents;
     protected boolean loaded = false;
 
@@ -38,10 +38,16 @@ public class Block extends SpeechComponent {
     }
 
     @Override
+    public String getLabel() {
+        return name;
+    }
+
+    @Override
     public ArrayList<String>[] toLabelledLists() {
         ArrayList<String>[] labelledLists = new ArrayList[2];
         labelledLists[0] = new ArrayList<>(contents.size());
         labelledLists[1] = new ArrayList<>(contents.size());
+        labelledLists[1].add(name);
         for (BlockComponent component:contents){
             labelledLists[0].add(component.getClass().getName());
             labelledLists[1].add(component.getBlockStorageString());
@@ -51,8 +57,9 @@ public class Block extends SpeechComponent {
 
     @Override
     public void importFromLabelledLists(ArrayList<String> labels, ArrayList<String> values) {
+        this.name = values.get(0);
         for (int i = 0; i < labels.size(); i++){
-            contents.add(BlockComponent.importFromData(labels.get(i),values.get(i)));
+            contents.add(BlockComponent.importFromData(labels.get(i),values.get(i+1)));
         }
     }
 

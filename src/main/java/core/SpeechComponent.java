@@ -3,7 +3,6 @@ package core;
 import io.componentio.ComponentIOManager;
 
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -21,6 +20,12 @@ public abstract class SpeechComponent {
             hash =null;
         }
     }
+
+    /**
+     * A human readable label for the object to display in GUIs
+     * @return Human readable label representative of the object
+     */
+    public abstract String getLabel();
 
     protected byte[] hash = null;
     public abstract ArrayList<String>[] toLabelledLists();

@@ -3,6 +3,7 @@ package io;
 import core.Block;
 import core.Card;
 import core.Cite;
+import core.blockcontents.BlockAnalytic;
 import core.blockcontents.BlockCardPlaceholder;
 import io.componentio.ComponentIOManager;
 import io.componentio.mongodb.MongoDBComponentIOManager;
@@ -14,6 +15,7 @@ import java.io.*;
 
 class MongoDBBlockIOManagerTest {
     Block block;
+    public final String ANALYTIC_TEXT = "This is an analytic";
 
     @BeforeClass
     public void setUp(){
@@ -34,6 +36,7 @@ class MongoDBBlockIOManagerTest {
         block = new Block();
         block.addComponent(cardholder1);
         block.addComponent(cardholder2);
+        block.addComponent(new BlockAnalytic(ANALYTIC_TEXT));
     }
 
     @Test
@@ -42,6 +45,7 @@ class MongoDBBlockIOManagerTest {
             manager.storeSpeechComponent(block);
             Block recovered = (Block) manager.retrieveSpeechComponent(block.getHash());
             recovered.load(manager);
+            Assert.assertEquals(recovered.getLabel(), block.getLabel());
             Assert.assertEquals(recovered.size(), block.size());
             for (int i = 0; i < block.size(); i++){
                 Assert.assertEquals(block.getComponent(i).getDisplayContent(), recovered.getComponent(i).getDisplayContent());

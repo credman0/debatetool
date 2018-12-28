@@ -15,7 +15,6 @@ import javafx.scene.control.TextField;
 import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
 
-import java.io.File;
 import java.io.IOException;
 
 public class CardCreator extends Application {
@@ -33,12 +32,9 @@ public class CardCreator extends Application {
     @Override
     public void start(Stage primaryStage) {
         try {
-            File baseDirectory = new File("data/db/");
-            String baseName = "carddb";
             ioManager = new MongoDBComponentIOManager();
             Parent root = FXMLLoader.load(getClass().getClassLoader().getResource("card_creator.fxml"));
             Scene scene = new Scene(root);
-
             primaryStage.setScene(scene);
             primaryStage.show();
         } catch (IOException e) {
