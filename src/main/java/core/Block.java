@@ -1,6 +1,5 @@
 package core;
 
-import core.blockcontents.BlockComponent;
 import io.componentio.ComponentIOManager;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
@@ -9,7 +8,7 @@ import javafx.collections.ObservableList;
 import java.io.IOException;
 import java.util.ArrayList;
 
-public class Block extends SpeechComponent {
+public class Block extends HashIdentifiedSpeechComponent {
     protected String name;
     protected ObservableList<BlockComponent> contents;
     protected boolean loaded = false;
@@ -66,7 +65,7 @@ public class Block extends SpeechComponent {
     @Override
     public void load(ComponentIOManager manager) throws IOException {
         for (BlockComponent component:contents){
-            component.loadExternal(manager);
+            component.load(manager);
         }
         loaded = true;
     }

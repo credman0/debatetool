@@ -1,13 +1,13 @@
-package core.blockcontents;
+package core;
 
 import io.componentio.ComponentIOManager;
 
 import java.io.IOException;
 
-public class BlockAnalytic implements BlockComponent {
-    protected String content;
+public class Analytic extends SpeechComponent implements BlockComponent {
+    private final String content;
 
-    public BlockAnalytic(String content) {
+    public Analytic(String content) {
         this.content = content;
     }
 
@@ -22,7 +22,12 @@ public class BlockAnalytic implements BlockComponent {
     }
 
     @Override
-    public void loadExternal(ComponentIOManager manager) throws IOException {
+    public void load(ComponentIOManager manager) throws IOException {
         // nothing to do
+    }
+
+    @Override
+    public boolean isLoaded() {
+        return true;
     }
 }

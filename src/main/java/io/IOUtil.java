@@ -7,9 +7,9 @@ import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.File;
 import java.io.IOException;
-import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.util.Base64;
 
 public class IOUtil {
     /**
@@ -172,5 +172,13 @@ public class IOUtil {
             result |= (b[i] & 0xFF);
         }
         return result;
+    }
+
+    public static byte[] decodeString(String src){
+        return Base64.getDecoder().decode(src);
+    }
+
+    public static String encodeString(byte[] src){
+        return Base64.getEncoder().encodeToString(src);
     }
 }

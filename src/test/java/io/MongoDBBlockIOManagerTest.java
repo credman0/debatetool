@@ -1,10 +1,9 @@
 package io;
 
+import core.Analytic;
 import core.Block;
 import core.Card;
 import core.Cite;
-import core.blockcontents.BlockAnalytic;
-import core.blockcontents.BlockCardPlaceholder;
 import io.componentio.ComponentIOManager;
 import io.componentio.mongodb.MongoDBComponentIOManager;
 import org.testng.Assert;
@@ -31,12 +30,10 @@ class MongoDBBlockIOManagerTest {
         }
         Card card1 = new Card(new Cite("Smith", "2010", "Renowned writer of cards"), text);
         Card card2 = new Card(new Cite("Smith", "2010", "Renowned writer of cards"), text+"AAA");
-        BlockCardPlaceholder cardholder1 = new BlockCardPlaceholder(card1);
-        BlockCardPlaceholder cardholder2 = new BlockCardPlaceholder(card2);
         block = new Block();
-        block.addComponent(cardholder1);
-        block.addComponent(cardholder2);
-        block.addComponent(new BlockAnalytic(ANALYTIC_TEXT));
+        block.addComponent(card1);
+        block.addComponent(card2);
+        block.addComponent(new Analytic(ANALYTIC_TEXT));
     }
 
     @Test

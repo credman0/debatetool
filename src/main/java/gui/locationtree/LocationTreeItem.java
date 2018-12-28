@@ -1,6 +1,6 @@
 package gui.locationtree;
 
-import core.SpeechComponent;
+import core.HashIdentifiedSpeechComponent;
 import io.componentio.ComponentIOManager;
 import io.structureio.StructureIOManager;
 import javafx.collections.FXCollections;
@@ -43,7 +43,7 @@ public class LocationTreeItem extends TreeItem<LocationTreeItemContent> {
                 children.add(new LocationTreeItem(structureIOManager,componentIOManager, this, new LocationTreeItemContent(name)));
             }
             for (byte[] hash:contentIDs) {
-                SpeechComponent content = null;
+                HashIdentifiedSpeechComponent content = null;
                 try {
                     content = componentIOManager.retrieveSpeechComponent(hash);
                 } catch (IOException e) {

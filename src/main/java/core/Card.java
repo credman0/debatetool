@@ -8,7 +8,7 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-public class Card extends SpeechComponent {
+public class Card extends HashIdentifiedSpeechComponent implements BlockComponent {
     /**
      * "tags" here used in the debate sense
      */
@@ -26,8 +26,8 @@ public class Card extends SpeechComponent {
      */
     protected long timeStamp;
 
-    public Card(){
-
+    public Card(byte[] hash){
+        this.hash = hash;
     }
 
     public Card(Cite cite, String text) {
@@ -173,10 +173,22 @@ public class Card extends SpeechComponent {
     }
 
     @Override
+    public String getDisplayContent() {
+        return getCite().toString()+"\n"+getText();
+    }
+
+    @Override
+    public String getBlockStorageString() {
+        return IOUtil.encodeString(getHash());
+    }
+
+    @Override
     public void load(ComponentIOManager manager) throws IOException {
-        if (!isLoaded()){
-            throw new UnsupportedOperationException("Dynamic card loading is not implemented");
-        }
+        Card self = (Card) manager.retrieveSpeechComponent(hash);
+        // TODO maybe a better way to import this information
+        this.text = self.text;
+        this.cite = self.cite;
+        this.timeStamp = self.timeStamp;
     }
 
     @Override

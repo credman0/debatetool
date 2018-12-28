@@ -6,7 +6,7 @@ import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Indexes;
 import com.mongodb.client.model.Updates;
-import core.SpeechComponent;
+import core.HashIdentifiedSpeechComponent;
 import io.componentio.ComponentIOManager;
 import org.bson.Document;
 
@@ -24,14 +24,14 @@ public class MongoDBComponentIOManager implements ComponentIOManager {
         collection.createIndex(Indexes.hashed("Hash"));
     }
     @Override
-    public SpeechComponent retrieveSpeechComponent(byte[] hash) throws IOException {
+    public HashIdentifiedSpeechComponent retrieveSpeechComponent(byte[] hash) throws IOException {
         return fromDocument(collection.find(Filters.eq("Hash", hash)).first());
     }
 
     @Override
-    public ArrayList<SpeechComponent> retrieveSpeechComponents(byte[][] hashes) throws IOException {
+    public ArrayList<HashIdentifiedSpeechComponent> retrieveSpeechComponents(byte[][] hashes) throws IOException {
         // TODO: Make this more efficient at fetching several speechComponents
-        ArrayList<SpeechComponent> speechComponents = new ArrayList<>(hashes.length);
+        ArrayList<HashIdentifiedSpeechComponent> speechComponents = new ArrayList<>(hashes.length);
         for (int i = 0; i < hashes.length; i++){
             speechComponents.add(retrieveSpeechComponent(hashes[i]));
         }
@@ -39,7 +39,7 @@ public class MongoDBComponentIOManager implements ComponentIOManager {
     }
 
     @Override
-    public void storeSpeechComponent(SpeechComponent speechComponent) throws IOException {
+    public void storeSpeechComponent(HashIdentifiedSpeechComponent speechComponent) throws IOException {
         // check if we already have the document
         if (collection.countDocuments(Filters.eq("Hash",speechComponent.getHash()))<1){
             collection.insertOne(toDocument(speechComponent));
@@ -62,7 +62,7 @@ public class MongoDBComponentIOManager implements ComponentIOManager {
         mongoClient.close();
     }
 
-    public static final Document toDocument(SpeechComponent speechComponent){
+    public static final Document toDocument(HashIdentifiedSpeechComponent speechComponent){
         ArrayList<String>[] labelledArray = speechComponent.toLabelledLists();
         return new Document("Type",speechComponent.getClass().getName())
                 .append("Hash", speechComponent.getHash())
@@ -70,10 +70,10 @@ public class MongoDBComponentIOManager implements ComponentIOManager {
                 .append("Values",labelledArray[1]);
     }
 
-    public static final SpeechComponent fromDocument(Document document){
+    public static final HashIdentifiedSpeechComponent fromDocument(Document document){
         String type = document.getString("Type");
         ArrayList<String> labels = (ArrayList<String>) document.get("Labels");
         ArrayList<String> values = (ArrayList<String>) document.get("Values");
-        return SpeechComponent.createFromLabelledLists(type,labels,values);
+        return HashIdentifiedSpeechComponent.createFromLabelledLists(type,labels,values);
     }
 }

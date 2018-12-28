@@ -1,16 +1,16 @@
 package gui.locationtree;
 
-import core.SpeechComponent;
+import core.HashIdentifiedSpeechComponent;
 
 /**
  * For use inside database trees. When card is null, the display is used instead.
  */
 public class LocationTreeItemContent {
-    final protected SpeechComponent component;
+    final protected HashIdentifiedSpeechComponent component;
     final protected String display;
 
 
-    public LocationTreeItemContent(SpeechComponent component) {
+    public LocationTreeItemContent(HashIdentifiedSpeechComponent component) {
         this.component = component;
         display = null;
     }
@@ -28,7 +28,7 @@ public class LocationTreeItemContent {
         }
     }
 
-    public SpeechComponent getSpeechComponent(){
+    public HashIdentifiedSpeechComponent getSpeechComponent(){
         return component;
     }
 }
