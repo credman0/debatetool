@@ -12,10 +12,10 @@
             <menus>
                 <Menu text="File">
                     <items>
-                        <MenuItem fx:id="menuNew" text="New" onAction="#newCardAction" accelerator="SHORTCUT+N"/>
-                        <MenuItem fx:id="menuSave" text="Save" onAction="#saveCard" accelerator="SHORTCUT+S"/>
+                        <MenuItem text="New" onAction="#newCardAction" accelerator="SHORTCUT+N"/>
+                        <MenuItem text="Save" onAction="#saveCard" accelerator="SHORTCUT+S"/>
                         <SeparatorMenuItem/>
-                        <MenuItem fx:id="menuQuit" text="Exit" accelerator="SHORTCUT+Q"/>
+                        <MenuItem text="Exit" onAction="#exit" accelerator="SHORTCUT+Q"/>
                     </items>
                 </Menu>
                 <Menu text="Edit">

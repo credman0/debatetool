@@ -13,6 +13,7 @@ import javafx.beans.property.StringProperty;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.TreeItemPropertyValueFactory;
+import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -20,9 +21,6 @@ import java.util.Date;
 import java.util.List;
 
 public class CardCreator{
-    @FXML protected MenuItem menuNew;
-    @FXML protected MenuItem menuSave;
-    @FXML protected MenuItem menuQuit;
     @FXML protected Label currentPathLabel;
     @FXML protected TreeTableView directoryView;
     @FXML protected TextField authorField;
@@ -145,5 +143,12 @@ public class CardCreator{
     public void setCurrentNode(LocationTreeItem currentNode) {
         this.currentNode = currentNode;
         this.currentPathString.set(String.join("/",currentNode.getPath()));
+    }
+
+    public void exit() throws IOException {
+        componentIOManager.close();
+        structureIOManager.close();
+        // need some handle to the stage, so the cardTextArea chosen arbitrarily
+        ((Stage)cardTextArea.getScene().getWindow()).close();
     }
 }
