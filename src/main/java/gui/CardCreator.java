@@ -10,11 +10,9 @@ import io.structureio.StructureIOManager;
 import io.structureio.mongodb.MongoDBStructureIOManager;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.TreeItemPropertyValueFactory;
-import javafx.scene.input.KeyEvent;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -22,6 +20,9 @@ import java.util.Date;
 import java.util.List;
 
 public class CardCreator{
+    @FXML protected MenuItem menuNew;
+    @FXML protected MenuItem menuSave;
+    @FXML protected MenuItem menuQuit;
     @FXML protected Label currentPathLabel;
     @FXML protected TreeTableView directoryView;
     @FXML protected TextField authorField;
@@ -41,18 +42,24 @@ public class CardCreator{
         populateDirectoryView();
         directoryView.getSelectionModel().selectedItemProperty().addListener((observableValue, oldV, newV) -> {
             LocationTreeItem newItem = ((LocationTreeItem)newV);
+            if (newItem==null){
+                return;
+            }
             if (newItem.isLeaf()){
                 setCurrentNode((LocationTreeItem) newItem.getParent());
             }else{
                 setCurrentNode(newItem);
             }
         });
+        directoryView.setOnMouseClicked(mouseEvent -> {
+            if(mouseEvent.getClickCount() == 2) {
+                LocationTreeItem node = (LocationTreeItem) directoryView.getSelectionModel().getSelectedItem();
+                if (node != null && node.isLeaf()){
+                    cardToFields((Card) node.getValue().getSpeechComponent());
+                }
+            }
+        });
         currentPathLabel.textProperty().bind(currentPathString);
-    }
-
-    @FXML
-    public void handleMenuKeyInput(KeyEvent keyEvent) {
-
     }
 
     private void populateDirectoryView(){
@@ -89,15 +96,38 @@ public class CardCreator{
     }
 
     @FXML
-    public void saveCard(ActionEvent actionEvent) {
-        Card card = new Card(new Cite(authorField.getText(), dateField.getText(), additionalField.getText()), cardTextArea.getText());
+    public void saveCard() {
+        if (currentNode == null){
+            currentPathLabel.setText("Please select a location");
+        }
+        Card card = fieldsToCard();
         try {
             componentIOManager.storeSpeechComponent(card);
             structureIOManager.addContent(currentNode.getPath(),card.getHash());
+            // TODO don't need to do a full reload here
             currentNode.reloadChildren();
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public void newCardAction(){
+        authorField.clear();
+        dateField.clear();
+        additionalField.clear();
+        cardTextArea.clear();
+    }
+
+    private Card fieldsToCard(){
+        return new Card(new Cite(authorField.getText(), dateField.getText(), additionalField.getText()), cardTextArea.getText());
+    }
+
+    private void cardToFields(Card card){
+        Cite cite = card.getCite();
+        authorField.setText(cite.getAuthor());
+        dateField.setText(cite.getDate());
+        additionalField.setText(cite.getAdditionalInfo());
+        cardTextArea.setText(card.getText());
     }
 
     public String getCurrentPathString() {
