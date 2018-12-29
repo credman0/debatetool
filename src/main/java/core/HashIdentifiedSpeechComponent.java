@@ -17,6 +17,7 @@ public abstract class HashIdentifiedSpeechComponent extends SpeechComponent{
             hash =null;
         }
     }
+    public abstract long getTimeStamp();
 
     /**
      * A human readable label for the object to display in GUIs

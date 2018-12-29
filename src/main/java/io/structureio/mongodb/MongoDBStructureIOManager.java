@@ -30,18 +30,31 @@ public class MongoDBStructureIOManager implements StructureIOManager {
 
     @Override
     public List<String> getChildren(List<String> path) {
-        return (List<String>) collection.find(Filters.eq("Path", path)).first().get("Children");
+        List<String> children = (List<String>) collection.find(Filters.eq("Path", path)).first().get("Children");
+        if (children==null){
+            return new ArrayList<>();
+        }else {
+            return children;
+        }
     }
 
     @Override
     public List<byte[]> getContent(List<String> path) {
-        // Todo find a better way to do this casting
         List<Binary> binaryList = (List<Binary>) collection.find(Filters.eq("Path", path)).first().get("Content");
+        if (binaryList == null){
+            return new ArrayList<>();
+        }
+        // Todo find a better way to do this casting
         List<byte[]> byteList = new ArrayList<>(binaryList.size());
         for (Binary binary:binaryList){
             byteList.add(binary.getData());
         }
         return byteList;
+    }
+
+    @Override
+    public List<String> getRoot() {
+        return (List<String>) collection.find(Filters.size("Path", 0)).first().get("Children");
     }
 
     @Override

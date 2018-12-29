@@ -1,71 +1,81 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
-<?import javafx.scene.text.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-
+<?import java.net.URL?>
 <BorderPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
             fx:controller="gui.CardCreator"
-            prefHeight="400.0" prefWidth="600.0">
+            prefHeight="720.0" prefWidth="1280.0">
     <top>
-        <GridPane>
-            <columnConstraints>
-                <ColumnConstraints percentWidth="20"  />
-                <ColumnConstraints percentWidth="20" />
-                <ColumnConstraints percentWidth="60" />
-            </columnConstraints>
-            <Label text="Author"
-                   GridPane.columnIndex="0" GridPane.rowIndex="0"/>
-
-            <TextField fx:id="authorField"
-                       GridPane.columnIndex="0" GridPane.rowIndex="1"/>
-
-            <Label text="Date"
-                   GridPane.columnIndex="1" GridPane.rowIndex="0"/>
-
-            <TextField fx:id="dateField"
-                           GridPane.columnIndex="1" GridPane.rowIndex="1"/>
-
-            <Label text="Other cite info"
-                   GridPane.columnIndex="2" GridPane.rowIndex="0"/>
-
-            <TextField fx:id="additionalField"
-                       GridPane.columnIndex="2" GridPane.rowIndex="1"/>
-        </GridPane>
+        <MenuBar fx:id="menuBar" onKeyPressed="#handleMenuKeyInput">
+            <menus>
+                <Menu text="File">
+                    <items>
+                        <MenuItem text="New"/>
+                        <MenuItem text="Open"/>
+                        <MenuItem text="Save" onAction="#saveCard"/>
+                        <SeparatorMenuItem  />
+                        <MenuItem text="Exit"/>
+                    </items>
+                </Menu>
+                <Menu text="Edit">
+                    <items>
+                        <MenuItem text="Copy"/>
+                        <MenuItem text="Cut"/>
+                        <MenuItem text="Paste"/>
+                    </items>
+                </Menu>
+                <Menu text="Help">
+                    <items>
+                        <MenuItem text="Search" disable="true"/>
+                        <MenuItem text="Online Manual" visible="false"/>
+                        <SeparatorMenuItem />
+                        <MenuItem text="About"/>
+                    </items>
+                </Menu>
+            </menus>
+        </MenuBar>
     </top>
     <center>
-        <TextArea fx:id="cardTextArea"/>
+        <SplitPane dividerPositions="0.3">
+
+            <TreeTableView fx:id="directoryView"/>
+            <BorderPane>
+                <top>
+                    <GridPane>
+                        <columnConstraints>
+                            <ColumnConstraints percentWidth="20"  />
+                            <ColumnConstraints percentWidth="20" />
+                            <ColumnConstraints percentWidth="60" />
+                        </columnConstraints>
+                        <Label text="Author"
+                               GridPane.columnIndex="0" GridPane.rowIndex="0" GridPane.halignment="CENTER"/>
+
+                        <TextField fx:id="authorField"
+                                   GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+
+                        <Label text="Date"
+                               GridPane.columnIndex="1" GridPane.rowIndex="0" GridPane.halignment="CENTER"/>
+
+                        <TextField fx:id="dateField"
+                                   GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+
+                        <Label text="Other cite info"
+                               GridPane.columnIndex="2" GridPane.rowIndex="0" GridPane.halignment="CENTER"/>
+
+                        <TextField fx:id="additionalField"
+                                   GridPane.columnIndex="2" GridPane.rowIndex="1"/>
+                    </GridPane>
+                </top>
+                <center>
+                    <TextArea fx:id="cardTextArea"/>
+                </center>
+            </BorderPane>
+        </SplitPane>
+
     </center>
-    <MenuBar fx:id="menuBar" onKeyPressed="#handleMenuKeyInput">
-        <menus>
-            <Menu text="File">
-                <items>
-                    <MenuItem text="New"/>
-                    <MenuItem text="Open"/>
-                    <MenuItem text="Save" onAction="#saveCard"/>
-                    <SeparatorMenuItem  />
-                    <MenuItem text="Exit"/>
-                </items>
-            </Menu>
-            <Menu text="Edit">
-                <items>
-                    <MenuItem text="Copy"/>
-                    <MenuItem text="Cut"/>
-                    <MenuItem text="Paste"/>
-                </items>
-            </Menu>
-            <Menu text="Help">
-                <items>
-                    <MenuItem text="Search" disable="true"/>
-                    <MenuItem text="Online Manual" visible="false"/>
-                    <SeparatorMenuItem />
-                    <MenuItem text="About"/>
-                </items>
-            </Menu>
-        </menus>
-    </MenuBar>
+    <stylesheets>
+        <URL value="@css/application.css" />
+    </stylesheets>
 </BorderPane>

@@ -85,4 +85,9 @@ public class Block extends HashIdentifiedSpeechComponent {
     public boolean isLoaded() {
         return loaded;
     }
+
+    @Override
+    public long getTimeStamp() {
+        return 0;
+    }
 }
