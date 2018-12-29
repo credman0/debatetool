@@ -15,19 +15,16 @@ public class LocationTreeItem extends TreeItem<LocationTreeItemContent> {
     private boolean childrenLoaded = false ;
     protected final StructureIOManager structureIOManager;
     protected final ComponentIOManager componentIOManager;
-    protected final LocationTreeItem parent;
 
     /**
      * Create a tree branch that contains children that are potentially either leaves, or branches that contain leaves.
      * @param structureIOManager Manager to be used for lazily retrieving children when necessary.
-     * @param parent
      * @param content
      */
-    public LocationTreeItem(StructureIOManager structureIOManager, ComponentIOManager componentIOManager, LocationTreeItem parent, LocationTreeItemContent content){
+    public LocationTreeItem(StructureIOManager structureIOManager, ComponentIOManager componentIOManager, LocationTreeItemContent content){
         super();
         this.structureIOManager = structureIOManager;
         this.componentIOManager = componentIOManager;
-        this.parent = parent;
         this.setValue(content);
     }
 
@@ -42,7 +39,7 @@ public class LocationTreeItem extends TreeItem<LocationTreeItemContent> {
         List<String> childrenDirs = structureIOManager.getChildren(path);
         List<byte[]> contentIDs = structureIOManager.getContent(path);
         for (String name:childrenDirs){
-            children.add(new LocationTreeItem(structureIOManager,componentIOManager, this, new LocationTreeItemContent(name)));
+            children.add(new LocationTreeItem(structureIOManager,componentIOManager, new LocationTreeItemContent(name)));
         }
         for (byte[] hash:contentIDs) {
             HashIdentifiedSpeechComponent content = null;
@@ -51,7 +48,7 @@ public class LocationTreeItem extends TreeItem<LocationTreeItemContent> {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            children.add(new LocationTreeItem(structureIOManager, componentIOManager, this, new LocationTreeItemContent(content)));
+            children.add(new LocationTreeItem(structureIOManager, componentIOManager, new LocationTreeItemContent(content)));
         }
         super.getChildren().addAll(children);
         return super.getChildren();
@@ -60,25 +57,16 @@ public class LocationTreeItem extends TreeItem<LocationTreeItemContent> {
 
     @Override
     public boolean isLeaf(){
-        if (getValue().getSpeechComponent()==null){
-            if (!childrenLoaded){
-                return false;
-            }else {
-                return getChildren().size() == 0;
-            }
-        }else {
-            // when the content includes a component, it is a leaf (not a directory)
-            return true;
-        }
+        return getValue().getSpeechComponent()!=null;
     }
 
     public List<String> getPath(){
-        if (parent==null){
+        if (getParent().getParent()==null){
             List<String> path = new ArrayList<>();
             path.add(getValue().toString());
             return path;
         }else{
-            List<String> parentPath = parent.getPath();
+            List<String> parentPath = ((LocationTreeItem) getParent()).getPath();
             parentPath.add(getValue().toString());
             return parentPath;
         }
