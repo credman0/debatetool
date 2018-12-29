@@ -23,7 +23,7 @@
                         <MenuItem text="Copy"/>
                         <MenuItem text="Paste"/>
                         <SeparatorMenuItem/>
-                        <MenuItem text="Toggle Edit Mode" onAction="#togglePanes"/>
+                        <MenuItem text="Toggle Edit Mode" onAction="#togglePanes" accelerator="SHORTCUT+E"/>
                     </items>
                 </Menu>
                 <Menu text="Help">
