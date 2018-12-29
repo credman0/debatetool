@@ -54,6 +54,15 @@ public class LocationTreeItem extends TreeItem<LocationTreeItemContent> {
         return super.getChildren();
     }
 
+    public void reloadChildren(){
+        getChildren().clear();
+        childrenLoaded = false;
+        if (isExpanded()){
+            // need to reload right away
+            getChildren();
+        }
+    }
+
 
     @Override
     public boolean isLeaf(){

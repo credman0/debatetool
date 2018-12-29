@@ -39,8 +39,14 @@
     </top>
     <center>
         <SplitPane dividerPositions="0.3">
-
-            <TreeTableView fx:id="directoryView"/>
+            <BorderPane>
+                <center>
+                    <TreeTableView fx:id="directoryView"/>
+                </center>
+                <bottom>
+                    <Label fx:id="currentPathLabel"/>
+                </bottom>
+            </BorderPane>
             <BorderPane>
                 <top>
                     <GridPane>
