@@ -38,6 +38,7 @@ public class CardCreator{
         componentIOManager = new MongoDBComponentIOManager();
         structureIOManager = new MongoDBStructureIOManager();
         populateDirectoryView();
+        // Selection listener for tracking current node
         directoryView.getSelectionModel().selectedItemProperty().addListener((observableValue, oldV, newV) -> {
             LocationTreeItem newItem = ((LocationTreeItem)newV);
             if (newItem==null){
@@ -49,6 +50,7 @@ public class CardCreator{
                 setCurrentNode(newItem);
             }
         });
+        // double click listener for opening cards
         directoryView.setOnMouseClicked(mouseEvent -> {
             if(mouseEvent.getClickCount() == 2) {
                 LocationTreeItem node = (LocationTreeItem) directoryView.getSelectionModel().getSelectedItem();
@@ -57,6 +59,14 @@ public class CardCreator{
                 }
             }
         });
+
+        // verify only legal characters are used in card text
+        cardTextArea.textProperty().addListener(
+                (observable, oldValue, newValue) -> {
+                    ((StringProperty)observable).setValue(Card.cleanForCard(newValue));
+                }
+        );
+
         currentPathLabel.textProperty().bind(currentPathString);
     }
 
@@ -96,7 +106,8 @@ public class CardCreator{
     @FXML
     public void saveCard() {
         if (currentNode == null){
-            currentPathLabel.setText("Please select a location");
+            currentPathString.set("Please select a location");
+            return;
         }
         Card card = fieldsToCard();
         try {

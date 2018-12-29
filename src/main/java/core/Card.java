@@ -208,7 +208,15 @@ public class Card extends HashIdentifiedSpeechComponent implements BlockComponen
     }
 
     protected void formatText(){
-        text = text.replaceAll("\n", "");
-        text = text.replaceAll("\0", "");
+        text = cleanForCard(text);
+    }
+
+    /**
+     * removes illegal characters (new lines and null bytes) from the string, then returns it
+     * @param s any string
+     * @return s, minus illegal characters for cards
+     */
+    public static String cleanForCard(String s){
+        return s.replaceAll("\n", "").replaceAll("\0", "");
     }
 }
