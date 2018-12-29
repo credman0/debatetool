@@ -1,7 +1,6 @@
 package gui;
 
 import core.Card;
-import core.Cite;
 import gui.locationtree.LocationTreeItem;
 import gui.locationtree.LocationTreeItemContent;
 import io.componentio.ComponentIOManager;
@@ -11,8 +10,10 @@ import io.structureio.mongodb.MongoDBStructureIOManager;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.TreeItemPropertyValueFactory;
+import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -21,15 +22,15 @@ import java.util.Date;
 import java.util.List;
 
 public class CardCreator{
+    @FXML protected BorderPane viewerPane;
     @FXML protected Label currentPathLabel;
     @FXML protected TreeTableView directoryView;
-    @FXML protected TextField authorField;
-    @FXML protected TextField dateField;
-    @FXML protected TextField additionalField;
-    @FXML protected TextArea cardTextArea;
-
     private LocationTreeItem currentNode;
     private StringProperty currentPathString = new SimpleStringProperty("");
+    private CardEditor cardEditor;
+    private CardCutter cardCutter;
+    private CardViewer cardViewer;
+    private boolean editMode;
 
     ComponentIOManager componentIOManager;
     StructureIOManager structureIOManager;
@@ -55,19 +56,32 @@ public class CardCreator{
             if(mouseEvent.getClickCount() == 2) {
                 LocationTreeItem node = (LocationTreeItem) directoryView.getSelectionModel().getSelectedItem();
                 if (node != null && node.isLeaf()){
-                    cardToFields((Card) node.getValue().getSpeechComponent());
+                    cardViewer.open((Card) node.getValue().getSpeechComponent());
                 }
             }
         });
-
-        // verify only legal characters are used in card text
-        cardTextArea.textProperty().addListener(
-                (observable, oldValue, newValue) -> {
-                    ((StringProperty)observable).setValue(Card.cleanForCard(newValue));
-                }
-        );
-
         currentPathLabel.textProperty().bind(currentPathString);
+
+        // load the card viewers
+        try {
+            FXMLLoader editorLoader = new FXMLLoader(getClass().getClassLoader().getResource("card_editor.fxml"));
+            editorLoader.load();
+            cardEditor = editorLoader.getController();
+            cardEditor.setComponentIOManager(componentIOManager);
+            cardEditor.setStructureIOManager(structureIOManager);
+
+            FXMLLoader cutterLoader = new FXMLLoader(getClass().getClassLoader().getResource("card_cutter.fxml"));
+            cutterLoader.load();
+            cardCutter = cutterLoader.getController();
+            cardCutter.setComponentIOManager(componentIOManager);
+            cardCutter.setStructureIOManager(structureIOManager);
+
+            cardViewer = cardEditor;
+            viewerPane.setCenter(cardViewer.getPane());
+            editMode = true;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private void populateDirectoryView(){
@@ -109,36 +123,14 @@ public class CardCreator{
             currentPathString.set("Please select a location");
             return;
         }
-        Card card = fieldsToCard();
-        try {
-            componentIOManager.storeSpeechComponent(card);
-            structureIOManager.addContent(currentNode.getPath(),card.getHash());
-            // TODO don't need to do a full reload here
-            currentNode.reloadChildren();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        cardViewer.save(currentNode.getPath());
+        // TODO don't need to do a full reload here
+        currentNode.reloadChildren();
     }
 
     public void newCardAction(){
-        authorField.clear();
-        dateField.clear();
-        additionalField.clear();
-        cardTextArea.clear();
+        cardViewer.clear();
     }
-
-    private Card fieldsToCard(){
-        return new Card(new Cite(authorField.getText(), dateField.getText(), additionalField.getText()), cardTextArea.getText());
-    }
-
-    private void cardToFields(Card card){
-        Cite cite = card.getCite();
-        authorField.setText(cite.getAuthor());
-        dateField.setText(cite.getDate());
-        additionalField.setText(cite.getAdditionalInfo());
-        cardTextArea.setText(card.getText());
-    }
-
     public String getCurrentPathString() {
         return currentPathString.get();
     }
@@ -159,7 +151,21 @@ public class CardCreator{
     public void exit() throws IOException {
         componentIOManager.close();
         structureIOManager.close();
-        // need some handle to the stage, so the cardTextArea chosen arbitrarily
-        ((Stage)cardTextArea.getScene().getWindow()).close();
+        // need some handle to the stage, so the viewerPane chosen arbitrarily
+        ((Stage)viewerPane.getScene().getWindow()).close();
+    }
+
+    public void togglePanes() {
+        if (editMode){
+            cardEditor.swapTo(cardCutter);
+            cardViewer = cardCutter;
+            viewerPane.setCenter(cardCutter.getPane());
+            editMode = false;
+        }else{
+            cardCutter.swapTo(cardEditor);
+            cardViewer = cardEditor;
+            viewerPane.setCenter(cardEditor.getPane());
+            editMode = true;
+        }
     }
 }

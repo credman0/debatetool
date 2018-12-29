@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<BorderPane
+        fx:id="mainPane"
+        xmlns="http://javafx.com/javafx"
+        xmlns:fx="http://javafx.com/fxml"
+        fx:controller="gui.CardEditor">
+    <top>
+        <GridPane>
+            <columnConstraints>
+                <ColumnConstraints percentWidth="20"  />
+                <ColumnConstraints percentWidth="20" />
+                <ColumnConstraints percentWidth="60" />
+            </columnConstraints>
+            <Label text="Author"
+                   GridPane.columnIndex="0" GridPane.rowIndex="0" GridPane.halignment="CENTER"/>
+
+            <TextField fx:id="authorField"
+                       GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+
+            <Label text="Date"
+                   GridPane.columnIndex="1" GridPane.rowIndex="0" GridPane.halignment="CENTER"/>
+
+            <TextField fx:id="dateField"
+                       GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+
+            <Label text="Other cite info"
+                   GridPane.columnIndex="2" GridPane.rowIndex="0" GridPane.halignment="CENTER"/>
+
+            <TextField fx:id="additionalField"
+                       GridPane.columnIndex="2" GridPane.rowIndex="1"/>
+        </GridPane>
+    </top>
+    <center>
+        <TextArea fx:id="cardTextArea" wrapText="true"/>
+    </center>
+</BorderPane>
+
