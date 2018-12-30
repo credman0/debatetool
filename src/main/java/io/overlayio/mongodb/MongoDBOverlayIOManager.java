@@ -3,12 +3,16 @@ package io.overlayio.mongodb;
 import com.mongodb.MongoClient;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Indexes;
+import com.mongodb.client.model.Updates;
 import core.CardOverlay;
 import io.overlayio.OverlayIOManager;
 import org.bson.Document;
+import org.bson.types.Binary;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class MongoDBOverlayIOManager implements OverlayIOManager {
@@ -24,16 +28,33 @@ public class MongoDBOverlayIOManager implements OverlayIOManager {
 
     @Override
     public List<CardOverlay> getOverlays(byte[] cardHash) {
-        return null;
+        return fromDocument(collection.find(Filters.eq("Hash", cardHash)).first());
     }
 
     @Override
     public void saveOverlays(byte[] cardHash, List<CardOverlay> overlays) {
-
+        List<byte[]> overlayPositions = new ArrayList<>();
+        List<byte[]> overlayTypes = new ArrayList<>();
+        overlays.forEach(overlay -> {
+            overlayPositions.add(overlay.getOverlayPositions());
+            overlayTypes.add(overlay.getOverlayType());
+        });
+        collection.updateOne(Filters.eq("Hash", cardHash), Updates.addEachToSet("OverlayPositions", overlayPositions));
+        collection.updateOne(Filters.eq("Hash", cardHash), Updates.addEachToSet("OverlayType", overlayTypes));
     }
 
     @Override
     public void close() throws IOException {
         mongoClient.close();
+    }
+
+    private List<CardOverlay> fromDocument (Document document){
+        List<Binary> binaryPositionList = (List<Binary>) document.get("OverlayPositions");
+        List<Binary> binaryTypeList = (List<Binary>) document.get("OverlayType");
+        ArrayList<CardOverlay> overlays = new ArrayList<>();
+        for (int i = 0; i < binaryPositionList.size(); i++){
+            overlays.add(new CardOverlay(binaryPositionList.get(i).getData(), binaryTypeList.get(i).getData()));
+        }
+        return overlays;
     }
 }
