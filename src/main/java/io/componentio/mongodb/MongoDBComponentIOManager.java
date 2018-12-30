@@ -17,8 +17,8 @@ public class MongoDBComponentIOManager implements ComponentIOManager {
     MongoClient mongoClient;
     MongoDatabase database;
     MongoCollection<Document> collection;
-    public MongoDBComponentIOManager(){
-        mongoClient = new MongoClient();
+    public MongoDBComponentIOManager(MongoClient mongoClient){
+        this.mongoClient = mongoClient;
         database = mongoClient.getDatabase("UDT");
         collection = database.getCollection("SpeechComponents");
         collection.createIndex(Indexes.hashed("Hash"));

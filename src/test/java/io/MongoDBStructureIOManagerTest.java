@@ -1,5 +1,6 @@
 package io;
 
+import com.mongodb.MongoClient;
 import core.Card;
 import core.Cite;
 import io.structureio.StructureIOManager;
@@ -33,7 +34,8 @@ class MongoDBStructureIOManagerTest {
 
     @Test
     public void directoriesAddGetTest (){
-        try (StructureIOManager manager = new MongoDBStructureIOManager()) {
+        MongoClient mongoClient = new MongoClient();
+        try (StructureIOManager manager = new MongoDBStructureIOManager(mongoClient)) {
             ArrayList<String> emptyList = new ArrayList<>();
             manager.addChild(emptyList, "test_dir");
 

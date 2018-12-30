@@ -1,12 +1,9 @@
 package gui;
 
 import core.Card;
+import core.Main;
 import gui.locationtree.LocationTreeItem;
 import gui.locationtree.LocationTreeItemContent;
-import io.componentio.ComponentIOManager;
-import io.componentio.mongodb.MongoDBComponentIOManager;
-import io.structureio.StructureIOManager;
-import io.structureio.mongodb.MongoDBStructureIOManager;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.fxml.FXML;
@@ -31,13 +28,7 @@ public class CardCreator{
     private CardCutter cardCutter;
     private CardViewer cardViewer;
     private boolean editMode;
-
-    ComponentIOManager componentIOManager;
-    StructureIOManager structureIOManager;
-
     public void init(){
-        componentIOManager = new MongoDBComponentIOManager();
-        structureIOManager = new MongoDBStructureIOManager();
         populateDirectoryView();
         // Selection listener for tracking current node
         directoryView.getSelectionModel().selectedItemProperty().addListener((observableValue, oldV, newV) -> {
@@ -67,14 +58,10 @@ public class CardCreator{
             FXMLLoader editorLoader = new FXMLLoader(getClass().getClassLoader().getResource("card_editor.fxml"));
             editorLoader.load();
             cardEditor = editorLoader.getController();
-            cardEditor.setComponentIOManager(componentIOManager);
-            cardEditor.setStructureIOManager(structureIOManager);
 
             FXMLLoader cutterLoader = new FXMLLoader(getClass().getClassLoader().getResource("card_cutter.fxml"));
             cutterLoader.load();
             cardCutter = cutterLoader.getController();
-            cardCutter.setComponentIOManager(componentIOManager);
-            cardCutter.setStructureIOManager(structureIOManager);
 
             cardViewer = cardEditor;
             viewerPane.setCenter(cardViewer.getPane());
@@ -85,7 +72,7 @@ public class CardCreator{
     }
 
     private void populateDirectoryView(){
-        List<String> rootFolders = structureIOManager.getRoot();
+        List<String> rootFolders = Main.getIoController().getStructureIOManager().getRoot();
         TreeItem<LocationTreeItemContent> root = new TreeItem<>();
         TreeTableColumn<LocationTreeItemContent, String> labelColumn = new TreeTableColumn<>("Name");
         TreeTableColumn<LocationTreeItemContent, Date> timeColumn = new TreeTableColumn<>("Date");
@@ -110,7 +97,7 @@ public class CardCreator{
         timeColumn.setCellValueFactory(new TreeItemPropertyValueFactory("date"));
 
         for (String name:rootFolders){
-            root.getChildren().add(new LocationTreeItem(structureIOManager,componentIOManager, new LocationTreeItemContent(name)));
+            root.getChildren().add(new LocationTreeItem(new LocationTreeItemContent(name)));
         }
         directoryView.setColumnResizePolicy(TreeTableView.CONSTRAINED_RESIZE_POLICY);
         directoryView.setShowRoot(false);
@@ -149,8 +136,6 @@ public class CardCreator{
     }
 
     public void exit() throws IOException {
-        componentIOManager.close();
-        structureIOManager.close();
         // need some handle to the stage, so the viewerPane chosen arbitrarily
         ((Stage)viewerPane.getScene().getWindow()).close();
     }

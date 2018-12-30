@@ -1,7 +1,5 @@
 package core;
 
-import io.componentio.ComponentIOManager;
-
 import java.io.IOException;
 
 public class Analytic extends SpeechComponent implements BlockComponent {
@@ -22,7 +20,7 @@ public class Analytic extends SpeechComponent implements BlockComponent {
     }
 
     @Override
-    public void load(ComponentIOManager manager) throws IOException {
+    public void load() throws IOException {
         // nothing to do
     }
 

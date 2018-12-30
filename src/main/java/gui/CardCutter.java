@@ -1,17 +1,18 @@
 package gui;
 
 import javafx.fxml.FXML;
-import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
+import javafx.scene.text.TextFlow;
 
 public class CardCutter extends CardViewer {
     @FXML protected BorderPane mainPane;
     @FXML protected TextField authorField;
     @FXML protected TextField dateField;
     @FXML protected TextField additionalField;
-    @FXML protected TextArea cardTextArea;
+    @FXML protected TextFlow cardTextArea;
+    protected String text;
 
     @Override
     public void setAuthor(String author) {
@@ -30,7 +31,7 @@ public class CardCutter extends CardViewer {
 
     @Override
     public void setText(String text) {
-        cardTextArea.setText(text);
+        this.text = text;
     }
 
     @Override
@@ -50,7 +51,7 @@ public class CardCutter extends CardViewer {
 
     @Override
     public String getText() {
-        return cardTextArea.getText();
+        return text;
     }
 
     @Override

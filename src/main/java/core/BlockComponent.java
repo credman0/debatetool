@@ -1,7 +1,6 @@
 package core;
 
 import io.IOUtil;
-import io.componentio.ComponentIOManager;
 
 import java.io.IOException;
 
@@ -17,7 +16,7 @@ public interface BlockComponent {
      * @return
      */
     String getBlockStorageString();
-    void load(ComponentIOManager manager) throws IOException;
+    void load() throws IOException;
     static BlockComponent importFromData(String type, String storageString){
         if (type.equals(Card.class.getName())){
             return new Card(IOUtil.decodeString(storageString));

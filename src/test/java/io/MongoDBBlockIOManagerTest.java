@@ -1,5 +1,6 @@
 package io;
 
+import com.mongodb.MongoClient;
 import core.Analytic;
 import core.Block;
 import core.Card;
@@ -38,10 +39,11 @@ class MongoDBBlockIOManagerTest {
 
     @Test
     public void writeReadTest (){
-        try (ComponentIOManager manager = new MongoDBComponentIOManager()) {
+        MongoClient mongoClient = new MongoClient();
+        try (ComponentIOManager manager = new MongoDBComponentIOManager(mongoClient)) {
             manager.storeSpeechComponent(block);
             Block recovered = (Block) manager.retrieveSpeechComponent(block.getHash());
-            recovered.load(manager);
+            recovered.load();
             Assert.assertEquals(recovered.getLabel(), block.getLabel());
             Assert.assertEquals(recovered.size(), block.size());
             for (int i = 0; i < block.size(); i++){

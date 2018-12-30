@@ -1,5 +1,6 @@
 package io;
 
+import com.mongodb.MongoClient;
 import core.Card;
 import core.Cite;
 import io.componentio.ComponentIOManager;
@@ -32,7 +33,8 @@ class MongoDBCardIOManagerTest {
 
     @Test
     public void writeReadTest (){
-        try (ComponentIOManager manager = new MongoDBComponentIOManager()) {
+        MongoClient mongoClient = new MongoClient();
+        try (ComponentIOManager manager = new MongoDBComponentIOManager(mongoClient)) {
             manager.deleteSpeechComponent(card.getHash());
             manager.storeSpeechComponent(card);
             Card recoveredCard = (Card) manager.retrieveSpeechComponent(card.getHash());
@@ -46,7 +48,8 @@ class MongoDBCardIOManagerTest {
 
     @Test
     public void doubleWriteReadTest(){
-        try (ComponentIOManager manager = new MongoDBComponentIOManager()) {
+        MongoClient mongoClient = new MongoClient();
+        try (ComponentIOManager manager = new MongoDBComponentIOManager(mongoClient)) {
             manager.deleteSpeechComponent(card.getHash());
             manager.deleteSpeechComponent(card2.getHash());
             manager.storeSpeechComponent(card);

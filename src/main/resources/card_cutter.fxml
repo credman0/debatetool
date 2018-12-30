@@ -2,6 +2,7 @@
 
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.text.TextFlow?>
 <BorderPane
         fx:id="mainPane"
         xmlns="http://javafx.com/javafx"
@@ -34,7 +35,7 @@
         </GridPane>
     </top>
     <center>
-        <TextArea fx:id="cardTextArea" disable="true" wrapText="true"/>
+        <TextFlow fx:id="cardTextArea"/>
     </center>
 </BorderPane>
 

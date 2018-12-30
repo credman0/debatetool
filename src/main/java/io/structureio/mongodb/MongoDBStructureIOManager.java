@@ -15,14 +15,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-// TODO restructure so the mongo io managers take a client and don't each open their own
 public class MongoDBStructureIOManager implements StructureIOManager {
     MongoClient mongoClient;
     MongoDatabase database;
     MongoCollection<Document> collection;
     public static final UpdateOptions upsertOption = new UpdateOptions().upsert(true);
-    public MongoDBStructureIOManager(){
-        mongoClient = new MongoClient();
+    public MongoDBStructureIOManager(MongoClient mongoClient){
+        this.mongoClient = mongoClient;
         database = mongoClient.getDatabase("UDT");
         collection = database.getCollection("StructureElements");
         collection.createIndex(Indexes.ascending("Path"));

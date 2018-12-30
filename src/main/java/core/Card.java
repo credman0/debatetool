@@ -183,8 +183,8 @@ public class Card extends HashIdentifiedSpeechComponent implements BlockComponen
     }
 
     @Override
-    public void load(ComponentIOManager manager) throws IOException {
-        Card self = (Card) manager.retrieveSpeechComponent(hash);
+    public void load() throws IOException {
+        Card self = (Card) Main.getIoController().getComponentIOManager().retrieveSpeechComponent(hash);
         // TODO maybe a better way to import this information
         this.text = self.text;
         this.cite = self.cite;
