@@ -39,11 +39,18 @@ public class CardOverlay {
         int position = 0;
         for (int i = 0; i < overlayPositions.size(); i++){
             byte type = overlayTypes.get(i);
-            boolean highlight = (type&HIGHLIGHT)==1;
+            boolean highlight = (type&HIGHLIGHT)!=0;
+            boolean underline = (type&UNDERLINE)!=0;
             if (highlight){
                 htmlBuilder.append("<h>");
             }
+            if (underline){
+                htmlBuilder.append("<u>");
+            }
             htmlBuilder.append(plainText.substring(position,position+overlayPositions.get(i)));
+            if (underline){
+                htmlBuilder.append("</u>");
+            }
             if (highlight){
                 htmlBuilder.append("</h>");
             }
@@ -179,5 +186,9 @@ public class CardOverlay {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String toString(){
+        return getName();
     }
 }

@@ -4,36 +4,28 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.web.HTMLEditor?>
 <?import javafx.scene.web.WebView?>
+
 <BorderPane
         fx:id="mainPane"
         xmlns="http://javafx.com/javafx"
         xmlns:fx="http://javafx.com/fxml"
         fx:controller="gui.CardCutter">
     <top>
+        <VBox> <Label fx:id="citeLabel"/>
         <GridPane>
-            <columnConstraints>
-                <ColumnConstraints percentWidth="20"  />
-                <ColumnConstraints percentWidth="20" />
-                <ColumnConstraints percentWidth="60" />
-            </columnConstraints>
-            <Label text="Author"
-                   GridPane.columnIndex="0" GridPane.rowIndex="0" GridPane.halignment="CENTER"/>
-
-            <TextField fx:id="authorField" disable="true"
-                       GridPane.columnIndex="0" GridPane.rowIndex="1"/>
-
-            <Label text="Date"
-                   GridPane.columnIndex="1" GridPane.rowIndex="0" GridPane.halignment="CENTER"/>
-
-            <TextField fx:id="dateField" disable="true"
-                       GridPane.columnIndex="1" GridPane.rowIndex="1"/>
-
-            <Label text="Other cite info"
-                   GridPane.columnIndex="2" GridPane.rowIndex="0" GridPane.halignment="CENTER"/>
-
-            <TextField fx:id="additionalField" disable="true"
-                       GridPane.columnIndex="2" GridPane.rowIndex="1"/>
+            <ComboBox fx:id="underlineChoice"
+                      GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+            <ComboBox fx:id="highlightChoice"
+                       GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+            <fx:define>
+                <ToggleGroup fx:id="underlineToggle"/>
+            </fx:define>
+            <RadioButton fx:id="underlineRadio" text="Underline" toggleGroup="$underlineToggle" selected="true"
+                         GridPane.columnIndex="2" GridPane.rowIndex="0"/>
+            <RadioButton text="Highlight" toggleGroup="$underlineToggle"
+                         GridPane.columnIndex="3" GridPane.rowIndex="0"/>
         </GridPane>
+        </VBox>
     </top>
     <center>
         <WebView fx:id="cardTextArea"/>
