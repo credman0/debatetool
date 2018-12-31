@@ -58,10 +58,12 @@ public class CardCreator{
             FXMLLoader editorLoader = new FXMLLoader(getClass().getClassLoader().getResource("card_editor.fxml"));
             editorLoader.load();
             cardEditor = editorLoader.getController();
+            cardEditor.init();
 
             FXMLLoader cutterLoader = new FXMLLoader(getClass().getClassLoader().getResource("card_cutter.fxml"));
             cutterLoader.load();
             cardCutter = cutterLoader.getController();
+            cardCutter.init();
 
             cardViewer = cardEditor;
             viewerPane.setCenter(cardViewer.getPane());

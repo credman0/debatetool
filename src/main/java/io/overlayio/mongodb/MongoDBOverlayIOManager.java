@@ -36,8 +36,8 @@ public class MongoDBOverlayIOManager implements OverlayIOManager {
         List<byte[]> overlayPositions = new ArrayList<>();
         List<byte[]> overlayTypes = new ArrayList<>();
         overlays.forEach(overlay -> {
-            overlayPositions.add(overlay.getOverlayPositions());
-            overlayTypes.add(overlay.getOverlayType());
+            overlayPositions.add(overlay.getOverlayPositionBytes());
+            overlayTypes.add(overlay.getOverlayTypeBytes());
         });
         collection.updateOne(Filters.eq("Hash", cardHash), Updates.addEachToSet("OverlayPositions", overlayPositions));
         collection.updateOne(Filters.eq("Hash", cardHash), Updates.addEachToSet("OverlayType", overlayTypes));
@@ -49,11 +49,13 @@ public class MongoDBOverlayIOManager implements OverlayIOManager {
     }
 
     private List<CardOverlay> fromDocument (Document document){
-        List<Binary> binaryPositionList = (List<Binary>) document.get("OverlayPositions");
-        List<Binary> binaryTypeList = (List<Binary>) document.get("OverlayType");
         ArrayList<CardOverlay> overlays = new ArrayList<>();
-        for (int i = 0; i < binaryPositionList.size(); i++){
-            overlays.add(new CardOverlay(binaryPositionList.get(i).getData(), binaryTypeList.get(i).getData()));
+        if (document != null) {
+            List<Binary> binaryPositionList = (List<Binary>) document.get("OverlayPositions");
+            List<Binary> binaryTypeList = (List<Binary>) document.get("OverlayType");
+            for (int i = 0; i < binaryPositionList.size(); i++) {
+                overlays.add(new CardOverlay(binaryPositionList.get(i).getData(), binaryTypeList.get(i).getData()));
+            }
         }
         return overlays;
     }

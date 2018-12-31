@@ -2,17 +2,13 @@ package gui;
 
 import core.Card;
 import core.Cite;
-import io.componentio.ComponentIOManager;
-import io.structureio.StructureIOManager;
+import core.Main;
 import javafx.scene.layout.Pane;
 
 import java.io.IOException;
 import java.util.List;
 
 public abstract class CardViewer {
-    private ComponentIOManager componentIOManager;
-    private StructureIOManager structureIOManager;
-
     public void swapTo(CardViewer viewer){
         viewer.setAuthor(getAuthor());
         viewer.setDate(getDate());
@@ -36,8 +32,8 @@ public abstract class CardViewer {
     public void save(List<String> path){
         Card card = createCard();
         try {
-            componentIOManager.storeSpeechComponent(card);
-            structureIOManager.addContent(path,card.getHash());
+            Main.getIoController().getComponentIOManager().storeSpeechComponent(card);
+            Main.getIoController().getStructureIOManager().addContent(path,card.getHash());
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -58,20 +54,4 @@ public abstract class CardViewer {
     public abstract String getText();
 
     public abstract Pane getPane();
-
-    public ComponentIOManager getComponentIOManager() {
-        return componentIOManager;
-    }
-
-    public StructureIOManager getStructureIOManager() {
-        return structureIOManager;
-    }
-
-    public void setStructureIOManager(StructureIOManager structureIOManager) {
-        this.structureIOManager = structureIOManager;
-    }
-
-    public void setComponentIOManager(ComponentIOManager componentIOManager) {
-        this.componentIOManager = componentIOManager;
-    }
 }

@@ -2,7 +2,8 @@
 
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.scene.text.TextFlow?>
+<?import javafx.scene.web.HTMLEditor?>
+<?import javafx.scene.web.WebView?>
 <BorderPane
         fx:id="mainPane"
         xmlns="http://javafx.com/javafx"
@@ -35,7 +36,7 @@
         </GridPane>
     </top>
     <center>
-        <TextFlow fx:id="cardTextArea"/>
+        <WebView fx:id="cardTextArea"/>
     </center>
 </BorderPane>
 

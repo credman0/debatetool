@@ -24,9 +24,6 @@ public class CardEditor extends CardViewer{
         );
     }
 
-    public CardEditor (){
-    }
-
     @Override
     public void setAuthor(String author) {
         authorField.setText(author);
