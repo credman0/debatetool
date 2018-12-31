@@ -112,7 +112,8 @@ public class CardCreator{
             currentPathString.set("Please select a location");
             return;
         }
-        cardViewer.save(currentNode.getPath());
+        cardEditor.save(currentNode.getPath());
+        cardCutter.save(currentNode.getPath());
         // TODO don't need to do a full reload here
         currentNode.reloadChildren();
     }

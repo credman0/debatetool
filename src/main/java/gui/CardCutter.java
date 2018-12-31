@@ -1,7 +1,9 @@
 package gui;
 
 import com.sun.javafx.webkit.WebConsoleListener;
+import core.Card;
 import core.CardOverlay;
+import core.Main;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.concurrent.Worker.State;
@@ -12,6 +14,8 @@ import javafx.scene.layout.Pane;
 import javafx.scene.web.WebView;
 import netscape.javascript.JSObject;
 
+import java.util.List;
+
 public class CardCutter extends CardViewer {
     @FXML protected BorderPane mainPane;
     @FXML protected TextField authorField;
@@ -20,7 +24,8 @@ public class CardCutter extends CardViewer {
     @FXML protected WebView cardTextArea;
     private String text;
     private String cutterHTMLUrl = getClass().getClassLoader().getResource("CardCutter.html").toExternalForm();
-    private CardOverlay overlay = new CardOverlay(new byte[0], new byte[0]);
+    private List<CardOverlay> highlightingOverlayList;
+    private int overlayIndex = 0;
 
     public void init(){
 
@@ -53,9 +58,34 @@ public class CardCutter extends CardViewer {
     public class JavaBridge {
         public void updateSelection(int start, int end) {
             System.out.println(start+"e"+end);
-            overlay.updateOverlay(start,end,CardOverlay.HIGHLIGHT);
-            cardTextArea.getEngine().executeScript("document.getElementById('textarea').innerHTML = \""+overlay.generateHTML(text)+"\";");
+            getActiveOverlay().updateOverlay(start,end,CardOverlay.HIGHLIGHT);
+            applyOverlay();
         }
+    }
+
+    private void applyOverlay(){
+        cardTextArea.getEngine().executeScript("document.getElementById('textarea').innerHTML = \""+getActiveOverlay().generateHTML(text)+"\";");
+    }
+
+    private CardOverlay getActiveOverlay(){
+        return highlightingOverlayList.get(overlayIndex);
+    }
+
+    @Override
+    public void open(Card card){
+        super.open(card);
+        highlightingOverlayList = Main.getIoController().getOverlayIOManager().getOverlays(card.getHash(), "Highlight");
+        if (highlightingOverlayList.isEmpty()){
+            highlightingOverlayList.add(new CardOverlay("Highlighting"));
+        }
+        overlayIndex = 0;
+        applyOverlay();
+    }
+
+    @Override
+    public void save(List<String> path){
+        Card card = createCard();
+        Main.getIoController().getOverlayIOManager().saveOverlays(card.getHash(), highlightingOverlayList, "Highlight");
     }
 
     @Override

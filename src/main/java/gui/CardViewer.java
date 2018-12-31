@@ -2,18 +2,13 @@ package gui;
 
 import core.Card;
 import core.Cite;
-import core.Main;
 import javafx.scene.layout.Pane;
 
-import java.io.IOException;
 import java.util.List;
 
 public abstract class CardViewer {
     public void swapTo(CardViewer viewer){
-        viewer.setAuthor(getAuthor());
-        viewer.setDate(getDate());
-        viewer.setAdditionalInfo(getAdditionalInfo());
-        viewer.setText(getText());
+        viewer.open(createCard());
     }
 
     public void clear(){
@@ -29,15 +24,7 @@ public abstract class CardViewer {
         setText(card.getText());
     }
 
-    public void save(List<String> path){
-        Card card = createCard();
-        try {
-            Main.getIoController().getComponentIOManager().storeSpeechComponent(card);
-            Main.getIoController().getStructureIOManager().addContent(path,card.getHash());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
+    public abstract void save(List<String> path);
 
     protected Card createCard(){
         return new Card(new Cite(getAuthor(), getDate(), getAdditionalInfo()), getText());

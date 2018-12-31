@@ -2,8 +2,11 @@
 <html>
 <body>
 <style>
+p {
+  font-size : 13pt;
+  font-family : Arial;
+}
 h {
-  border-radius: 3px;
   background-color: #b1d5e5;
 }
 u {
@@ -20,6 +23,7 @@ function checkSelection(event) {
             //text = document.getElementById('textarea').innerHTML;
             //document.getElementById('textarea').innerHTML = text.substr(0,offset.start) + "<highlight>" + selection.toString() + "</highlight>" + text.substr(offset.end);
             java.updateSelection(offset.start,offset.end);
+            window.getSelection().empty();
 }
 //document.addEventListener("selectionchange", myFunction(event));
 

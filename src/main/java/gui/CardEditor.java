@@ -1,12 +1,16 @@
 package gui;
 
 import core.Card;
+import core.Main;
 import javafx.beans.property.StringProperty;
 import javafx.fxml.FXML;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
+
+import java.io.IOException;
+import java.util.List;
 
 public class CardEditor extends CardViewer{
     @FXML protected BorderPane mainPane;
@@ -22,6 +26,17 @@ public class CardEditor extends CardViewer{
                     ((StringProperty)observable).setValue(Card.cleanForCard(newValue));
                 }
         );
+    }
+
+    @Override
+    public void save(List<String> path) {
+        Card card = createCard();
+        try {
+            Main.getIoController().getComponentIOManager().storeSpeechComponent(card);
+            Main.getIoController().getStructureIOManager().addContent(path,card.getHash());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override

@@ -10,12 +10,20 @@ public class CardOverlay {
     public static final byte HIGHLIGHT = 0x1<<0;
     public static final byte UNDERLINE = 0x1<<1;
 
+    private String name;
     private TShortArrayList overlayPositions;
     private TByteArrayList overlayTypes;
 
-    public CardOverlay(byte[] overlayPositions, byte[] overlayTypes){
+    public CardOverlay(String name, byte[] overlayPositions, byte[] overlayTypes){
+        this.name = name;
         this.overlayPositions = new TShortArrayList(fromBytes(overlayPositions));
         this.overlayTypes = new TByteArrayList(overlayTypes);
+    }
+
+    public CardOverlay(String name){
+        this.name = name;
+        this.overlayPositions = new TShortArrayList();
+        this.overlayTypes = new TByteArrayList();
     }
 
     public TShortArrayList getOverlayPositions() {
@@ -163,5 +171,13 @@ public class CardOverlay {
     }
     public byte[] getOverlayTypeBytes() {
         return overlayTypes.toArray();
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 }
