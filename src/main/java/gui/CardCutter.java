@@ -4,7 +4,6 @@ import com.sun.javafx.webkit.WebConsoleListener;
 import core.Card;
 import core.CardOverlay;
 import core.Main;
-import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ChangeListener;
@@ -12,10 +11,15 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Worker.State;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.RadioButton;
+import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.web.WebView;
@@ -25,6 +29,8 @@ import java.util.Arrays;
 import java.util.List;
 
 public class CardCutter extends CardViewer {
+    @FXML protected Button addUnderlineButton;
+    @FXML protected Button addHighlightButton;
     @FXML protected Label citeLabel;
     @FXML protected ComboBox highlightChoice;
     @FXML protected ComboBox underlineChoice;
@@ -51,7 +57,29 @@ public class CardCutter extends CardViewer {
         initHTML();
         highlightChoice.setItems(highlightingOverlayList);
         underlineChoice.setItems(underliningOverlayList);
-        citeLabel.textProperty().bind(Bindings.concat(author, " ", date, " (", additionalInfo,")"));
+
+        // listeners to update the view when the selection changes
+        underlineChoice.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() {
+            @Override
+            public void changed(ObservableValue<? extends Number> observableValue, Number number, Number t1) {
+                applyOverlay();
+            }
+        });
+        highlightChoice.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() {
+            @Override
+            public void changed(ObservableValue<? extends Number> observableValue, Number number, Number t1) {
+                applyOverlay();
+            }
+        });
+
+        underlineChoice.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                if (mouseEvent.getButton().equals(MouseButton.SECONDARY)){
+                    // TODO
+                }
+            }
+        });
     }
 
     public void initHTML(){
@@ -71,6 +99,15 @@ public class CardCutter extends CardViewer {
         cardTextArea.getEngine().load(cutterHTMLUrl);
     }
 
+
+    public void newUnderline(ActionEvent actionEvent) {
+        underliningOverlayList.add(new CardOverlay("New Underline"));
+    }
+
+    public void newHighlight(ActionEvent actionEvent) {
+        highlightingOverlayList.add(new CardOverlay("New Highlight"));
+    }
+
     public class JavaBridge {
         public void updateSelection(int start, int end) {
             System.out.println(start+"e"+end);
@@ -80,7 +117,8 @@ public class CardCutter extends CardViewer {
     }
 
     private void applyOverlay(){
-        cardTextArea.getEngine().executeScript("document.getElementById('textarea').innerHTML = \""+getActiveOverlay().generateHTML(text)+"\";");
+        CardOverlay combinedOverlay = CardOverlay.combineOverlays(getActiveUnderlineOverlay(),getActiveHighlightOverlay());
+        cardTextArea.getEngine().executeScript("document.getElementById('textarea').innerHTML = \""+combinedOverlay.generateHTML(text)+"\";");
     }
 
     private byte getActiveOverlayType(){
@@ -93,10 +131,24 @@ public class CardCutter extends CardViewer {
 
     private CardOverlay getActiveOverlay(){
         if (underlineRadio.isSelected()){
-            return underliningOverlayList.get(underlineChoice.getSelectionModel().getSelectedIndex());
+            return getActiveUnderlineOverlay();
         }else {
-            return highlightingOverlayList.get(highlightChoice.getSelectionModel().getSelectedIndex());
+            return getActiveHighlightOverlay();
         }
+    }
+
+    private CardOverlay getActiveHighlightOverlay(){
+        if (highlightChoice.getSelectionModel().getSelectedIndex()<0){
+            return new CardOverlay("");
+        }
+        return highlightingOverlayList.get(highlightChoice.getSelectionModel().getSelectedIndex());
+    }
+
+    private CardOverlay getActiveUnderlineOverlay(){
+        if (underlineChoice.getSelectionModel().getSelectedIndex()<0){
+            return new CardOverlay("");
+        }
+        return underliningOverlayList.get(underlineChoice.getSelectionModel().getSelectedIndex());
     }
 
     @Override

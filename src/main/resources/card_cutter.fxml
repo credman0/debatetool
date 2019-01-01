@@ -13,10 +13,14 @@
     <top>
         <VBox> <Label fx:id="citeLabel"/>
         <GridPane>
-            <ComboBox fx:id="underlineChoice"
+            <ComboBox fx:id="underlineChoice" promptText="Underlinings"
                       GridPane.columnIndex="0" GridPane.rowIndex="0"/>
-            <ComboBox fx:id="highlightChoice"
-                       GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+            <ComboBox fx:id="highlightChoice" promptText="Highlightings"
+                      GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+            <Button fx:id="addUnderlineButton" text="Add New Underlining" onAction="#newUnderline"
+                    GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+            <Button fx:id="addHighlightButton" text="Add New Highlighting" onAction="#newHighlight"
+                    GridPane.columnIndex="1" GridPane.rowIndex="1"/>
             <fx:define>
                 <ToggleGroup fx:id="underlineToggle"/>
             </fx:define>

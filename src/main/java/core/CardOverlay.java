@@ -108,7 +108,7 @@ public class CardOverlay {
             if (overlayIndex < overlayPositions.size()){
                 position+=overlayPositions.get(overlayIndex);
                 oldType = overlayTypes.get(overlayIndex);
-                overlayTypes.set(overlayIndex,overlayType);
+                overlayTypes.set(overlayIndex, (byte) (oldType|overlayType));
                 overlayIndex++;
             }else{
                 if (end-position <= (1<<(Short.SIZE+1)-1)){
@@ -138,6 +138,21 @@ public class CardOverlay {
 
             overlayTypes.set(overlayIndex, oldType);
         }
+    }
+
+    public static CardOverlay combineOverlays(CardOverlay... overlays){
+        // TODO do a better job of this
+        CardOverlay combinedOverlay = new CardOverlay("");
+        for (CardOverlay overlay:overlays){
+            int position = 0;
+            for (int i = 0; i < overlay.overlayPositions.size(); i++){
+                short overlayPosition = overlay.overlayPositions.get(i);
+                byte overlayType = overlay.overlayTypes.get(i);
+                combinedOverlay.updateOverlay(position,position+overlayPosition,overlayType);
+                position+=overlayPosition;
+            }
+        }
+        return combinedOverlay;
     }
 
     private void splitOverlay(int index, int position){
