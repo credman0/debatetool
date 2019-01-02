@@ -47,8 +47,6 @@ public class CardCutter extends CardViewer {
     private ObservableList<CardOverlay> highlightingOverlayList = FXCollections.checkedObservableList(FXCollections.observableArrayList(), CardOverlay.class);
     private ObservableList<CardOverlay> underliningOverlayList = FXCollections.checkedObservableList(FXCollections.observableArrayList(), CardOverlay.class);
 
-    private byte[] currentHash = null;
-
     public void init(){
 
         WebConsoleListener.setDefaultListener(new WebConsoleListener(){
@@ -193,22 +191,21 @@ public class CardCutter extends CardViewer {
 
     @Override
     public void open(Card card){
-        super.open(card);
-        if (currentHash!=null && Arrays.equals(currentHash, card.getHash())){
+        if (getCurrentHash()!=null && Arrays.equals(getCurrentHash(), card.getHash())){
             // should already be loaded, don't overwrite stuff
             applyOverlay();
             return;
         }
-        currentHash = card.getHash();
+        super.open(card);
         highlightingOverlayList.clear();
-        highlightingOverlayList.addAll(Main.getIoController().getOverlayIOManager().getOverlays(currentHash, "Highlight"));
+        highlightingOverlayList.addAll(Main.getIoController().getOverlayIOManager().getOverlays(getCurrentHash(), "Highlight"));
         if (highlightingOverlayList.isEmpty()){
             highlightingOverlayList.add(new CardOverlay("Highlighting"));
         }
         highlightChoice.getSelectionModel().select(0);
 
         underliningOverlayList.clear();
-        underliningOverlayList.addAll(Main.getIoController().getOverlayIOManager().getOverlays(currentHash, "Underline"));
+        underliningOverlayList.addAll(Main.getIoController().getOverlayIOManager().getOverlays(getCurrentHash(), "Underline"));
         if (underliningOverlayList.isEmpty()){
             underliningOverlayList.add(new CardOverlay("Underlining"));
         }
@@ -269,5 +266,4 @@ public class CardCutter extends CardViewer {
     public Pane getPane() {
         return mainPane;
     }
-
 }

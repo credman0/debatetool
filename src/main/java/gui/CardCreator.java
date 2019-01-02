@@ -6,15 +6,20 @@ import gui.locationtree.LocationTreeItem;
 import gui.locationtree.LocationTreeItemContent;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.TreeItemPropertyValueFactory;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
+import javafx.util.Callback;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
@@ -104,6 +109,46 @@ public class CardCreator{
         directoryView.setColumnResizePolicy(TreeTableView.CONSTRAINED_RESIZE_POLICY);
         directoryView.setShowRoot(false);
         directoryView.setRoot(root);
+        directoryView.setSortPolicy(new Callback<TreeTableView<LocationTreeItemContent>, Boolean>() {
+            @Override
+            public Boolean call(TreeTableView treeTableView) {
+                Comparator<TreeItem> comparator = new Comparator<TreeItem>(){
+
+                    @Override
+                    public int compare(TreeItem first, TreeItem second) {
+                        Comparator<TreeItem> treeComparator = directoryView.getComparator();
+                        if (treeComparator==null){
+                            return 0;
+                        }
+                        boolean firstIsDir = first.isLeaf();
+                        boolean secondIsDir = second.isLeaf();
+                        if (firstIsDir && !secondIsDir){
+                            return 1;
+                        }
+                        if (secondIsDir && !firstIsDir){
+                            return -1;
+                        }
+                        return treeComparator.compare(first,second);
+                    }
+                };
+                recurseSort(directoryView.getRoot(), comparator);
+                return true;
+
+            }
+            private void recurseSort(TreeItem item, Comparator<TreeItem> comparator){
+                item.getChildren().sort(comparator);
+                ObservableList<TreeItem> children = item.getChildren();
+                for (TreeItem child:children) {
+                    recurseSort(child, comparator);
+                }
+            }
+        });
+        directoryView.treeColumnProperty().addListener(new ChangeListener() {
+            @Override
+            public void changed(ObservableValue observableValue, Object o, Object t1) {
+                directoryView.sort();
+            }
+        });
     }
 
     @FXML
@@ -112,8 +157,11 @@ public class CardCreator{
             currentPathString.set("Please select a location");
             return;
         }
-        cardEditor.save(currentNode.getPath());
-        cardCutter.save(currentNode.getPath());
+        if (editMode) {
+            cardEditor.save(currentNode.getPath());
+        }else {
+            cardCutter.save(currentNode.getPath());
+        }
         // TODO don't need to do a full reload here
         currentNode.reloadChildren();
     }

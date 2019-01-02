@@ -7,6 +7,8 @@ import javafx.scene.layout.Pane;
 import java.util.List;
 
 public abstract class CardViewer {
+    private byte[] currentHash;
+
     public void swapTo(CardViewer viewer){
         viewer.open(createCard());
     }
@@ -22,6 +24,15 @@ public abstract class CardViewer {
         setDate(card.getCite().getDate());
         setAdditionalInfo(card.getCite().getAdditionalInfo());
         setText(card.getText());
+        updateHash();
+    }
+
+    public byte[] getCurrentHash(){
+        return currentHash;
+    }
+
+    public void updateHash(){
+        currentHash = createCard().getHash();
     }
 
     public abstract void save(List<String> path);

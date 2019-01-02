@@ -42,21 +42,25 @@ public class CardEditor extends CardViewer{
     @Override
     public void setAuthor(String author) {
         authorField.setText(author);
+        updateHash();
     }
 
     @Override
     public void setDate(String date) {
         dateField.setText(date);
+        updateHash();
     }
 
     @Override
     public void setAdditionalInfo(String additionalInfo) {
         additionalField.setText(additionalInfo);
+        updateHash();
     }
 
     @Override
     public void setText(String text) {
         cardTextArea.setText(text);
+        updateHash();
     }
 
     @Override
