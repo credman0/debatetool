@@ -144,6 +144,9 @@ public class CardOverlay {
         // TODO do a better job of this
         CardOverlay combinedOverlay = new CardOverlay("");
         for (CardOverlay overlay:overlays){
+            if (overlay == null){
+                continue;
+            }
             int position = 0;
             for (int i = 0; i < overlay.overlayPositions.size(); i++){
                 short overlayPosition = overlay.overlayPositions.get(i);
