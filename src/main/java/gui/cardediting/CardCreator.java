@@ -1,4 +1,4 @@
-package gui;
+package gui.cardediting;
 
 import core.Card;
 import core.Main;

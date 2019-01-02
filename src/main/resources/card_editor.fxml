@@ -6,7 +6,7 @@
         fx:id="mainPane"
         xmlns="http://javafx.com/javafx"
         xmlns:fx="http://javafx.com/fxml"
-        fx:controller="gui.CardEditor">
+        fx:controller="gui.cardediting.CardEditor">
     <top>
         <GridPane>
             <columnConstraints>

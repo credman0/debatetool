@@ -6,7 +6,7 @@ import java.io.IOException;
 
 public interface BlockComponent {
     /**
-     * The actual content to be sent to the screen when the block is presented
+     * The actual html content to be sent to the view when the block is presented
      * @return
      */
     String getDisplayContent();
@@ -19,6 +19,7 @@ public interface BlockComponent {
     void load() throws IOException;
     static BlockComponent importFromData(String type, String storageString){
         if (type.equals(Card.class.getName())){
+            // empty card with hash used to dynamically load it later
             return new Card(IOUtil.decodeString(storageString));
         }else if (type.equals(Analytic.class.getName())){
             return new Analytic(storageString);

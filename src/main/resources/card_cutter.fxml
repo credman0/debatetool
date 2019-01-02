@@ -9,7 +9,7 @@
         fx:id="mainPane"
         xmlns="http://javafx.com/javafx"
         xmlns:fx="http://javafx.com/fxml"
-        fx:controller="gui.CardCutter">
+        fx:controller="gui.cardediting.CardCutter">
     <top>
         <VBox> <Label fx:id="citeLabel"/>
         <GridPane>

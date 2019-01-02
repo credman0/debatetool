@@ -1,6 +1,6 @@
 package core;
 
-import gui.CardCreatorLauncher;
+import gui.cardediting.CardCreatorLauncher;
 import io.iocontrollers.IOController;
 import io.iocontrollers.mongodb.MongoDBIOController;
 import javafx.application.Application;

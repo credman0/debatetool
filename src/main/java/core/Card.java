@@ -1,12 +1,12 @@
 package core;
 
 import io.IOUtil;
-import io.componentio.ComponentIOManager;
 
 import javax.imageio.IIOException;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 public class Card extends HashIdentifiedSpeechComponent implements BlockComponent {
     /**
@@ -16,6 +16,9 @@ public class Card extends HashIdentifiedSpeechComponent implements BlockComponen
     protected int tagIndex = 0;
     protected Cite cite;
     protected String text;
+    private int preferredHighlightIndex = 0;
+    private int preferredUnderlineIndex = 0;
+    private CardOverlay loadedOverlay = null;
 
     public long getTimeStamp() {
         return timeStamp;
@@ -174,7 +177,12 @@ public class Card extends HashIdentifiedSpeechComponent implements BlockComponen
 
     @Override
     public String getDisplayContent() {
-        return getCite().toString()+"\n"+getText();
+        if (loadedOverlay==null){
+            List<CardOverlay> underlining = Main.getIoController().getOverlayIOManager().getOverlays(getHash(), "Underline");
+            List<CardOverlay> highlighting = Main.getIoController().getOverlayIOManager().getOverlays(getHash(), "Highlight");
+            loadedOverlay = CardOverlay.combineOverlays(underlining.get(getPreferredUnderlineIndex()), highlighting.get(getPreferredHighlightIndex()));
+        }
+        return getCite().toString()+"\n"+loadedOverlay.generateHTML(getText());
     }
 
     @Override
@@ -218,5 +226,23 @@ public class Card extends HashIdentifiedSpeechComponent implements BlockComponen
      */
     public static String cleanForCard(String s){
         return s.replaceAll("\n", "").replaceAll("\0", "");
+    }
+
+    public int getPreferredUnderlineIndex() {
+        return preferredUnderlineIndex;
+    }
+
+    public void setPreferredUnderlineIndex(int preferredUnderlineIndex) {
+        this.preferredUnderlineIndex = preferredUnderlineIndex;
+        loadedOverlay = null;
+    }
+
+    public int getPreferredHighlightIndex() {
+        return preferredHighlightIndex;
+    }
+
+    public void setPreferredHighlightIndex(int preferredHighlightIndex) {
+        this.preferredHighlightIndex = preferredHighlightIndex;
+        loadedOverlay = null;
     }
 }
