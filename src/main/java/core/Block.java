@@ -23,6 +23,29 @@ public class Block extends HashIdentifiedSpeechComponent {
         });
     }
 
+    public String getDisplayContent(){
+        StringBuilder contentsBuilder = new StringBuilder();
+        for (int i = 0; i < contents.size(); i++) {
+            contentsBuilder.append("<n>"+toAlphabet(i) + ") </n>");
+            BlockComponent component = contents.get(i);
+            contentsBuilder.append(component.getDisplayContent() + "<br>");
+        }
+        return contentsBuilder.toString();
+    }
+
+    /**
+     * convert an integer to an alphabetic index (a,b,...aa,ab,etc)
+     * @param i
+     * @return
+     */
+    public static String toAlphabet(int i){
+        if (i<0){
+            return "";
+        }else {
+            return toAlphabet((i / 26) - 1) + (char)(65 + i % 26);
+        }
+    }
+
     public void addComponent(BlockComponent component){
         contents.add(component);
     }

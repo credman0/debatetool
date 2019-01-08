@@ -139,10 +139,12 @@ public class CardCutter extends CardViewer {
 
     public void newUnderline(ActionEvent actionEvent) {
         underliningOverlayList.add(new CardOverlay("New Underline"));
+        underlineChoice.getSelectionModel().select(underliningOverlayList.size()-1);
     }
 
     public void newHighlight(ActionEvent actionEvent) {
         highlightingOverlayList.add(new CardOverlay("New Highlight"));
+        highlightChoice.getSelectionModel().select(highlightingOverlayList.size()-1);
     }
 
     public class JavaBridge {

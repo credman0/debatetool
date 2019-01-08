@@ -11,7 +11,7 @@ public class Analytic extends SpeechComponent implements BlockComponent {
 
     @Override
     public String getDisplayContent() {
-        return content;
+        return "<t>"+content+"</t>";
     }
 
     @Override

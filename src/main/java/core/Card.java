@@ -177,12 +177,15 @@ public class Card extends HashIdentifiedSpeechComponent implements BlockComponen
 
     @Override
     public String getDisplayContent() {
+        if (text == null){
+            throw new IllegalStateException("Attempted to display card before loading");
+        }
         if (loadedOverlay==null){
             List<CardOverlay> underlining = Main.getIoController().getOverlayIOManager().getOverlays(getHash(), "Underline");
             List<CardOverlay> highlighting = Main.getIoController().getOverlayIOManager().getOverlays(getHash(), "Highlight");
             loadedOverlay = CardOverlay.combineOverlays(underlining.get(getPreferredUnderlineIndex()), highlighting.get(getPreferredHighlightIndex()));
         }
-        return getCite().toString()+"\n"+loadedOverlay.generateHTML(getText());
+        return getCite().getDisplayContent()+"<br>"+loadedOverlay.generateHTML(getText());
     }
 
     @Override

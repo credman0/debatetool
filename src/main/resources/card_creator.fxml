@@ -13,7 +13,7 @@
                 <Menu text="File">
                     <items>
                         <MenuItem text="New Card" onAction="#newCardAction" accelerator="SHORTCUT+N"/>
-                        <MenuItem text="Save Card" onAction="#saveCard" accelerator="SHORTCUT+S"/>
+                        <MenuItem text="Save Card" onAction="#save" accelerator="SHORTCUT+S"/>
                         <SeparatorMenuItem/>
                         <MenuItem text="Exit" onAction="#exit" accelerator="SHORTCUT+Q"/>
                     </items>
@@ -23,7 +23,7 @@
                         <MenuItem text="Copy"/>
                         <MenuItem text="Paste"/>
                         <SeparatorMenuItem/>
-                        <MenuItem text="Toggle Edit Mode" onAction="#togglePanes" accelerator="SHORTCUT+E"/>
+                        <MenuItem text="Toggle Edit Mode" onAction="#toggleEdit" accelerator="SHORTCUT+E"/>
                     </items>
                 </Menu>
                 <Menu text="Help">

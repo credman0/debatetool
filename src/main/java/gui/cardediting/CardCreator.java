@@ -1,6 +1,5 @@
 package gui.cardediting;
 
-import core.Card;
 import core.Main;
 import gui.locationtree.LocationTreeItem;
 import gui.locationtree.LocationTreeItemContent;
@@ -9,8 +8,8 @@ import javafx.beans.property.StringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.TreeItemPropertyValueFactory;
 import javafx.scene.layout.BorderPane;
@@ -29,11 +28,10 @@ public class CardCreator{
     @FXML protected TreeTableView directoryView;
     private LocationTreeItem currentNode;
     private StringProperty currentPathString = new SimpleStringProperty("");
-    private CardEditor cardEditor;
-    private CardCutter cardCutter;
-    private CardViewer cardViewer;
-    private boolean editMode;
+    private ComponentViewer componentViewer;
     public void init(){
+        componentViewer = new ComponentViewer();
+        componentViewer.init(viewerPane);
         populateDirectoryView();
         // Selection listener for tracking current node
         directoryView.getSelectionModel().selectedItemProperty().addListener((observableValue, oldV, newV) -> {
@@ -52,30 +50,12 @@ public class CardCreator{
             if(mouseEvent.getClickCount() == 2) {
                 LocationTreeItem node = (LocationTreeItem) directoryView.getSelectionModel().getSelectedItem();
                 if (node != null && node.isLeaf()){
-                    cardViewer.open((Card) node.getValue().getSpeechComponent());
+                    componentViewer.open(node.getValue().getSpeechComponent());
                 }
             }
         });
         currentPathLabel.textProperty().bind(currentPathString);
-
-        // load the card viewers
-        try {
-            FXMLLoader editorLoader = new FXMLLoader(getClass().getClassLoader().getResource("card_editor.fxml"));
-            editorLoader.load();
-            cardEditor = editorLoader.getController();
-            cardEditor.init();
-
-            FXMLLoader cutterLoader = new FXMLLoader(getClass().getClassLoader().getResource("card_cutter.fxml"));
-            cutterLoader.load();
-            cardCutter = cutterLoader.getController();
-            cardCutter.init();
-
-            cardViewer = cardEditor;
-            viewerPane.setCenter(cardViewer.getPane());
-            editMode = true;
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        viewerPane.setCenter(componentViewer.getPane());
     }
 
     private void populateDirectoryView(){
@@ -152,22 +132,18 @@ public class CardCreator{
     }
 
     @FXML
-    public void saveCard() {
+    public void save() {
         if (currentNode == null){
             currentPathString.set("Please select a location");
             return;
         }
-        if (editMode) {
-            cardEditor.save(currentNode.getPath());
-        }else {
-            cardCutter.save(currentNode.getPath());
-        }
+        componentViewer.save(currentNode);
         // TODO don't need to do a full reload here
         currentNode.reloadChildren();
     }
 
     public void newCardAction(){
-        cardViewer.clear();
+        componentViewer.clear();
     }
     public String getCurrentPathString() {
         return currentPathString.get();
@@ -191,17 +167,7 @@ public class CardCreator{
         ((Stage)viewerPane.getScene().getWindow()).close();
     }
 
-    public void togglePanes() {
-        if (editMode){
-            cardEditor.swapTo(cardCutter);
-            cardViewer = cardCutter;
-            viewerPane.setCenter(cardCutter.getPane());
-            editMode = false;
-        }else{
-            cardCutter.swapTo(cardEditor);
-            cardViewer = cardEditor;
-            viewerPane.setCenter(cardEditor.getPane());
-            editMode = true;
-        }
+    public void toggleEdit(ActionEvent actionEvent) {
+        componentViewer.togglePanes();
     }
 }

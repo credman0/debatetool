@@ -51,4 +51,8 @@ public class Cite {
     public String toString(){
         return getAuthor()+getDate()+getAdditionalInfo();
     }
+
+    public String getDisplayContent(){
+        return "<c>"+getAuthor() + " " + getDate() + "</c> ("+getAdditionalInfo()+")";
+    }
 }

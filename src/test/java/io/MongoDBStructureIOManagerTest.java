@@ -1,6 +1,8 @@
 package io;
 
 import com.mongodb.MongoClient;
+import core.Analytic;
+import core.Block;
 import core.Card;
 import core.Cite;
 import io.structureio.StructureIOManager;
@@ -15,6 +17,7 @@ import java.util.ArrayList;
 class MongoDBStructureIOManagerTest {
     Card card;
     Card card2;
+    public final String ANALYTIC_TEXT = "This is an analytic";
 
     @BeforeClass
     public void setUp(){
@@ -49,6 +52,13 @@ class MongoDBStructureIOManagerTest {
             testChildDirPath.add("test_child_dir");
             manager.addChild(testDirPath, "test_child_dir");
             manager.addContent(testChildDirPath, card2.getHash());
+
+
+            Block block = new Block();
+            block.addComponent(card);
+            block.addComponent(card2);
+            block.addComponent(new Analytic(ANALYTIC_TEXT));
+            manager.addContent(testChildDirPath, block.getHash());
 
             Assert.assertEquals(manager.getChildren(emptyList), testDirPath);
             Assert.assertEquals(manager.getContent(testDirPath).get(0), card.getHash());
