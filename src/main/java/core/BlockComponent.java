@@ -3,8 +3,9 @@ package core;
 import io.IOUtil;
 
 import java.io.IOException;
+import java.io.Serializable;
 
-public interface BlockComponent {
+public interface BlockComponent extends Serializable {
     /**
      * The actual html content to be sent to the view when the block is presented
      * @return
@@ -27,4 +28,6 @@ public interface BlockComponent {
             throw new IllegalArgumentException("Unrecognized type: " + type);
         }
     }
+
+    String getLabel();
 }

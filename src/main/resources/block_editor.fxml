@@ -3,7 +3,8 @@
 <?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.control.TreeView?>
 <?import javafx.scene.layout.BorderPane?>
-<?import javafx.scene.web.WebView?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.control.ScrollPane?>
 <BorderPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
             fx:id="mainPane"
@@ -11,8 +12,10 @@
             prefHeight="760" prefWidth="1280">
 <center>
     <SplitPane dividerPositions="0.3">
-        <TreeView fx:id="blockTreeView"/>
-        <WebView fx:id="viewerArea"/>
+        <TreeView fx:id="blockTreeView" showRoot="false"/>
+        <ScrollPane fx:id="scrollpane" hbarPolicy="NEVER" fitToWidth="true">
+            <GridPane fx:id="viewerArea"/>
+        </ScrollPane>
     </SplitPane>
 </center>
 

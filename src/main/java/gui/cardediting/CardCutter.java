@@ -5,6 +5,7 @@ import core.Card;
 import core.CardOverlay;
 import core.Main;
 import javafx.beans.binding.Bindings;
+import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
@@ -24,10 +25,12 @@ import javafx.scene.layout.Pane;
 import javafx.scene.web.WebView;
 import netscape.javascript.JSObject;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
 public class CardCutter extends CardViewer {
+    @FXML protected ComboBox tagChoice;
     @FXML protected Button addUnderlineButton;
     @FXML protected Button addHighlightButton;
     @FXML protected Label citeLabel;
@@ -43,6 +46,8 @@ public class CardCutter extends CardViewer {
     private String cutterHTMLUrl = getClass().getClassLoader().getResource("CardCutter.html").toExternalForm();
     private ObservableList<CardOverlay> highlightingOverlayList = FXCollections.checkedObservableList(FXCollections.observableArrayList(), CardOverlay.class);
     private ObservableList<CardOverlay> underliningOverlayList = FXCollections.checkedObservableList(FXCollections.observableArrayList(), CardOverlay.class);
+    private ObservableList<String> tagsList = FXCollections.checkedObservableList(FXCollections.observableArrayList(), String.class);
+    private Card card;
 
     public void init(){
 
@@ -55,11 +60,34 @@ public class CardCutter extends CardViewer {
         initHTML();
         highlightChoice.setItems(highlightingOverlayList);
         underlineChoice.setItems(underliningOverlayList);
-        initChoiceListeners();
+        initOverlayChoiceListeners();
+        initTagChoiceListeners();
         citeLabel.textProperty().bind(Bindings.concat(author, " ", date, " (", additionalInfo,")"));
     }
 
-    public void initChoiceListeners(){
+    private void initTagChoiceListeners(){
+        // listener to set on losing focus
+        tagChoice.getEditor().focusedProperty().addListener(new ChangeListener<Boolean>() {
+            @Override
+            public void changed(ObservableValue<? extends Boolean> observableValue, Boolean aBoolean, Boolean t1) {
+                if (t1.equals(false)){
+                    tagChoice.getEditor().commitValue();
+                }
+            }
+        });
+        // listener to change list
+        tagChoice.valueProperty().addListener(new ChangeListener<String>() {
+            @Override
+            public void changed(ObservableValue observableValue, String o, String t1) {
+                if (t1!=null && !t1.equals(o)) {
+                    ((ObjectProperty) observableValue).setValue(t1);
+                }
+            }
+
+        });
+    }
+
+    private void initOverlayChoiceListeners(){
         // listeners to change the name when the field is edited
         underlineChoice.valueProperty().addListener(new ChangeListener() {
             @Override
@@ -195,6 +223,8 @@ public class CardCutter extends CardViewer {
             applyOverlay();
             return;
         }
+
+        this.card = card;
         super.open(card);
         highlightingOverlayList.clear();
         highlightingOverlayList.addAll(Main.getIoController().getOverlayIOManager().getOverlays(getCurrentHash(), "Highlight"));
@@ -211,13 +241,24 @@ public class CardCutter extends CardViewer {
         underlineChoice.getSelectionModel().select(0);
 
         applyOverlay();
+
+        tagsList = FXCollections.observableList(card.getTags());
+        tagChoice.setItems(tagsList);
+        if (tagsList.isEmpty()){
+            tagsList.add("Empty tag");
+            tagChoice.getSelectionModel().select(0);
+        }
     }
 
     @Override
     public void save(List<String> path){
-        Card card = createCard();
         Main.getIoController().getOverlayIOManager().saveOverlays(card.getHash(), highlightingOverlayList, "Highlight");
         Main.getIoController().getOverlayIOManager().saveOverlays(card.getHash(), underliningOverlayList, "Underline");
+        try {
+            Main.getIoController().getComponentIOManager().storeSpeechComponent(card);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override

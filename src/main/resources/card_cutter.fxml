@@ -11,24 +11,26 @@
         xmlns:fx="http://javafx.com/fxml"
         fx:controller="gui.cardediting.CardCutter">
     <top>
-        <VBox> <Label fx:id="citeLabel"/>
-        <GridPane>
-            <ComboBox fx:id="underlineChoice" promptText="Underlinings" editable="true"
-                      GridPane.columnIndex="0" GridPane.rowIndex="0"/>
-            <ComboBox fx:id="highlightChoice" promptText="Highlightings" editable="true"
-                      GridPane.columnIndex="1" GridPane.rowIndex="0"/>
-            <Button fx:id="addUnderlineButton" text="Add New Underlining" onAction="#newUnderline"
-                    GridPane.columnIndex="0" GridPane.rowIndex="1"/>
-            <Button fx:id="addHighlightButton" text="Add New Highlighting" onAction="#newHighlight"
-                    GridPane.columnIndex="1" GridPane.rowIndex="1"/>
-            <fx:define>
-                <ToggleGroup fx:id="underlineToggle"/>
-            </fx:define>
-            <RadioButton fx:id="underlineRadio" text="Underline" toggleGroup="$underlineToggle" selected="true"
-                         GridPane.columnIndex="2" GridPane.rowIndex="0"/>
-            <RadioButton text="Highlight" toggleGroup="$underlineToggle"
-                         GridPane.columnIndex="3" GridPane.rowIndex="0"/>
-        </GridPane>
+        <VBox>
+            <ComboBox fx:id="tagChoice" editable="true"/>
+            <Label fx:id="citeLabel"/>
+            <GridPane>
+                <ComboBox fx:id="underlineChoice" promptText="Underlinings" editable="true"
+                          GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+                <ComboBox fx:id="highlightChoice" promptText="Highlightings" editable="true"
+                          GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+                <Button fx:id="addUnderlineButton" text="Add New Underlining" onAction="#newUnderline"
+                        GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+                <Button fx:id="addHighlightButton" text="Add New Highlighting" onAction="#newHighlight"
+                        GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+                <fx:define>
+                    <ToggleGroup fx:id="underlineToggle"/>
+                </fx:define>
+                <RadioButton fx:id="underlineRadio" text="Underline" toggleGroup="$underlineToggle" selected="true"
+                             GridPane.columnIndex="2" GridPane.rowIndex="0"/>
+                <RadioButton text="Highlight" toggleGroup="$underlineToggle"
+                             GridPane.columnIndex="3" GridPane.rowIndex="0"/>
+            </GridPane>
         </VBox>
     </top>
     <center>

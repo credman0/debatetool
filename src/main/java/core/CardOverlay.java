@@ -4,9 +4,10 @@ package core;
 import gnu.trove.list.array.TShortArrayList;
 import gnu.trove.list.array.TByteArrayList;
 
+import java.io.Serializable;
 import java.nio.ByteBuffer;
 
-public class CardOverlay {
+public class CardOverlay implements Serializable {
     public static final byte HIGHLIGHT = 0x1<<0;
     public static final byte UNDERLINE = 0x1<<1;
 

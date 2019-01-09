@@ -5,8 +5,9 @@ import io.IOUtil;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
+import java.io.Serializable;
 
-public class Cite {
+public class Cite implements Serializable {
     protected String author;
     protected String date;
     protected String additionalInfo;

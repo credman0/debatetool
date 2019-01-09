@@ -25,6 +25,11 @@ public class Analytic extends SpeechComponent implements BlockComponent {
     }
 
     @Override
+    public String getLabel() {
+        return content;
+    }
+
+    @Override
     public boolean isLoaded() {
         return true;
     }

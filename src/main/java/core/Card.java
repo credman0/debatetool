@@ -12,7 +12,7 @@ public class Card extends HashIdentifiedSpeechComponent implements BlockComponen
     /**
      * "tags" here used in the debate sense
      */
-    protected ArrayList<String> tags = new ArrayList<>();
+    protected List<String> tags = new ArrayList<>();
     protected int tagIndex = 0;
     protected Cite cite;
     protected String text;
@@ -165,6 +165,10 @@ public class Card extends HashIdentifiedSpeechComponent implements BlockComponen
         return tags.get(i);
     }
 
+    public List<String> getTags(){
+        return tags;
+    }
+
     /**
      * adds a tag but only if it does not already exist
      * @param tag
@@ -200,6 +204,7 @@ public class Card extends HashIdentifiedSpeechComponent implements BlockComponen
         this.text = self.text;
         this.cite = self.cite;
         this.timeStamp = self.timeStamp;
+        this.tags = self.tags;
     }
 
     @Override
