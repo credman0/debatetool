@@ -54,7 +54,7 @@ class MongoDBStructureIOManagerTest {
             manager.addContent(testChildDirPath, card2.getHash());
 
 
-            Block block = new Block();
+            Block block = new Block("Test Block");
             block.addComponent(card);
             block.addComponent(card2);
             block.addComponent(new Analytic(ANALYTIC_TEXT));

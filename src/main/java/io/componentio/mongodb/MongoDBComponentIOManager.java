@@ -9,6 +9,7 @@ import com.mongodb.client.model.Updates;
 import core.HashIdentifiedSpeechComponent;
 import io.componentio.ComponentIOManager;
 import org.bson.Document;
+import org.bson.conversions.Bson;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -46,8 +47,8 @@ public class MongoDBComponentIOManager implements ComponentIOManager {
         }else{
             if (speechComponent.isModified()) {
                 ArrayList<String>[] labelledArray = speechComponent.toLabelledLists();
-                collection.updateOne(Filters.eq("Hash", speechComponent.getHash()), Updates.addEachToSet("Labels", labelledArray[0]));
-                collection.updateOne(Filters.eq("Hash", speechComponent.getHash()), Updates.addEachToSet("Values", labelledArray[1]));
+                Bson update = Updates.combine(Updates.set("Labels", labelledArray[0]), Updates.set("Values", labelledArray[1]));
+                collection.updateOne(Filters.eq("Hash", speechComponent.getHash()), update);
             }
         }
     }

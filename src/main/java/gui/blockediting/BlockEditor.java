@@ -3,11 +3,14 @@ package gui.blockediting;
 import core.Block;
 import core.BlockComponent;
 import core.Card;
+import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.concurrent.Worker;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
@@ -16,6 +19,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.web.WebView;
 
 import java.io.IOException;
+import java.util.Set;
 
 public class BlockEditor {
     @FXML protected
@@ -56,6 +60,15 @@ public class BlockEditor {
                 tagsBox.setItems(FXCollections.observableList(((Card) block.getComponent(i)).getTags()));
                 componentBox.getChildren().add(tagsBox);
             }
+            // http://stackoverflow.com/questions/11206942/how-to-hide-scrollbars-in-the-javafx-webview
+            blockContentsView.getChildrenUnmodifiable().addListener(new ListChangeListener<Node>() {
+                @Override public void onChanged(ListChangeListener.Change<? extends Node> change) {
+                    Set<Node> scrolls = blockContentsView.lookupAll(".scroll-bar");
+                    for (Node scroll : scrolls) {
+                        scroll.setVisible(false);
+                    }
+                }
+            });
             componentBox.getChildren().add(blockContentsView);
             viewerArea.add(componentBox,0,i);
         }
@@ -76,6 +89,24 @@ public class BlockEditor {
         public void changed(ObservableValue<? extends Worker.State> observableValue, Worker.State oldState, Worker.State newState) {
             if (newState == Worker.State.SUCCEEDED) {
                 contentView.getEngine().executeScript("document.getElementById('textarea').innerHTML = \""+block.getComponent(index).getDisplayContent()+"\";");
+                // put the resizing code in a runLater because otherwise for some reason the size is way too large
+                // adapted from http://java-no-makanaikata.blogspot.com/2012/10/javafx-webview-size-trick.html
+                Platform.runLater(new Runnable(){
+                    @Override
+                    public void run() {
+                        viewerArea.setPrefHeight(-1);
+                        Object heightO = contentView.getEngine().executeScript("document.getElementById('textarea').clientHeight");
+                        System.out.println(heightO);
+                        if (heightO instanceof Integer) {
+                            Integer heightI = (Integer) heightO;
+                            double heightD = Double.valueOf(heightI) + 15;
+                            contentView.setPrefHeight(heightD);
+                        }else{
+                            throw new IllegalStateException("Document height returned is not an Integer");
+                        }
+                    }
+                });
+
             }
         }
     }

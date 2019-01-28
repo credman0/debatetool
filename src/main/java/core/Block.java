@@ -13,7 +13,8 @@ public class Block extends HashIdentifiedSpeechComponent {
     protected boolean loaded = false;
 
 
-    public Block (){
+    public Block (String name){
+        this.name = name;
         contents = FXCollections.observableArrayList();
         contents.addListener(new ListChangeListener<BlockComponent>() {
             @Override
@@ -21,6 +22,10 @@ public class Block extends HashIdentifiedSpeechComponent {
                 setModified(true);
             }
         });
+    }
+
+    public Block (){
+        this("");
     }
 
     public String getDisplayContent(){
@@ -95,7 +100,8 @@ public class Block extends HashIdentifiedSpeechComponent {
     @Override
     public String getHashedString() {
         StringBuilder builder = new StringBuilder();
-        // add some uniqueness in case all the contents are the same on blocks of different length
+        builder.append(name);
+        // add some uniqueness in case the appended contents are the same on two blocks of different length
         builder.append(contents.size());
         for (BlockComponent component:contents){
             builder.append(component.getBlockStorageString());

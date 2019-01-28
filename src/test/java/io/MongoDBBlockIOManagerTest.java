@@ -31,7 +31,7 @@ class MongoDBBlockIOManagerTest {
         }
         Card card1 = new Card(new Cite("Smith", "2010", "Renowned writer of cards"), text);
         Card card2 = new Card(new Cite("Smith", "2010", "Renowned writer of cards"), text+"AAA");
-        block = new Block();
+        block = new Block("Test Block");
         block.addComponent(card1);
         block.addComponent(card2);
         block.addComponent(new Analytic(ANALYTIC_TEXT));
