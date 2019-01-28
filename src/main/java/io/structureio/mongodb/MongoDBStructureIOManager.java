@@ -9,6 +9,7 @@ import com.mongodb.client.model.UpdateOptions;
 import com.mongodb.client.model.Updates;
 import io.structureio.StructureIOManager;
 import org.bson.Document;
+import org.bson.conversions.Bson;
 import org.bson.types.Binary;
 
 import java.io.IOException;
@@ -51,13 +52,15 @@ public class MongoDBStructureIOManager implements StructureIOManager {
         if (binaryList == null){
             return new ArrayList<>();
         }
-        // Todo find a better way to do this casting
+        // Todo find a better way to cast from list of Binary to list of byte[]
         List<byte[]> byteList = new ArrayList<>(binaryList.size());
         for (Binary binary:binaryList){
             byteList.add(binary.getData());
         }
         return byteList;
     }
+
+
 
     @Override
     public List<String> getRoot() {
@@ -73,6 +76,28 @@ public class MongoDBStructureIOManager implements StructureIOManager {
     public void addContent(List<String> path, byte[] contentID) {
         // TODO add checks against adding content before creating a tree element
         collection.updateOne(Filters.eq("Path", path), Updates.addToSet("Content", contentID),upsertOption);
+    }
+
+    @Override
+    public void renameDirectory(List<String> path, String name, String newName) {
+        // generate a filter that will catch the path in the chosen directory as well as all subdirectories, to update all at once
+        ArrayList<Bson>pathFiltersList = new ArrayList<>(path.size());
+        ArrayList<Bson>pathUpdateList = new ArrayList<>(path.size());
+        for (int i = 0; i < path.size(); i++){
+            pathFiltersList.add(Filters.eq("Path."+i, path.get(i)));
+            pathUpdateList.add(Updates.set("Path."+i, path.get(i)));
+        }
+        pathFiltersList.add(Filters.eq("Path."+path.size(), name));
+        pathUpdateList.add(Updates.set("Path."+path.size(), newName));
+        Bson pathFilter = Filters.and(pathFiltersList);
+        Bson pathUpdate = Updates.combine(pathUpdateList);
+        // find documents that are prefixed with every element of the path and replace those path elements
+        collection.updateMany(pathFilter,pathUpdate);
+
+        // now change the way that the document is found by its parent
+        Bson parentFilter = Filters.eq("Path", path);
+        collection.updateOne(parentFilter, Updates.pull("Children",name));
+        collection.updateOne(parentFilter, Updates.push("Children",newName));
     }
 
     @Override

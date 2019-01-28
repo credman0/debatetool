@@ -9,4 +9,5 @@ public interface StructureIOManager extends Closeable, AutoCloseable {
     List<String> getRoot();
     void addChild(List<String> path, String name);
     void addContent(List<String> path, byte[] contentID);
+    void renameDirectory(List<String> path, String name, String newName);
 }

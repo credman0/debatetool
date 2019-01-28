@@ -1,6 +1,7 @@
 package core;
 
 import io.IOUtil;
+import io.iocontrollers.IOController;
 
 import javax.imageio.IIOException;
 import java.io.*;
@@ -185,8 +186,8 @@ public class Card extends HashIdentifiedSpeechComponent implements BlockComponen
             throw new IllegalStateException("Attempted to display card before loading");
         }
         if (loadedOverlay==null){
-            List<CardOverlay> underlining = Main.getIoController().getOverlayIOManager().getOverlays(getHash(), "Underline");
-            List<CardOverlay> highlighting = Main.getIoController().getOverlayIOManager().getOverlays(getHash(), "Highlight");
+            List<CardOverlay> underlining = IOController.getIoController().getOverlayIOManager().getOverlays(getHash(), "Underline");
+            List<CardOverlay> highlighting = IOController.getIoController().getOverlayIOManager().getOverlays(getHash(), "Highlight");
             loadedOverlay = CardOverlay.combineOverlays(underlining.get(getPreferredUnderlineIndex()), highlighting.get(getPreferredHighlightIndex()));
         }
         return getCite().getDisplayContent()+"<br>"+loadedOverlay.generateHTML(getText());
@@ -199,7 +200,7 @@ public class Card extends HashIdentifiedSpeechComponent implements BlockComponen
 
     @Override
     public void load() throws IOException {
-        Card self = (Card) Main.getIoController().getComponentIOManager().retrieveSpeechComponent(hash);
+        Card self = (Card) IOController.getIoController().getComponentIOManager().retrieveSpeechComponent(hash);
         // TODO maybe a better way to import this information
         this.text = self.text;
         this.cite = self.cite;

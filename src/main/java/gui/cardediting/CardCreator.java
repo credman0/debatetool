@@ -1,14 +1,15 @@
 package gui.cardediting;
 
-import core.Main;
 import gui.locationtree.LocationTreeItem;
 import gui.locationtree.LocationTreeItemContent;
+import io.iocontrollers.IOController;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.TreeItemPropertyValueFactory;
@@ -16,6 +17,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 
+import javax.swing.*;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Comparator;
@@ -59,12 +61,61 @@ public class CardCreator{
     }
 
     private void populateDirectoryView(){
-        List<String> rootFolders = Main.getIoController().getStructureIOManager().getRoot();
+        List<String> rootFolders = IOController.getIoController().getStructureIOManager().getRoot();
         TreeItem<LocationTreeItemContent> root = new TreeItem<>();
         TreeTableColumn<LocationTreeItemContent, String> labelColumn = new TreeTableColumn<>("Name");
         TreeTableColumn<LocationTreeItemContent, Date> timeColumn = new TreeTableColumn<>("Date");
         directoryView.getColumns().setAll(labelColumn,timeColumn);
         labelColumn.setCellValueFactory(new TreeItemPropertyValueFactory("display"));
+        labelColumn.setCellFactory(new Callback<TreeTableColumn<LocationTreeItemContent, String>, TreeTableCell<LocationTreeItemContent, String>>() {
+            @Override
+            public TreeTableCell<LocationTreeItemContent, String> call(TreeTableColumn<LocationTreeItemContent, String> locationTreeItemContentStringTreeTableColumn) {
+                TreeTableCell<LocationTreeItemContent, String> cell = new TreeTableCell<>() {
+                    {
+                        // only add context to directories
+                        ContextMenu localMenu = getContextMenu();
+                        if (localMenu == null) {
+                            localMenu = new ContextMenu();
+                        }
+                        MenuItem changeDirectoryName = new MenuItem("Change Directory Name");
+                        changeDirectoryName.setOnAction(new EventHandler<ActionEvent>() {
+                            @Override
+                            public void handle(ActionEvent actionEvent) {
+                                String name = JOptionPane.showInputDialog("Enter name");
+
+                                List<String> path = currentNode.getPath();
+                                path.remove(path.size()-1);
+                                IOController.getIoController().getStructureIOManager().renameDirectory(path, getCurrentNode().getValue().getDisplay(), name);
+                                getCurrentNode().getValue().setDisplay(name);
+
+                            }
+                        });
+                        localMenu.getItems().add(changeDirectoryName);
+
+                        MenuItem newDirectoryItem = new MenuItem("Add Directory Item");
+                        newDirectoryItem.setOnAction(new EventHandler<ActionEvent>() {
+                            @Override
+                            public void handle(ActionEvent actionEvent) {
+                                currentNode.getChildren().add(new LocationTreeItem(new LocationTreeItemContent("tester")));
+                                IOController.getIoController().getStructureIOManager().addChild(getCurrentNode().getPath(), "tester");
+                            }
+                        });
+                        localMenu.getItems().add(newDirectoryItem);
+                        this.setContextMenu(localMenu);
+                    }
+                    @Override
+                    protected void updateItem(String content, boolean empty){
+                        super.updateItem(content, empty);
+                        if(empty || content==null) {
+                            setText(null);
+                        } else {
+                            setText(content);
+                        }
+                    }
+                };
+                return cell;
+            }
+        });
         timeColumn.setCellFactory(column -> {
             TreeTableCell<LocationTreeItemContent, Date> cell = new TreeTableCell<>() {
                 private SimpleDateFormat format = new SimpleDateFormat("MMM dd h:mm a ''yy");
@@ -84,6 +135,7 @@ public class CardCreator{
         timeColumn.setCellValueFactory(new TreeItemPropertyValueFactory("date"));
 
         for (String name:rootFolders){
+
             root.getChildren().add(new LocationTreeItem(new LocationTreeItemContent(name)));
         }
         directoryView.setColumnResizePolicy(TreeTableView.CONSTRAINED_RESIZE_POLICY);

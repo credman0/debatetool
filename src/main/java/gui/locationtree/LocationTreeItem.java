@@ -1,7 +1,7 @@
 package gui.locationtree;
 
 import core.HashIdentifiedSpeechComponent;
-import core.Main;
+import io.iocontrollers.IOController;
 import javafx.collections.ObservableList;
 import javafx.scene.control.TreeItem;
 
@@ -30,15 +30,15 @@ public class LocationTreeItem extends TreeItem<LocationTreeItemContent> {
         childrenLoaded = true;
         List<TreeItem<LocationTreeItemContent>> children = new ArrayList<>();
         List<String> path = getPath();
-        List<String> childrenDirs = Main.getIoController().getStructureIOManager().getChildren(path);
-        List<byte[]> contentIDs = Main.getIoController().getStructureIOManager().getContent(path);
+        List<String> childrenDirs = IOController.getIoController().getStructureIOManager().getChildren(path);
+        List<byte[]> contentIDs = IOController.getIoController().getStructureIOManager().getContent(path);
         for (String name:childrenDirs){
             children.add(new LocationTreeItem(new LocationTreeItemContent(name)));
         }
         for (byte[] hash:contentIDs) {
             HashIdentifiedSpeechComponent content = null;
             try {
-                content = Main.getIoController().getComponentIOManager().retrieveSpeechComponent(hash);
+                content = IOController.getIoController().getComponentIOManager().retrieveSpeechComponent(hash);
             } catch (IOException e) {
                 e.printStackTrace();
             }

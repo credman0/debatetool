@@ -1,7 +1,7 @@
 package gui.cardediting;
 
 import core.Card;
-import core.Main;
+import io.iocontrollers.IOController;
 import javafx.beans.property.StringProperty;
 import javafx.fxml.FXML;
 import javafx.scene.control.TextArea;
@@ -32,8 +32,8 @@ public class CardEditor extends CardViewer{
     public void save(List<String> path) {
         Card card = createCard();
         try {
-            Main.getIoController().getComponentIOManager().storeSpeechComponent(card);
-            Main.getIoController().getStructureIOManager().addContent(path,card.getHash());
+            IOController.getIoController().getComponentIOManager().storeSpeechComponent(card);
+            IOController.getIoController().getStructureIOManager().addContent(path,card.getHash());
         } catch (IOException e) {
             e.printStackTrace();
         }

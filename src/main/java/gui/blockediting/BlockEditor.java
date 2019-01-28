@@ -8,10 +8,7 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.concurrent.Worker;
 import javafx.fxml.FXML;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.control.TreeItem;
-import javafx.scene.control.TreeView;
+import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
@@ -48,6 +45,7 @@ public class BlockEditor {
     private void generateContents(){
         for (int i = 0; i < block.size(); i++){
             VBox componentBox = new VBox();
+            componentBox.getChildren().add(new Label(Block.toAlphabet(i) + ")"));
             WebView blockContentsView = new WebView();
             blockContentsView.getEngine().load(WEBVIEW_HTML);
             final int index = i;

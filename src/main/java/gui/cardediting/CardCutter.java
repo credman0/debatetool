@@ -3,7 +3,7 @@ package gui.cardediting;
 import com.sun.javafx.webkit.WebConsoleListener;
 import core.Card;
 import core.CardOverlay;
-import core.Main;
+import io.iocontrollers.IOController;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -227,14 +227,14 @@ public class CardCutter extends CardViewer {
         this.card = card;
         super.open(card);
         highlightingOverlayList.clear();
-        highlightingOverlayList.addAll(Main.getIoController().getOverlayIOManager().getOverlays(getCurrentHash(), "Highlight"));
+        highlightingOverlayList.addAll(IOController.getIoController().getOverlayIOManager().getOverlays(getCurrentHash(), "Highlight"));
         if (highlightingOverlayList.isEmpty()){
             highlightingOverlayList.add(new CardOverlay("Highlighting"));
         }
         highlightChoice.getSelectionModel().select(0);
 
         underliningOverlayList.clear();
-        underliningOverlayList.addAll(Main.getIoController().getOverlayIOManager().getOverlays(getCurrentHash(), "Underline"));
+        underliningOverlayList.addAll(IOController.getIoController().getOverlayIOManager().getOverlays(getCurrentHash(), "Underline"));
         if (underliningOverlayList.isEmpty()){
             underliningOverlayList.add(new CardOverlay("Underlining"));
         }
@@ -252,10 +252,10 @@ public class CardCutter extends CardViewer {
 
     @Override
     public void save(List<String> path){
-        Main.getIoController().getOverlayIOManager().saveOverlays(card.getHash(), highlightingOverlayList, "Highlight");
-        Main.getIoController().getOverlayIOManager().saveOverlays(card.getHash(), underliningOverlayList, "Underline");
+        IOController.getIoController().getOverlayIOManager().saveOverlays(card.getHash(), highlightingOverlayList, "Highlight");
+        IOController.getIoController().getOverlayIOManager().saveOverlays(card.getHash(), underliningOverlayList, "Underline");
         try {
-            Main.getIoController().getComponentIOManager().storeSpeechComponent(card);
+            IOController.getIoController().getComponentIOManager().storeSpeechComponent(card);
         } catch (IOException e) {
             e.printStackTrace();
         }
