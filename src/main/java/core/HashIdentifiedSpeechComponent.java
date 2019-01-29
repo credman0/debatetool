@@ -57,4 +57,7 @@ public abstract class HashIdentifiedSpeechComponent extends SpeechComponent{
         }
         return hash;
     }
+    public HashIdentifiedSpeechComponent clone(){
+        return clone();
+    }
 }

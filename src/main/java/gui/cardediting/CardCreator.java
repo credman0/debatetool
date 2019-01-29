@@ -52,7 +52,7 @@ public class CardCreator{
             if(mouseEvent.getClickCount() == 2) {
                 LocationTreeItem node = (LocationTreeItem) directoryView.getSelectionModel().getSelectedItem();
                 if (node != null && node.isLeaf()){
-                    componentViewer.open(node.getValue().getSpeechComponent());
+                    componentViewer.open(node.getValue().getSpeechComponent().clone());
                 }
             }
         });

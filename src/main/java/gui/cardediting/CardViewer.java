@@ -2,54 +2,45 @@ package gui.cardediting;
 
 import core.Card;
 import core.Cite;
+import io.iocontrollers.IOController;
 import javafx.scene.layout.Pane;
 
+import java.io.IOException;
 import java.util.List;
 
 public abstract class CardViewer {
-    private byte[] currentHash;
+    private Card card;
 
     public void swapTo(CardViewer viewer){
-        viewer.open(createCard());
+        viewer.open(card);
     }
 
     public void clear(){
-        setAuthor("");
-        setDate("");
-        setAdditionalInfo("");
-        setText("");
+        card.setCite(new Cite("","",""));
+        card.setText("");
     }
+
     public void open(Card card){
-        setAuthor(card.getCite().getAuthor());
-        setDate(card.getCite().getDate());
-        setAdditionalInfo(card.getCite().getAdditionalInfo());
-        setText(card.getText());
-        updateHash();
+        this.card = card;
     }
 
     public byte[] getCurrentHash(){
-        return currentHash;
+        return card.getHash();
     }
 
-    public void updateHash(){
-        currentHash = createCard().getHash();
+    public void save(List<String> path) {
+        try {
+            IOController.getIoController().getComponentIOManager().storeSpeechComponent(card);
+            IOController.getIoController().getStructureIOManager().addContent(path, card.getHash());
+        } catch (
+                IOException e) {
+            e.printStackTrace();
+        }
     }
 
-    public abstract void save(List<String> path);
-
-    protected Card createCard(){
-        return new Card(new Cite(getAuthor(), getDate(), getAdditionalInfo()), getText());
+    public Card getCard(){
+        return card;
     }
-
-    public abstract void setAuthor(String author);
-    public abstract void setDate(String date);
-    public abstract void setAdditionalInfo(String additionalInfo);
-    public abstract void setText(String text);
-
-    public abstract String getAuthor();
-    public abstract String getDate();
-    public abstract String getAdditionalInfo();
-    public abstract String getText();
 
     public abstract Pane getPane();
 }

@@ -1,6 +1,7 @@
 package io.componentio.mongodb;
 
 import com.mongodb.MongoClient;
+import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
@@ -13,6 +14,7 @@ import org.bson.conversions.Bson;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 public class MongoDBComponentIOManager implements ComponentIOManager {
     MongoClient mongoClient;
@@ -31,10 +33,16 @@ public class MongoDBComponentIOManager implements ComponentIOManager {
 
     @Override
     public ArrayList<HashIdentifiedSpeechComponent> retrieveSpeechComponents(byte[][] hashes) throws IOException {
-        // TODO: Make this more efficient at fetching several speechComponents
+        List<Bson> fetchFilterList = new ArrayList<>();
+        for (byte[] hash:hashes){
+            fetchFilterList.add(Filters.eq("Hash", hash));
+        }
+        Bson fetchFilter = Filters.or(fetchFilterList);
+        FindIterable<Document> foundDocuments = collection.find(fetchFilter);
+
         ArrayList<HashIdentifiedSpeechComponent> speechComponents = new ArrayList<>(hashes.length);
-        for (int i = 0; i < hashes.length; i++){
-            speechComponents.add(retrieveSpeechComponent(hashes[i]));
+        for (Document doc:foundDocuments){
+            speechComponents.add(fromDocument(doc));
         }
         return speechComponents;
     }

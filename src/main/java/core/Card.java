@@ -202,6 +202,19 @@ public class Card extends HashIdentifiedSpeechComponent implements BlockComponen
     }
 
     @Override
+    public HashIdentifiedSpeechComponent clone() {
+        // cite is alread read-only, so no need to clone it
+        Card clone = new Card(getCite(), getText());
+        clone.tags = tags;
+        clone.tagIndex = tagIndex;
+        clone.loadedOverlay = loadedOverlay;
+        clone.timeStamp = timeStamp;
+        clone.preferredHighlightIndex = preferredHighlightIndex;
+        clone.preferredUnderlineIndex = preferredUnderlineIndex;
+        return clone;
+    }
+
+    @Override
     public String getBlockStorageString() {
         return IOUtil.encodeString(getHash());
     }

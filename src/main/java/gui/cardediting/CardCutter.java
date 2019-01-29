@@ -47,7 +47,6 @@ public class CardCutter extends CardViewer {
     private ObservableList<CardOverlay> highlightingOverlayList = FXCollections.checkedObservableList(FXCollections.observableArrayList(), CardOverlay.class);
     private ObservableList<CardOverlay> underliningOverlayList = FXCollections.checkedObservableList(FXCollections.observableArrayList(), CardOverlay.class);
     private ObservableList<String> tagsList = FXCollections.checkedObservableList(FXCollections.observableArrayList(), String.class);
-    private Card card;
 
     public void init(){
 
@@ -79,8 +78,17 @@ public class CardCutter extends CardViewer {
         tagChoice.valueProperty().addListener(new ChangeListener<String>() {
             @Override
             public void changed(ObservableValue observableValue, String o, String t1) {
-                if (t1!=null && !t1.equals(o)) {
-                    ((ObjectProperty) observableValue).setValue(t1);
+                if (t1!=null && o!=null && !t1.equals(o)) {
+                    if (tagsList.contains(t1)){
+                        // TODO make this something intelligent instead of just a rejection of the change
+                        ((SimpleObjectProperty) observableValue).setValue(o);
+                    }else{
+                        if (o==null){
+                            tagsList.add(t1);
+                        }else {
+                            tagsList.set(tagsList.indexOf(o), t1);
+                        }
+                    }
                 }
             }
 
@@ -218,14 +226,17 @@ public class CardCutter extends CardViewer {
 
     @Override
     public void open(Card card){
-        if (getCurrentHash()!=null && Arrays.equals(getCurrentHash(), card.getHash())){
+        if (getCard()!=null && Arrays.equals(getCurrentHash(), card.getHash())){
             // should already be loaded, don't overwrite stuff
             applyOverlay();
             return;
         }
-
-        this.card = card;
         super.open(card);
+        setAuthor(card.getCite().getAuthor());
+        setDate(card.getCite().getDate());
+        setAdditionalInfo(card.getCite().getAdditionalInfo());
+        setText(card.getText());
+
         highlightingOverlayList.clear();
         highlightingOverlayList.addAll(IOController.getIoController().getOverlayIOManager().getOverlays(getCurrentHash(), "Highlight"));
         if (highlightingOverlayList.isEmpty()){
@@ -247,57 +258,47 @@ public class CardCutter extends CardViewer {
         if (tagsList.isEmpty()){
             tagsList.add("Empty tag");
             tagChoice.getSelectionModel().select(0);
+        }else{
+            tagChoice.getSelectionModel().select(card.getTagIndex());
         }
     }
 
     @Override
-    public void save(List<String> path){
-        IOController.getIoController().getOverlayIOManager().saveOverlays(card.getHash(), highlightingOverlayList, "Highlight");
-        IOController.getIoController().getOverlayIOManager().saveOverlays(card.getHash(), underliningOverlayList, "Underline");
-        try {
-            IOController.getIoController().getComponentIOManager().storeSpeechComponent(card);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    public void save(List<String> path) {
+        IOController.getIoController().getOverlayIOManager().saveOverlays(getCard().getHash(), highlightingOverlayList, "Highlight");
+        IOController.getIoController().getOverlayIOManager().saveOverlays(getCard().getHash(), underliningOverlayList, "Underline");
+        super.save(path);
     }
 
-    @Override
     public void setAuthor(String author) {
         this.author.setValue(author);
     }
 
-    @Override
     public void setDate(String date) {
         this.date.setValue(date);
     }
 
-    @Override
     public void setAdditionalInfo(String additionalInfo) {
         this.additionalInfo.setValue(additionalInfo);
     }
 
-    @Override
     public void setText(String text) {
         cardTextArea.getEngine().getDocument().getElementById("textarea").setTextContent(text);
         this.text = text;
     }
 
-    @Override
     public String getAuthor() {
         return author.get();
     }
 
-    @Override
     public String getDate() {
         return date.get();
     }
 
-    @Override
     public String getAdditionalInfo() {
         return additionalInfo.get();
     }
 
-    @Override
     public String getText() {
         return text;
     }

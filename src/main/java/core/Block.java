@@ -38,6 +38,15 @@ public class Block extends HashIdentifiedSpeechComponent {
         return contentsBuilder.toString();
     }
 
+    @Override
+    public HashIdentifiedSpeechComponent clone() {
+        Block clone =  new Block(name);
+        clone.contents = contents;
+        clone.loaded = loaded;
+        clone.hash = hash;
+        return clone;
+    }
+
     /**
      * convert an integer to an alphabetic index (a,b,...aa,ab,etc)
      * @param i
