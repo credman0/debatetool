@@ -12,7 +12,7 @@ public abstract class CardViewer {
     private Card card;
 
     public void swapTo(CardViewer viewer){
-        viewer.open(card);
+        viewer.open(getCard());
     }
 
     public void clear(){
@@ -39,6 +39,9 @@ public abstract class CardViewer {
     }
 
     public Card getCard(){
+        if (card==null){
+            card = new Card(new Cite("","",""),"");
+        }
         return card;
     }
 

@@ -5,7 +5,6 @@ import core.Card;
 import core.CardOverlay;
 import io.iocontrollers.IOController;
 import javafx.beans.binding.Bindings;
-import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
@@ -22,10 +21,10 @@ import javafx.scene.control.Label;
 import javafx.scene.control.RadioButton;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.Region;
 import javafx.scene.web.WebView;
 import netscape.javascript.JSObject;
 
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -93,6 +92,8 @@ public class CardCutter extends CardViewer {
             }
 
         });
+        // listener to make combobox stretch to fill the parent
+        tagChoice.prefWidthProperty().bind(((Region)tagChoice.getParent()).widthProperty());
     }
 
     private void initOverlayChoiceListeners(){
@@ -185,7 +186,6 @@ public class CardCutter extends CardViewer {
 
     public class JavaBridge {
         public void updateSelection(int start, int end) {
-            System.out.println(start+"e"+end);
             getActiveOverlay().updateOverlay(start,end,getActiveOverlayType());
             applyOverlay();
         }
