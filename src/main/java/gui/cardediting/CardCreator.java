@@ -87,6 +87,7 @@ public class CardCreator{
                                 path.remove(path.size()-1);
                                 IOController.getIoController().getStructureIOManager().renameDirectory(path, getCurrentNode().getValue().getDisplay(), name);
                                 getCurrentNode().getValue().setDisplay(name);
+                                currentPathString.set(String.join("/",currentNode.getPath()));
 
                             }
                         });
