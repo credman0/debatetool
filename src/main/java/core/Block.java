@@ -15,6 +15,7 @@ public class Block extends HashIdentifiedSpeechComponent {
 
     public void setName(String name) {
         this.name = name;
+        setModified(true);
     }
 
     private List<String> path;
@@ -138,5 +139,9 @@ public class Block extends HashIdentifiedSpeechComponent {
     @Override
     public long getTimeStamp() {
         return 0;
+    }
+
+    public List<String> getPath() {
+        return path;
     }
 }

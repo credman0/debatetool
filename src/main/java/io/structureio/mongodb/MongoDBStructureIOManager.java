@@ -14,6 +14,7 @@ import org.bson.types.Binary;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class MongoDBStructureIOManager implements StructureIOManager {
@@ -70,6 +71,16 @@ public class MongoDBStructureIOManager implements StructureIOManager {
     @Override
     public void addChild(List<String> path, String name) {
         collection.updateOne(Filters.eq("Path", path), Updates.addToSet("Children", name),upsertOption);
+    }
+
+    @Override
+    public void replaceContent(List<String> path, byte[] oldHash, byte[] newHash){
+        System.out.println(Arrays.toString(oldHash));
+        System.out.println(Arrays.toString(newHash));
+        System.out.println(path);
+        // TODO combine these statements
+        collection.updateOne(Filters.eq("Path", path), Updates.pull("Content",oldHash));
+        collection.updateOne(Filters.eq("Path", path), Updates.push("Content",newHash));
     }
 
     @Override

@@ -8,6 +8,9 @@ public interface StructureIOManager extends Closeable, AutoCloseable {
     List<byte[]> getContent(List<String> path);
     List<String> getRoot();
     void addChild(List<String> path, String name);
+
+    void replaceContent(List<String> path, byte[] oldHash, byte[] newHash);
+
     void addContent(List<String> path, byte[] contentID);
 
     List<String> getBlockPath(byte[] hash);

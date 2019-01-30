@@ -120,6 +120,11 @@ public class CardCreator{
                                 Block newBlock = new Block(getCurrentNode().getPath(), "New Block");
                                 currentNode.getChildren().add(new LocationTreeItem(new LocationTreeItemContent(newBlock)));
                                 IOController.getIoController().getStructureIOManager().addContent(getCurrentNode().getPath(), newBlock.getHash());
+                                try {
+                                    IOController.getIoController().getComponentIOManager().storeSpeechComponent(newBlock);
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
                                 localMenu.hide();
                             }
                         });
@@ -158,14 +163,17 @@ public class CardCreator{
                                         localMenu.hide();
                                         String name = JOptionPane.showInputDialog("Enter name");
                                         Block cellBlock = (Block) cell.getTreeTableRow().getTreeItem().getValue().getSpeechComponent();
+                                        byte[] oldHash = cellBlock.getHash();
                                         cellBlock.setName(name);
                                         try {
                                             IOController.getIoController().getComponentIOManager().storeSpeechComponent(cellBlock);
+                                            IOController.getIoController().getStructureIOManager().replaceContent(cellBlock.getPath(), oldHash, cellBlock.getHash());
                                         } catch (IOException e) {
                                             e.printStackTrace();
                                         }
                                         // force change the text of the cell
                                         cell.setText(name);
+                                        componentViewer.open(cellBlock);
                                     }
                                 });
                                 localMenu.getItems().add(changeBlockName);
