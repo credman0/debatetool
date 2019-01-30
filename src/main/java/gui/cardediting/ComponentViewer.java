@@ -70,10 +70,14 @@ public class ComponentViewer {
     }
 
     public void save(LocationTreeItem currentNode){
-        if (editMode) {
-            cardEditor.save(currentNode.getPath());
+        if (blockMode){
+            blockEditor.save();
         }else {
-            cardCutter.save(currentNode.getPath());
+            if (editMode) {
+                cardEditor.save(currentNode.getPath());
+            } else {
+                cardCutter.save(currentNode.getPath());
+            }
         }
     }
 
@@ -102,6 +106,12 @@ public class ComponentViewer {
             cardCutter.swapTo(cardEditor);
             editMode = true;
         }
+        updateViewerPane();
+    }
+
+    public void newCard() {
+        editMode = true;
+        blockMode = false;
         updateViewerPane();
     }
 }

@@ -54,7 +54,7 @@ class MongoDBStructureIOManagerTest {
             manager.addContent(testChildDirPath, card2.getHash());
 
 
-            Block block = new Block("Test Block");
+            Block block = new Block(testChildDirPath, "Test Block");
             block.addComponent(card);
             block.addComponent(card2);
             block.addComponent(new Analytic(ANALYTIC_TEXT));
@@ -64,6 +64,7 @@ class MongoDBStructureIOManagerTest {
             Assert.assertEquals(manager.getContent(testDirPath).get(0), card.getHash());
             Assert.assertEquals(manager.getContent(testDirPath).get(1), card2.getHash());
             Assert.assertEquals(manager.getContent(testChildDirPath).get(0), card2.getHash());
+            Assert.assertEquals(manager.getContent(testChildDirPath).get(1), block.getHash());
         } catch (IOException e) {
             e.printStackTrace();
         }

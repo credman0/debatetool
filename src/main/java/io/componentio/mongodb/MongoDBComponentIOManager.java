@@ -11,6 +11,7 @@ import core.HashIdentifiedSpeechComponent;
 import io.componentio.ComponentIOManager;
 import org.bson.Document;
 import org.bson.conversions.Bson;
+import org.bson.types.Binary;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -28,7 +29,7 @@ public class MongoDBComponentIOManager implements ComponentIOManager {
     }
     @Override
     public HashIdentifiedSpeechComponent retrieveSpeechComponent(byte[] hash) throws IOException {
-        return fromDocument(collection.find(Filters.eq("Hash", hash)).first());
+        return fromDocument(collection.find(Filters.eq("Hash", hash)).first(), hash);
     }
 
     @Override
@@ -42,7 +43,7 @@ public class MongoDBComponentIOManager implements ComponentIOManager {
 
         ArrayList<HashIdentifiedSpeechComponent> speechComponents = new ArrayList<>(hashes.length);
         for (Document doc:foundDocuments){
-            speechComponents.add(fromDocument(doc));
+            speechComponents.add(fromDocument(doc, ((Binary) doc.get("Hash")).getData()));
         }
         return speechComponents;
     }
@@ -60,6 +61,7 @@ public class MongoDBComponentIOManager implements ComponentIOManager {
             }
         }
     }
+
 
     @Override
     public void deleteSpeechComponent(byte[] hash) throws IOException {
@@ -79,10 +81,10 @@ public class MongoDBComponentIOManager implements ComponentIOManager {
                 .append("Values",labelledArray[1]);
     }
 
-    public static final HashIdentifiedSpeechComponent fromDocument(Document document){
+    public static final HashIdentifiedSpeechComponent fromDocument(Document document, byte[] hash){
         String type = document.getString("Type");
         ArrayList<String> labels = (ArrayList<String>) document.get("Labels");
         ArrayList<String> values = (ArrayList<String>) document.get("Values");
-        return HashIdentifiedSpeechComponent.createFromLabelledLists(type,labels,values);
+        return HashIdentifiedSpeechComponent.createFromLabelledLists(type,labels,values, hash);
     }
 }

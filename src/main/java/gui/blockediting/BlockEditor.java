@@ -3,6 +3,7 @@ package gui.blockediting;
 import core.Block;
 import core.BlockComponent;
 import core.Card;
+import io.iocontrollers.IOController;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -16,6 +17,7 @@ import javafx.scene.layout.*;
 import javafx.scene.web.WebView;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Set;
 
 public class BlockEditor {
@@ -44,18 +46,19 @@ public class BlockEditor {
     }
 
     private void generateContents(){
-        for (int i = 0; i < block.size(); i++){
+        viewerArea.getChildren().clear();
+        for (int i = 0; i < blockTreeView.getRoot().getChildren().size(); i++){
+            BlockComponent child = (BlockComponent) ((TreeItem) blockTreeView.getRoot().getChildren().get(i)).getValue();
             VBox componentBox = new VBox();
             HBox tagLine = new HBox();
             tagLine.getChildren().add(new Label(Block.toAlphabet(i) + ")"));
             WebView blockContentsView = new WebView();
             blockContentsView.getEngine().load(WEBVIEW_HTML);
-            final int index = i;
-            blockContentsView.getEngine().getLoadWorker().stateProperty().addListener(new ContentLoader(block,i,blockContentsView));
+            blockContentsView.getEngine().getLoadWorker().stateProperty().addListener(new ContentLoader(child,blockContentsView));
             blockContentsView.setDisable(true);
-            if (block.getComponent(i).getClass().isAssignableFrom(Card.class)){
+            if (child.getClass().isAssignableFrom(Card.class)){
                 ComboBox<String> tagsBox = new ComboBox<>();
-                tagsBox.setItems(FXCollections.observableList(((Card) block.getComponent(i)).getTags()));
+                tagsBox.setItems(FXCollections.observableList(((Card) child).getTags()));
                 tagLine.getChildren().add(tagsBox);
             }
             componentBox.getChildren().add(tagLine);
@@ -73,21 +76,32 @@ public class BlockEditor {
         }
     }
 
-    private class ContentLoader implements ChangeListener<Worker.State>{
-        private final Block block;
-        private final int index;
-        private final WebView contentView;
+    public void save() {
+        List<TreeItem> children = blockTreeView.getRoot().getChildren();
+        block.clearContents();
+        for (TreeItem child:children){
+            block.addComponent((BlockComponent) child.getValue());
+        }
+        try {
+            IOController.getIoController().getComponentIOManager().storeSpeechComponent(block);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
-        private ContentLoader(Block block, int index, WebView contentView) {
-            this.block = block;
-            this.index = index;
+    private class ContentLoader implements ChangeListener<Worker.State>{
+        private final WebView contentView;
+        private final BlockComponent component;
+
+        private ContentLoader(BlockComponent component, WebView contentView) {
+            this.component = component;
             this.contentView = contentView;
         }
 
         @Override
         public void changed(ObservableValue<? extends Worker.State> observableValue, Worker.State oldState, Worker.State newState) {
             if (newState == Worker.State.SUCCEEDED) {
-                contentView.getEngine().executeScript("document.getElementById('textarea').innerHTML = \""+block.getComponent(index).getDisplayContent()+"\";");
+                contentView.getEngine().executeScript("document.getElementById('textarea').innerHTML = \""+component.getDisplayContent()+"\";");
                 // put the resizing code in a runLater because otherwise for some reason the size is way too large
                 // adapted from http://java-no-makanaikata.blogspot.com/2012/10/javafx-webview-size-trick.html
                 Platform.runLater(new Runnable(){
@@ -117,11 +131,22 @@ public class BlockEditor {
         blockTreeView.setCellFactory(new BlockComponentCellFactory());
     }
 
+    private void setRoot(TreeItem<BlockComponent> root){
+        blockTreeView.setRoot(root);
+        root.getChildren().addListener(new ListChangeListener<TreeItem<BlockComponent>>() {
+            @Override
+            public void onChanged(Change<? extends TreeItem<BlockComponent>> change) {
+                generateContents();
+            }
+        });
+
+    }
+
     private void populateTree(){
         TreeItem<BlockComponent> root = new TreeItem<>();
         for (int i = 0; i < block.size(); i++){
             root.getChildren().add(new TreeItem<>(block.getComponent(i)));
         }
-        blockTreeView.setRoot(root);
+        setRoot(root);
     }
 }

@@ -1,6 +1,7 @@
 package gui.cardediting;
 
 import core.Block;
+import gui.blockediting.BlockComponentCellFactory;
 import gui.locationtree.LocationTreeItem;
 import gui.locationtree.LocationTreeItemContent;
 import io.iocontrollers.IOController;
@@ -14,7 +15,7 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.TreeItemPropertyValueFactory;
-import javafx.scene.input.ContextMenuEvent;
+import javafx.scene.input.*;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import javafx.util.Callback;
@@ -22,6 +23,7 @@ import javafx.util.Callback;
 import javax.swing.*;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
@@ -92,60 +94,96 @@ public class CardCreator{
                         ContextMenu localMenu = new ContextMenu();
 
 
-                        MenuItem newDirectoryItem = new MenuItem("Add Directory");
+                        MenuItem newDirectoryItem = new MenuItem("New Directory");
                         newDirectoryItem.setOnAction(new EventHandler<ActionEvent>() {
                             @Override
                             public void handle(ActionEvent actionEvent) {
-                                currentNode.getChildren().add(new LocationTreeItem(new LocationTreeItemContent("tester")));
-                                IOController.getIoController().getStructureIOManager().addChild(getCurrentNode().getPath(), "tester");
+                                List<String> effectivePath;
+                                if (cell.isEmpty()){
+                                    // if we are on an empty cell, create a top-level directory
+                                    root.getChildren().add(new LocationTreeItem(new LocationTreeItemContent("New Directory")));
+                                    effectivePath = new ArrayList<>();
+                                }else{
+                                    currentNode.getChildren().add(new LocationTreeItem(new LocationTreeItemContent("New Directory")));
+                                    effectivePath = getCurrentNode().getPath();
+                                }
+                                IOController.getIoController().getStructureIOManager().addChild(effectivePath, "New Directory");
+                                localMenu.hide();
                             }
                         });
                         localMenu.getItems().add(newDirectoryItem);
-                        // Add directory actions only to directories
-                        if (cell.getTreeTableRow().getTreeItem().getValue().getSpeechComponent()==null) {
-                            localMenu.getItems().add(new SeparatorMenuItem());
 
-                            MenuItem changeDirectoryName = new MenuItem("Change Directory Name");
-                            changeDirectoryName.setOnAction(new EventHandler<ActionEvent>() {
-                                @Override
-                                public void handle(ActionEvent actionEvent) {
-                                    String name = JOptionPane.showInputDialog("Enter name");
+                        MenuItem newBlockItem = new MenuItem("New Block");
+                        newBlockItem.setOnAction(new EventHandler<ActionEvent>() {
+                            @Override
+                            public void handle(ActionEvent actionEvent) {
+                                Block newBlock = new Block(getCurrentNode().getPath(), "New Block");
+                                currentNode.getChildren().add(new LocationTreeItem(new LocationTreeItemContent(newBlock)));
+                                IOController.getIoController().getStructureIOManager().addContent(getCurrentNode().getPath(), newBlock.getHash());
+                                localMenu.hide();
+                            }
+                        });
+                        localMenu.getItems().add(newBlockItem);
 
-                                    List<String> path = currentNode.getPath();
-                                    path.remove(path.size() - 1);
-                                    IOController.getIoController().getStructureIOManager().renameDirectory(path, getCurrentNode().getValue().getDisplay(), name);
-                                    getCurrentNode().getValue().setDisplay(name);
-                                    currentPathString.set(String.join("/", currentNode.getPath()));
+                        if (!cell.isEmpty()){
+                            if (cell.getTreeTableRow().getTreeItem().getValue().getSpeechComponent()==null) {
+                                // Add directory actions only to directories
+                                localMenu.getItems().add(new SeparatorMenuItem());
 
-                                }
-                            });
-                            localMenu.getItems().add(changeDirectoryName);
-                        }
+                                MenuItem changeDirectoryName = new MenuItem("Change Directory Name");
+                                changeDirectoryName.setOnAction(new EventHandler<ActionEvent>() {
+                                    @Override
+                                    public void handle(ActionEvent actionEvent) {
+                                        localMenu.hide();
+                                        String name = JOptionPane.showInputDialog("Enter name");
 
-                        System.out.println(cell.getTreeTableRow().getTreeItem().getValue().getSpeechComponent());
-                        // add block rename action only to block
-                        if ((cell.getTreeTableRow().getTreeItem().getValue().getSpeechComponent() != null) && Block.class.isInstance(cell.getTreeTableRow().getTreeItem().getValue().getSpeechComponent())) {
-                            localMenu.getItems().add(new SeparatorMenuItem());
+                                        List<String> path = currentNode.getPath();
+                                        path.remove(path.size() - 1);
+                                        IOController.getIoController().getStructureIOManager().renameDirectory(path, getCurrentNode().getValue().getDisplay(), name);
+                                        getCurrentNode().getValue().setDisplay(name);
+                                        currentPathString.set(String.join("/", currentNode.getPath()));
 
-                            MenuItem changeBlockName = new MenuItem("Rename Block");
-                            changeBlockName.setOnAction(new EventHandler<ActionEvent>() {
-                                @Override
-                                public void handle(ActionEvent actionEvent) {
-                                    String name = JOptionPane.showInputDialog("Enter name");
-                                    Block cellBlock = (Block) cell.getTreeTableRow().getTreeItem().getValue().getSpeechComponent();
-                                    cellBlock.setName(name);
-                                    try {
-                                        IOController.getIoController().getComponentIOManager().storeSpeechComponent(cellBlock);
-                                    } catch (IOException e) {
-                                        e.printStackTrace();
                                     }
-                                    cell.getTreeTableRow().getTreeItem().setValue(cell.getTreeTableRow().getTreeItem().getValue());
-                                }
-                            });
-                            localMenu.getItems().add(changeBlockName);
+                                });
+                                localMenu.getItems().add(changeDirectoryName);
+                            }
+                            // add block rename action only to block
+                            if ((cell.getTreeTableRow().getTreeItem().getValue().getSpeechComponent() != null) && Block.class.isInstance(cell.getTreeTableRow().getTreeItem().getValue().getSpeechComponent())) {
+                                localMenu.getItems().add(new SeparatorMenuItem());
+
+                                MenuItem changeBlockName = new MenuItem("Rename Block");
+                                changeBlockName.setOnAction(new EventHandler<ActionEvent>() {
+                                    @Override
+                                    public void handle(ActionEvent actionEvent) {
+                                        localMenu.hide();
+                                        String name = JOptionPane.showInputDialog("Enter name");
+                                        Block cellBlock = (Block) cell.getTreeTableRow().getTreeItem().getValue().getSpeechComponent();
+                                        cellBlock.setName(name);
+                                        try {
+                                            IOController.getIoController().getComponentIOManager().storeSpeechComponent(cellBlock);
+                                        } catch (IOException e) {
+                                            e.printStackTrace();
+                                        }
+                                        // force change the text of the cell
+                                        cell.setText(name);
+                                    }
+                                });
+                                localMenu.getItems().add(changeBlockName);
+                            }
                         }
                         cell.setContextMenu(localMenu);
                         cell.getContextMenu().show(cell.getTreeTableView(),contextMenuEvent.getScreenX(),contextMenuEvent.getScreenY());
+                    }
+                });
+                cell.setOnDragDetected(new EventHandler<MouseEvent>() {
+                    @Override
+                    public void handle(MouseEvent mouseEvent) {
+                        Dragboard db = cell.startDragAndDrop(TransferMode.COPY);
+
+                        ClipboardContent content = new ClipboardContent();
+                        content.put(BlockComponentCellFactory.blockComponentFormat, cell.getTreeTableRow().getTreeItem().getValue().getSpeechComponent());
+                        db.setContent(content);
+                        mouseEvent.consume();
                     }
                 });
                 return cell;
@@ -230,7 +268,7 @@ public class CardCreator{
     }
 
     public void newCardAction(){
-        componentViewer.clear();
+        componentViewer.newCard();
     }
     public String getCurrentPathString() {
         return currentPathString.get();

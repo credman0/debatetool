@@ -35,6 +35,7 @@ public class LocationTreeItem extends TreeItem<LocationTreeItemContent> {
         for (String name:childrenDirs){
             children.add(new LocationTreeItem(new LocationTreeItemContent(name)));
         }
+        // TODO use group fetch function of io manager
         for (byte[] hash:contentIDs) {
             HashIdentifiedSpeechComponent content = null;
             try {

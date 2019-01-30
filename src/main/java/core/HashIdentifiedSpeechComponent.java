@@ -1,5 +1,7 @@
 package core;
 
+import io.iocontrollers.IOController;
+
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -28,13 +30,13 @@ public abstract class HashIdentifiedSpeechComponent extends SpeechComponent{
     protected byte[] hash = null;
     public abstract ArrayList<String>[] toLabelledLists();
     public abstract void importFromLabelledLists(ArrayList<String> labels, ArrayList<String> values);
-    public static HashIdentifiedSpeechComponent createFromLabelledLists(String type, ArrayList<String> labels, ArrayList<String> values){
+    public static HashIdentifiedSpeechComponent createFromLabelledLists(String type, ArrayList<String> labels, ArrayList<String> values, byte[] hash){
         if (type.equals(Card.class.getName())){
             Card card = new Card((byte[])null);
             card.importFromLabelledLists(labels,values);
             return card;
         }else if (type.equals(Block.class.getName())) {
-            Block block = new Block();
+            Block block = new Block(IOController.getIoController().getStructureIOManager().getBlockPath(hash));
             block.importFromLabelledLists(labels, values);
             return block;
         }else{

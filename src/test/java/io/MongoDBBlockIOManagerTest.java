@@ -7,11 +7,13 @@ import core.Card;
 import core.Cite;
 import io.componentio.ComponentIOManager;
 import io.componentio.mongodb.MongoDBComponentIOManager;
+import io.iocontrollers.IOController;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 import java.io.*;
+import java.util.ArrayList;
 
 class MongoDBBlockIOManagerTest {
     Block block;
@@ -29,12 +31,18 @@ class MongoDBBlockIOManagerTest {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+
+        ArrayList<String> testChildDirPath = new ArrayList<>();
+        testChildDirPath.add("test_dir");
+        testChildDirPath.add("test_child_dir");
         Card card1 = new Card(new Cite("Smith", "2010", "Renowned writer of cards"), text);
         Card card2 = new Card(new Cite("Smith", "2010", "Renowned writer of cards"), text+"AAA");
-        block = new Block("Test Block");
+        block = new Block(testChildDirPath, "Test Block");
         block.addComponent(card1);
         block.addComponent(card2);
         block.addComponent(new Analytic(ANALYTIC_TEXT));
+        IOController.getIoController().getStructureIOManager().addContent(testChildDirPath, block.getHash());
     }
 
     @Test

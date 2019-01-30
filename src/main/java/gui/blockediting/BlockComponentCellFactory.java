@@ -10,7 +10,7 @@ import javafx.scene.paint.Color;
 import javafx.util.Callback;
 
 public class BlockComponentCellFactory implements Callback<TreeView<BlockComponent>, TreeCell<BlockComponent>> {
-    DataFormat blockComponentFormat = new DataFormat("BlockComponent");
+    public static DataFormat blockComponentFormat = new DataFormat("BlockComponent");
     @Override
     public TreeCell<BlockComponent> call(TreeView<BlockComponent> treeView) {
         TreeCell<BlockComponent> cell = new TreeCell<>() {
@@ -53,9 +53,8 @@ public class BlockComponentCellFactory implements Callback<TreeView<BlockCompone
     }
 
     private void dragOver(DragEvent event, TreeCell<BlockComponent> treeCell, TreeView<BlockComponent> treeView) {
-        if (!event.getDragboard().getContent(blockComponentFormat).equals(treeCell.getTreeItem())
-                && !treeCell.isEmpty()){
-            event.acceptTransferModes(TransferMode.MOVE);
+        if (!event.getDragboard().getContent(blockComponentFormat).equals(treeCell.getTreeItem())){
+            event.acceptTransferModes(TransferMode.COPY_OR_MOVE);
         }
         event.consume();
     }
@@ -72,6 +71,11 @@ public class BlockComponentCellFactory implements Callback<TreeView<BlockCompone
             success = true;
             treeView.getRoot().getChildren().add(indexInParent,new TreeItem<>(droppedItem));
             treeView.getSelectionModel().select(indexInParent);
+        }else if (treeCell.isEmpty()){
+            // dropped past the end, just put it at the end of parent
+            success = true;
+            treeView.getRoot().getChildren().add(new TreeItem<>(droppedItem));
+            treeView.getSelectionModel().select(root.getChildren().size()-1);
         }
         event.setDropCompleted(success);
         event.consume();

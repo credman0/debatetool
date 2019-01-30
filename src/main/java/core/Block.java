@@ -6,6 +6,7 @@ import javafx.collections.ObservableList;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 public class Block extends HashIdentifiedSpeechComponent {
     public String getName() {
@@ -16,12 +17,14 @@ public class Block extends HashIdentifiedSpeechComponent {
         this.name = name;
     }
 
+    private List<String> path;
     protected String name;
     protected ObservableList<BlockComponent> contents;
     protected boolean loaded = false;
 
 
-    public Block (String name){
+    public Block(List<String> path, String name){
+        this.path = path;
         this.name = name;
         contents = FXCollections.observableArrayList();
         contents.addListener(new ListChangeListener<BlockComponent>() {
@@ -32,8 +35,8 @@ public class Block extends HashIdentifiedSpeechComponent {
         });
     }
 
-    public Block (){
-        this("");
+    public Block(List<String> path){
+        this(path, "");
     }
 
     public String getDisplayContent(){
@@ -48,8 +51,15 @@ public class Block extends HashIdentifiedSpeechComponent {
 
     @Override
     public HashIdentifiedSpeechComponent clone() {
-        Block clone =  new Block(name);
-        clone.contents = contents;
+        Block clone =  new Block(path, name);
+        // copy the list
+        clone.contents = FXCollections.observableArrayList(contents);
+        clone.contents.addListener(new ListChangeListener<BlockComponent>() {
+            @Override
+            public void onChanged(Change<? extends BlockComponent> change) {
+                clone.setModified(true);
+            }
+        });
         clone.loaded = loaded;
         clone.hash = hash;
         return clone;
@@ -74,6 +84,10 @@ public class Block extends HashIdentifiedSpeechComponent {
 
     public BlockComponent getComponent(int i){
         return contents.get(i);
+    }
+
+    public void clearContents(){
+        contents.clear();
     }
 
     public int size(){
@@ -117,11 +131,8 @@ public class Block extends HashIdentifiedSpeechComponent {
     @Override
     public String getHashedString() {
         StringBuilder builder = new StringBuilder();
-        // add some uniqueness in case the appended contents are the same on two blocks of different length
-        builder.append(contents.size());
-        for (BlockComponent component:contents){
-            builder.append(component.getBlockStorageString());
-        }
+        builder.append(String.join("/"+path.size(),path));
+        builder.append(name);
         return builder.toString();
     }
 

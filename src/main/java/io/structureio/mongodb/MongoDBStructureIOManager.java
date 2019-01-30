@@ -79,6 +79,17 @@ public class MongoDBStructureIOManager implements StructureIOManager {
     }
 
     @Override
+    public List<String> getBlockPath(byte[] hash){
+        // TODO replace this search (or at least index it)
+        Document directoryDoc =  collection.find(Filters.in("Content", hash)).first();
+        if (directoryDoc==null){
+            return new ArrayList<>();
+        }else {
+            return (List<String>) directoryDoc.get("Path");
+        }
+    }
+
+    @Override
     public void renameDirectory(List<String> path, String name, String newName) {
         // generate a filter that will catch the path in the chosen directory as well as all subdirectories, to update all at once
         ArrayList<Bson>pathFiltersList = new ArrayList<>(path.size());
