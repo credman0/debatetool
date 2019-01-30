@@ -2,6 +2,9 @@ package core;
 
 import io.IOUtil;
 import io.iocontrollers.IOController;
+import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
+import javafx.collections.ObservableList;
 
 import javax.imageio.IIOException;
 import java.io.*;
@@ -30,16 +33,23 @@ public class Card extends HashIdentifiedSpeechComponent implements BlockComponen
      */
     protected long timeStamp;
 
+    private Card(){
+
+    }
+
     public Card(byte[] hash){
+        this();
         this.hash = hash;
     }
 
     public Card(Cite cite, String text) {
+        this();
         setCite(cite);
         setText(text);
     }
 
     public Card(DataInputStream in) throws IOException {
+        this();
         loadFromInput(in, true);
     }
 
@@ -167,7 +177,20 @@ public class Card extends HashIdentifiedSpeechComponent implements BlockComponen
     }
 
     public List<String> getTags(){
-        return tags;
+        ObservableList<String> observableTags = FXCollections.observableList(tags);
+        observableTags.addListener(new ListChangeListener<String>() {
+            @Override
+            public void onChanged(Change<? extends String> change) {
+                setModified(true);
+            }
+        });
+        return observableTags;
+    }
+
+    public void setTags(List<String> tags){
+        this.tags.clear();
+        this.tags.addAll(tags);
+        setModified(true);
     }
 
     /**
@@ -203,9 +226,9 @@ public class Card extends HashIdentifiedSpeechComponent implements BlockComponen
 
     @Override
     public HashIdentifiedSpeechComponent clone() {
-        // cite is alread read-only, so no need to clone it
+        // cite is already read-only, so no need to clone it
         Card clone = new Card(getCite(), getText());
-        clone.tags = tags;
+        clone.tags.addAll(tags);
         clone.tagIndex = tagIndex;
         clone.loadedOverlay = loadedOverlay;
         clone.timeStamp = timeStamp;

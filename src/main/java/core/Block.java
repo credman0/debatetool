@@ -53,13 +53,7 @@ public class Block extends HashIdentifiedSpeechComponent {
     public HashIdentifiedSpeechComponent clone() {
         Block clone =  new Block(path, name);
         // copy the list
-        clone.contents = FXCollections.observableArrayList(contents);
-        clone.contents.addListener(new ListChangeListener<BlockComponent>() {
-            @Override
-            public void onChanged(Change<? extends BlockComponent> change) {
-                clone.setModified(true);
-            }
-        });
+        clone.contents.addAll(contents);
         clone.loaded = loaded;
         clone.hash = hash;
         return clone;

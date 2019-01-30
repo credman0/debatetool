@@ -14,6 +14,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Worker.State;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
@@ -75,26 +76,30 @@ public class CardCutter extends CardViewer {
             }
         });
         // listener to change list
-        tagChoice.valueProperty().addListener(new ChangeListener<String>() {
+        tagChoice.valueProperty().addListener(new ChangeListener() {
             @Override
-            public void changed(ObservableValue observableValue, String o, String t1) {
-                if (t1!=null && o!=null && !t1.equals(o)) {
-                    if (tagsList.contains(t1)){
-                        // TODO make this something intelligent instead of just a rejection of the change
-                        ((SimpleObjectProperty) observableValue).setValue(o);
-                    }else{
-                        if (o==null){
-                            tagsList.add(t1);
-                        }else {
-                            tagsList.set(tagsList.indexOf(o), t1);
-                        }
+            public void changed(ObservableValue observableValue, Object o, Object t1) {
+                if (TagChoiceAction.class.isInstance(t1)){
+                    String trialName = "New Tag";
+                    int index = 0;
+                    while (tagChoice.getItems().contains(trialName)){
+                        trialName = "New Tag (" + index +")";
+                        index++;
                     }
+                    tagChoice.getItems().add(tagChoice.getItems().size()-1, trialName);
+                    tagChoice.getSelectionModel().select(tagChoice.getItems().size()-2);
+                    return;
                 }
             }
-
         });
         // listener to make combobox stretch to fill the parent
         tagChoice.prefWidthProperty().bind(((Region)tagChoice.getParent()).widthProperty());
+    }
+
+    private class TagChoiceAction{
+        public String toString(){
+            return "Create New Tag";
+        }
     }
 
     private void initOverlayChoiceListeners(){
@@ -254,7 +259,8 @@ public class CardCutter extends CardViewer {
 
         applyOverlay();
 
-        tagsList = FXCollections.observableList(card.getTags());
+        // note that tagsList is a deep copy
+        tagsList = FXCollections.observableArrayList(card.getTags());
         tagChoice.setItems(tagsList);
         if (tagsList.isEmpty()){
             tagsList.add("Empty tag");
@@ -262,12 +268,14 @@ public class CardCutter extends CardViewer {
         }else{
             tagChoice.getSelectionModel().select(card.getTagIndex());
         }
+        tagChoice.getItems().add(new TagChoiceAction());
     }
 
     @Override
     public void save(List<String> path) {
         IOController.getIoController().getOverlayIOManager().saveOverlays(getCard().getHash(), highlightingOverlayList, "Highlight");
         IOController.getIoController().getOverlayIOManager().saveOverlays(getCard().getHash(), underliningOverlayList, "Underline");
+        getCard().setTags(tagsList.subList(0, tagsList.size()-1));
         super.save(path);
     }
 
