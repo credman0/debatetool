@@ -12,10 +12,7 @@ import javafx.concurrent.Worker;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.*;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.scene.web.WebView;
 
 import java.io.IOException;
@@ -49,7 +46,8 @@ public class BlockEditor {
     private void generateContents(){
         for (int i = 0; i < block.size(); i++){
             VBox componentBox = new VBox();
-            componentBox.getChildren().add(new Label(Block.toAlphabet(i) + ")"));
+            HBox tagLine = new HBox();
+            tagLine.getChildren().add(new Label(Block.toAlphabet(i) + ")"));
             WebView blockContentsView = new WebView();
             blockContentsView.getEngine().load(WEBVIEW_HTML);
             final int index = i;
@@ -58,8 +56,9 @@ public class BlockEditor {
             if (block.getComponent(i).getClass().isAssignableFrom(Card.class)){
                 ComboBox<String> tagsBox = new ComboBox<>();
                 tagsBox.setItems(FXCollections.observableList(((Card) block.getComponent(i)).getTags()));
-                componentBox.getChildren().add(tagsBox);
+                tagLine.getChildren().add(tagsBox);
             }
+            componentBox.getChildren().add(tagLine);
             // http://stackoverflow.com/questions/11206942/how-to-hide-scrollbars-in-the-javafx-webview
             blockContentsView.getChildrenUnmodifiable().addListener(new ListChangeListener<Node>() {
                 @Override public void onChanged(ListChangeListener.Change<? extends Node> change) {
