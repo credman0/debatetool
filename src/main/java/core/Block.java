@@ -8,6 +8,14 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 public class Block extends HashIdentifiedSpeechComponent {
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
     protected String name;
     protected ObservableList<BlockComponent> contents;
     protected boolean loaded = false;
@@ -109,7 +117,6 @@ public class Block extends HashIdentifiedSpeechComponent {
     @Override
     public String getHashedString() {
         StringBuilder builder = new StringBuilder();
-        builder.append(name);
         // add some uniqueness in case the appended contents are the same on two blocks of different length
         builder.append(contents.size());
         for (BlockComponent component:contents){

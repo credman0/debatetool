@@ -48,6 +48,7 @@ public class CardCutter extends CardViewer {
     private ObservableList<String> tagsList = FXCollections.checkedObservableList(FXCollections.observableArrayList(), String.class);
 
     public void init(){
+        cardTextArea.setContextMenuEnabled(false);
 
         WebConsoleListener.setDefaultListener(new WebConsoleListener(){
             @Override

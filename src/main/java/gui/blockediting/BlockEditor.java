@@ -96,7 +96,6 @@ public class BlockEditor {
                     public void run() {
                         viewerArea.setPrefHeight(-1);
                         Object heightO = contentView.getEngine().executeScript("document.getElementById('textarea').clientHeight");
-                        System.out.println(heightO);
                         if (heightO instanceof Integer) {
                             Integer heightI = (Integer) heightO;
                             double heightD = Double.valueOf(heightI) + 15;
