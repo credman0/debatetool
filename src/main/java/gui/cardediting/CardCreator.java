@@ -1,6 +1,7 @@
 package gui.cardediting;
 
 import core.Block;
+import core.HashIdentifiedSpeechComponent;
 import core.Speech;
 import gui.locationtree.LocationTreeItem;
 import gui.locationtree.LocationTreeItemContent;
@@ -36,6 +37,11 @@ public class CardCreator{
     private LocationTreeItem currentNode;
     private StringProperty currentPathString = new SimpleStringProperty("");
     private ComponentViewer componentViewer;
+    private LocationTreeItem openedNode;
+
+    public LocationTreeItem getOpenedNode(){
+        return openedNode;
+    }
     public void init(){
         componentViewer = new ComponentViewer();
         componentViewer.init(viewerPane);
@@ -57,12 +63,17 @@ public class CardCreator{
             if(mouseEvent.getClickCount() == 2) {
                 LocationTreeItem node = (LocationTreeItem) directoryView.getSelectionModel().getSelectedItem();
                 if (node != null && node.isLeaf()){
-                    componentViewer.open(node.getValue().getSpeechComponent().clone());
+                    open(node.getValue().getSpeechComponent().clone());
                 }
             }
         });
         currentPathLabel.textProperty().bind(currentPathString);
         viewerPane.setCenter(componentViewer.getPane());
+    }
+
+    private void open(HashIdentifiedSpeechComponent component){
+        componentViewer.open(component);
+        openedNode = currentNode;
     }
 
     private void populateDirectoryView(){
@@ -289,8 +300,9 @@ public class CardCreator{
             return;
         }
         componentViewer.save(currentNode);
-        // TODO don't need to do a full reload here
         currentNode.reloadChildren();
+        // TODO don't need to do a full reload here
+        openedNode.reloadChildren();
     }
 
     public void newCardAction(){

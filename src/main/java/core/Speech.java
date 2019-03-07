@@ -1,5 +1,7 @@
 package core;
 
+import io.iocontrollers.IOController;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,7 +26,7 @@ public class Speech extends HashIdentifiedSpeechComponent{
     public String getDisplayContent(){
         StringBuilder contentsBuilder = new StringBuilder();
         for (int i = 0; i < contents.size(); i++) {
-            contentsBuilder.append("<p>"+(i)+"</p>");
+            contentsBuilder.append("<p>"+(i+1)+"</p>");
             SpeechComponent component = contents.get(i);
             contentsBuilder.append(component.getDisplayContent());
         }
@@ -52,6 +54,14 @@ public class Speech extends HashIdentifiedSpeechComponent{
     public void addComponent(SpeechComponent component){
         contents.add(component);
         setModified(true);
+    }
+
+    public void reload() throws IOException {
+        // TODO more elegant fix than querying the database?
+        Speech newSpeech = (Speech) IOController.getIoController().getComponentIOManager().retrieveSpeechComponent(getHash());
+        loaded = false;
+        this.contents = newSpeech.contents;
+        load();
     }
 
     public int size(){

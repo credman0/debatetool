@@ -31,16 +31,17 @@ public class SpeechEditor {
     final static String WEBVIEW_HTML = SpeechEditor.class.getClassLoader().getResource("BlockViewer.html").toExternalForm();
 
     public void open(Speech speech) {
-        if (!speech.isLoaded()){
+        if (this.speech == null || speech.getHash()!=this.speech.getHash()) {
+            this.speech = speech;
             try {
-                speech.load();
+                // reloading speeches allows us to make sure the blocks didn't change
+                speech.reload();
             } catch (IOException e) {
                 e.printStackTrace();
             }
+            populateTree();
+            generateContents();
         }
-        this.speech = speech;
-        populateTree();
-        generateContents();
     }
 
     private void generateContents(){
@@ -49,7 +50,7 @@ public class SpeechEditor {
             SpeechComponent child = (SpeechComponent) ((TreeItem) speechTreeView.getRoot().getChildren().get(i)).getValue();
             VBox componentBox = new VBox();
             HBox tagLine = new HBox();
-            tagLine.getChildren().add(new Label(i + ")"));
+            tagLine.getChildren().add(new Label((i+1) + ")"));
             WebView speechContentView = new WebView();
             speechContentView.getEngine().load(WEBVIEW_HTML);
             speechContentView.getEngine().getLoadWorker().stateProperty().addListener(new ContentLoader(child,speechContentView));

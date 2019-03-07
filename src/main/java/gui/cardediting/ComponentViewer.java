@@ -24,6 +24,7 @@ public class ComponentViewer {
     private enum ViewType {BLOCK, CARD, SPEECH};
     private ViewType currentViewMode = ViewType.CARD;
     public void open(HashIdentifiedSpeechComponent component){
+
         if (component.getClass().isAssignableFrom(Card.class)){
             currentViewMode = ViewType.CARD;
             if (editMode){
