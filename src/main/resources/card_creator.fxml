@@ -26,6 +26,11 @@
                         <MenuItem text="Toggle Edit Mode" onAction="#toggleEdit" accelerator="SHORTCUT+E"/>
                     </items>
                 </Menu>
+                <Menu text="Preferences">
+                    <items>
+                        <MenuItem text="Settings" onAction="#showSettings"/>
+                    </items>
+                </Menu>
                 <Menu text="Help">
                     <items>
                         <MenuItem text="Search" disable="true"/>

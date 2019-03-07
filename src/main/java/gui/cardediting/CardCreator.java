@@ -3,6 +3,7 @@ package gui.cardediting;
 import core.Block;
 import core.HashIdentifiedSpeechComponent;
 import core.Speech;
+import gui.SettingsHandler;
 import gui.locationtree.LocationTreeItem;
 import gui.locationtree.LocationTreeItemContent;
 import gui.speechtools.SpeechComponentCellFactory;
@@ -332,5 +333,9 @@ public class CardCreator{
 
     public void toggleEdit(ActionEvent actionEvent) {
         componentViewer.togglePanes();
+    }
+
+    public void showSettings(ActionEvent actionEvent) {
+        SettingsHandler.showDialog();
     }
 }

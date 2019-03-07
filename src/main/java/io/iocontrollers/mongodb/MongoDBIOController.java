@@ -1,6 +1,7 @@
 package io.iocontrollers.mongodb;
 
 import com.mongodb.MongoClient;
+import gui.SettingsHandler;
 import io.componentio.ComponentIOManager;
 import io.componentio.mongodb.MongoDBComponentIOManager;
 import io.iocontrollers.IOController;
@@ -12,7 +13,7 @@ import io.structureio.mongodb.MongoDBStructureIOManager;
 import java.io.IOException;
 
 public class MongoDBIOController implements IOController {
-    MongoClient mongoClient = new MongoClient("127.0.0.1", 27017);
+    MongoClient mongoClient = new MongoClient((String) SettingsHandler.getSetting("mongod_ip"), 27017);
     private ComponentIOManager componentIOManager = new MongoDBComponentIOManager(mongoClient);
     private StructureIOManager structureIOManager = new MongoDBStructureIOManager(mongoClient);
     private OverlayIOManager overlayIOManager = new MongoDBOverlayIOManager(mongoClient);
