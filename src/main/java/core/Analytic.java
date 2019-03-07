@@ -2,7 +2,7 @@ package core;
 
 import java.io.IOException;
 
-public class Analytic extends SpeechComponent implements BlockComponent {
+public class Analytic extends SpeechComponent {
     private String content;
 
     public Analytic(String content) {
@@ -20,7 +20,7 @@ public class Analytic extends SpeechComponent implements BlockComponent {
     }
 
     @Override
-    public String getBlockStorageString() {
+    public String getStorageString() {
         return content;
     }
 

@@ -1,9 +1,10 @@
 package gui.cardediting;
 
 import core.Block;
-import gui.blockediting.BlockComponentCellFactory;
+import core.Speech;
 import gui.locationtree.LocationTreeItem;
 import gui.locationtree.LocationTreeItemContent;
+import gui.speechtools.SpeechComponentCellFactory;
 import io.iocontrollers.IOController;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
@@ -130,6 +131,23 @@ public class CardCreator{
                         });
                         localMenu.getItems().add(newBlockItem);
 
+                        MenuItem newSpeechItem = new MenuItem("New Speech");
+                        newSpeechItem.setOnAction(new EventHandler<ActionEvent>() {
+                            @Override
+                            public void handle(ActionEvent actionEvent) {
+                                Speech newSpeech = new Speech(getCurrentNode().getPath(),"New Speech");
+                                currentNode.getChildren().add(new LocationTreeItem(new LocationTreeItemContent(newSpeech)));
+                                IOController.getIoController().getStructureIOManager().addContent(getCurrentNode().getPath(), newSpeech.getHash());
+                                try {
+                                    IOController.getIoController().getComponentIOManager().storeSpeechComponent(newSpeech);
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+                                localMenu.hide();
+                            }
+                        });
+                        localMenu.getItems().add(newSpeechItem);
+
                         if (!cell.isEmpty()){
                             if (cell.getTreeTableRow().getTreeItem().getValue().getSpeechComponent()==null) {
                                 // Add directory actions only to directories
@@ -161,8 +179,8 @@ public class CardCreator{
                                     @Override
                                     public void handle(ActionEvent actionEvent) {
                                         localMenu.hide();
-                                        String name = JOptionPane.showInputDialog("Enter name");
                                         Block cellBlock = (Block) cell.getTreeTableRow().getTreeItem().getValue().getSpeechComponent();
+                                        String name = JOptionPane.showInputDialog("Enter name", cellBlock.getName());
                                         byte[] oldHash = cellBlock.getHash();
                                         cellBlock.setName(name);
                                         try {
@@ -189,7 +207,7 @@ public class CardCreator{
                         Dragboard db = cell.startDragAndDrop(TransferMode.COPY);
 
                         ClipboardContent content = new ClipboardContent();
-                        content.put(BlockComponentCellFactory.blockComponentFormat, cell.getTreeTableRow().getTreeItem().getValue().getSpeechComponent());
+                        content.put(SpeechComponentCellFactory.speechComponentFormat, cell.getTreeTableRow().getTreeItem().getValue().getSpeechComponent());
                         db.setContent(content);
                         mouseEvent.consume();
                     }

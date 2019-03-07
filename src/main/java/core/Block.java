@@ -1,8 +1,6 @@
 package core;
 
-import javafx.collections.FXCollections;
-import javafx.collections.ListChangeListener;
-import javafx.collections.ObservableList;
+import io.IOUtil;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -20,20 +18,14 @@ public class Block extends HashIdentifiedSpeechComponent {
 
     private List<String> path;
     protected String name;
-    protected ObservableList<BlockComponent> contents;
+    private List <SpeechComponent> contents;
     protected boolean loaded = false;
 
 
     public Block(List<String> path, String name){
         this.path = path;
         this.name = name;
-        contents = FXCollections.observableArrayList();
-        contents.addListener(new ListChangeListener<BlockComponent>() {
-            @Override
-            public void onChanged(Change<? extends BlockComponent> change) {
-                setModified(true);
-            }
-        });
+        contents = new ArrayList<>();
     }
 
     public Block(List<String> path){
@@ -44,10 +36,15 @@ public class Block extends HashIdentifiedSpeechComponent {
         StringBuilder contentsBuilder = new StringBuilder();
         for (int i = 0; i < contents.size(); i++) {
             contentsBuilder.append("<n>"+toAlphabet(i) + ") </n>");
-            BlockComponent component = contents.get(i);
+            SpeechComponent component = contents.get(i);
             contentsBuilder.append(component.getDisplayContent() + "<br>");
         }
         return contentsBuilder.toString();
+    }
+
+    @Override
+    public String getStorageString() {
+        return IOUtil.encodeString(getHash());
     }
 
     @Override
@@ -73,16 +70,18 @@ public class Block extends HashIdentifiedSpeechComponent {
         }
     }
 
-    public void addComponent(BlockComponent component){
+    public void addComponent(SpeechComponent component){
         contents.add(component);
+        setModified(true);
     }
 
-    public BlockComponent getComponent(int i){
+    public SpeechComponent getComponent(int i){
         return contents.get(i);
     }
 
     public void clearContents(){
         contents.clear();
+        setModified(true);
     }
 
     public int size(){
@@ -100,9 +99,9 @@ public class Block extends HashIdentifiedSpeechComponent {
         labelledLists[0] = new ArrayList<>(contents.size());
         labelledLists[1] = new ArrayList<>(contents.size());
         labelledLists[1].add(name);
-        for (BlockComponent component:contents){
+        for (SpeechComponent component:contents){
             labelledLists[0].add(component.getClass().getName());
-            labelledLists[1].add(component.getBlockStorageString());
+            labelledLists[1].add(component.getStorageString());
         }
         return labelledLists;
     }
@@ -111,13 +110,17 @@ public class Block extends HashIdentifiedSpeechComponent {
     public void importFromLabelledLists(ArrayList<String> labels, ArrayList<String> values) {
         this.name = values.get(0);
         for (int i = 0; i < labels.size(); i++){
-            contents.add(BlockComponent.importFromData(labels.get(i),values.get(i+1)));
+            try {
+                contents.add(SpeechComponent.importFromData(labels.get(i),values.get(i+1)));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
     @Override
     public void load() throws IOException {
-        for (BlockComponent component:contents){
+        for (SpeechComponent component:contents){
             component.load();
         }
         loaded = true;

@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class Card extends HashIdentifiedSpeechComponent implements BlockComponent {
+public class Card extends HashIdentifiedSpeechComponent {
     /**
      * "tags" here used in the debate sense
      */
@@ -238,7 +238,7 @@ public class Card extends HashIdentifiedSpeechComponent implements BlockComponen
     }
 
     @Override
-    public String getBlockStorageString() {
+    public String getStorageString() {
         return IOUtil.encodeString(getHash());
     }
 

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.TreeView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.control.ScrollPane?>
+<BorderPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:id="mainPane"
+            fx:controller="gui.speechtools.SpeechEditor"
+            prefHeight="760" prefWidth="1280">
+<center>
+    <SplitPane dividerPositions="0.3">
+        <TreeView fx:id="speechTreeView" showRoot="false"/>
+        <ScrollPane fx:id="scrollpane" hbarPolicy="NEVER" fitToWidth="true">
+            <GridPane fx:id="viewerArea"/>
+        </ScrollPane>
+    </SplitPane>
+</center>
+
+</BorderPane>

@@ -1,10 +1,10 @@
 package io;
 
-import com.mongodb.MongoClient;
 import core.Card;
 import core.Cite;
 import io.componentio.ComponentIOManager;
-import io.componentio.mongodb.MongoDBComponentIOManager;
+import io.iocontrollers.IOController;
+import io.iocontrollers.mongodb.MongoDBIOController;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -33,8 +33,8 @@ class MongoDBCardIOManagerTest {
 
     @Test
     public void writeReadTest (){
-        MongoClient mongoClient = new MongoClient();
-        try (ComponentIOManager manager = new MongoDBComponentIOManager(mongoClient)) {
+        try (IOController controller = new MongoDBIOController()) {
+            ComponentIOManager manager = controller.getComponentIOManager();
             manager.deleteSpeechComponent(card.getHash());
             manager.storeSpeechComponent(card);
             Card recoveredCard = (Card) manager.retrieveSpeechComponent(card.getHash());
@@ -48,8 +48,8 @@ class MongoDBCardIOManagerTest {
 
     @Test
     public void doubleWriteReadTest(){
-        MongoClient mongoClient = new MongoClient();
-        try (ComponentIOManager manager = new MongoDBComponentIOManager(mongoClient)) {
+        try (IOController controller = new MongoDBIOController()) {
+            ComponentIOManager manager = controller.getComponentIOManager();
             manager.deleteSpeechComponent(card.getHash());
             manager.deleteSpeechComponent(card2.getHash());
             manager.storeSpeechComponent(card);

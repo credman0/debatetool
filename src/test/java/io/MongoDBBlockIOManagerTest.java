@@ -1,13 +1,12 @@
 package io;
 
-import com.mongodb.MongoClient;
 import core.Analytic;
 import core.Block;
 import core.Card;
 import core.Cite;
 import io.componentio.ComponentIOManager;
-import io.componentio.mongodb.MongoDBComponentIOManager;
 import io.iocontrollers.IOController;
+import io.iocontrollers.mongodb.MongoDBIOController;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -47,8 +46,8 @@ class MongoDBBlockIOManagerTest {
 
     @Test
     public void writeReadTest (){
-        MongoClient mongoClient = new MongoClient();
-        try (ComponentIOManager manager = new MongoDBComponentIOManager(mongoClient)) {
+        try (IOController controller = new MongoDBIOController()) {
+            ComponentIOManager manager = controller.getComponentIOManager();
             manager.storeSpeechComponent(block);
             Block recovered = (Block) manager.retrieveSpeechComponent(block.getHash());
             recovered.load();

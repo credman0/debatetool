@@ -1,4 +1,4 @@
-package core;
+package main;
 
 import gui.cardediting.CardCreatorLauncher;
 import io.iocontrollers.IOController;

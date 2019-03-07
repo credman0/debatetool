@@ -1,10 +1,6 @@
-package gui.blockediting;
+package gui.speechtools;
 
-import core.Analytic;
-import core.Block;
-import core.Card;
-import core.SpeechComponent;
-import gui.speechtools.SpeechComponentCellFactory;
+import core.*;
 import io.iocontrollers.IOController;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
@@ -22,42 +18,42 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Set;
 
-public class BlockEditor {
+public class SpeechEditor {
     @FXML protected
     ScrollPane scrollpane;
     @FXML protected
     BorderPane mainPane;
     @FXML protected
-    TreeView blockTreeView;
+    TreeView speechTreeView;
     @FXML protected
     GridPane viewerArea;
-    Block block;
-    final static String WEBVIEW_HTML = BlockEditor.class.getClassLoader().getResource("BlockViewer.html").toExternalForm();
+    private Speech speech;
+    final static String WEBVIEW_HTML = SpeechEditor.class.getClassLoader().getResource("BlockViewer.html").toExternalForm();
 
-    public void open(Block block) {
-        if (!block.isLoaded()){
+    public void open(Speech speech) {
+        if (!speech.isLoaded()){
             try {
-                block.load();
+                speech.load();
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
-        this.block = block;
+        this.speech = speech;
         populateTree();
         generateContents();
     }
 
     private void generateContents(){
         viewerArea.getChildren().clear();
-        for (int i = 0; i < blockTreeView.getRoot().getChildren().size(); i++){
-            SpeechComponent child = (SpeechComponent) ((TreeItem) blockTreeView.getRoot().getChildren().get(i)).getValue();
+        for (int i = 0; i < speechTreeView.getRoot().getChildren().size(); i++){
+            SpeechComponent child = (SpeechComponent) ((TreeItem) speechTreeView.getRoot().getChildren().get(i)).getValue();
             VBox componentBox = new VBox();
             HBox tagLine = new HBox();
-            tagLine.getChildren().add(new Label(Block.toAlphabet(i) + ")"));
-            WebView blockContentsView = new WebView();
-            blockContentsView.getEngine().load(WEBVIEW_HTML);
-            blockContentsView.getEngine().getLoadWorker().stateProperty().addListener(new ContentLoader(child,blockContentsView));
-            blockContentsView.setDisable(true);
+            tagLine.getChildren().add(new Label(i + ")"));
+            WebView speechContentView = new WebView();
+            speechContentView.getEngine().load(WEBVIEW_HTML);
+            speechContentView.getEngine().getLoadWorker().stateProperty().addListener(new ContentLoader(child,speechContentView));
+            speechContentView.setDisable(true);
             if (child.getClass().isAssignableFrom(Card.class)){
                 ComboBox<String> tagsBox = new ComboBox<>();
                 tagsBox.setItems(FXCollections.observableList(((Card) child).getTags()));
@@ -65,27 +61,27 @@ public class BlockEditor {
             }
             componentBox.getChildren().add(tagLine);
             // http://stackoverflow.com/questions/11206942/how-to-hide-scrollbars-in-the-javafx-webview
-            blockContentsView.getChildrenUnmodifiable().addListener(new ListChangeListener<Node>() {
-                @Override public void onChanged(ListChangeListener.Change<? extends Node> change) {
-                    Set<Node> scrolls = blockContentsView.lookupAll(".scroll-bar");
+            speechContentView.getChildrenUnmodifiable().addListener(new ListChangeListener<Node>() {
+                @Override public void onChanged(Change<? extends Node> change) {
+                    Set<Node> scrolls = speechContentView.lookupAll(".scroll-bar");
                     for (Node scroll : scrolls) {
                         scroll.setVisible(false);
                     }
                 }
             });
-            componentBox.getChildren().add(blockContentsView);
+            componentBox.getChildren().add(speechContentView);
             viewerArea.add(componentBox,0,i);
         }
     }
 
     public void save() {
-        List<TreeItem> children = blockTreeView.getRoot().getChildren();
-        block.clearContents();
+        List<TreeItem> children = speechTreeView.getRoot().getChildren();
+        speech.clearContents();
         for (TreeItem child:children){
-            block.addComponent((SpeechComponent) child.getValue());
+            speech.addComponent((SpeechComponent) child.getValue());
         }
         try {
-            IOController.getIoController().getComponentIOManager().storeSpeechComponent(block);
+            IOController.getIoController().getComponentIOManager().storeSpeechComponent(speech);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -130,11 +126,11 @@ public class BlockEditor {
     }
 
     public void init() {
-        blockTreeView.setCellFactory(new SpeechComponentCellFactory(true, Card.class, Analytic.class));
+        speechTreeView.setCellFactory(new SpeechComponentCellFactory(false, Card.class, Block.class, Analytic.class));
     }
 
     private void setRoot(TreeItem<SpeechComponent> root){
-        blockTreeView.setRoot(root);
+        speechTreeView.setRoot(root);
         root.getChildren().addListener(new ListChangeListener<TreeItem<SpeechComponent>>() {
             @Override
             public void onChanged(Change<? extends TreeItem<SpeechComponent>> change) {
@@ -146,8 +142,9 @@ public class BlockEditor {
 
     private void populateTree(){
         TreeItem<SpeechComponent> root = new TreeItem<>();
-        for (int i = 0; i < block.size(); i++){
-            root.getChildren().add(new TreeItem<>(block.getComponent(i)));
+        for (int i = 0; i < speech.size(); i++){
+            SpeechComponent component = speech.getComponent(i);
+            root.getChildren().add(SpeechComponentCellFactory.createTreeItem(component));
         }
         setRoot(root);
     }

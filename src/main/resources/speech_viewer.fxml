@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.web.WebView?>
+<BorderPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:id="mainPane"
+            fx:controller="gui.speechtools.SpeechViewer"
+            prefHeight="760" prefWidth="1280">
+<center>
+    <ScrollPane fx:id="scrollpane" hbarPolicy="NEVER" fitToWidth="true">
+        <WebView fx:id="webview"/>
+    </ScrollPane>
+</center>
+
+</BorderPane>
