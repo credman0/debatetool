@@ -260,14 +260,14 @@ public class CardCutter extends CardViewer {
         setText(card.getText());
 
         highlightingOverlayList.clear();
-        highlightingOverlayList.addAll(IOController.getIoController().getOverlayIOManager().getOverlays(getCurrentHash(), "Highlight"));
+        highlightingOverlayList.addAll(card.getHighlighting());
         if (highlightingOverlayList.isEmpty()){
             highlightingOverlayList.add(new CardOverlay("Highlighting"));
         }
         highlightChoice.getSelectionModel().select(0);
 
         underliningOverlayList.clear();
-        underliningOverlayList.addAll(IOController.getIoController().getOverlayIOManager().getOverlays(getCurrentHash(), "Underline"));
+        underliningOverlayList.addAll(card.getUnderlining());
         if (underliningOverlayList.isEmpty()){
             underliningOverlayList.add(new CardOverlay("Underlining"));
         }

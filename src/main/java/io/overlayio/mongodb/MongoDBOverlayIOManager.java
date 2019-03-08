@@ -1,6 +1,7 @@
 package io.overlayio.mongodb;
 
 import com.mongodb.MongoClient;
+import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
@@ -14,6 +15,7 @@ import org.bson.types.Binary;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class MongoDBOverlayIOManager implements OverlayIOManager {
@@ -29,8 +31,13 @@ public class MongoDBOverlayIOManager implements OverlayIOManager {
     }
 
     @Override
-    public List<CardOverlay> getOverlays(byte[] cardHash, String type) {
-        return fromDocument(collection.find(Filters.and(Filters.eq("Hash", cardHash),Filters.eq("Type", type))).first());
+    public HashMap<String,List<CardOverlay>> getOverlays(byte[] cardHash) {
+        FindIterable <Document> documents =  collection.find(Filters.eq("Hash", cardHash));
+        HashMap<String,List<CardOverlay>> overlays = new HashMap<>();
+        for (Document document:documents){
+            overlays.put(document.getString("Type"),fromDocument(document));
+        }
+        return overlays;
     }
 
     @Override

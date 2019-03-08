@@ -10,6 +10,7 @@ import javax.imageio.IIOException;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 
 public class Card extends HashIdentifiedSpeechComponent {
@@ -23,6 +24,23 @@ public class Card extends HashIdentifiedSpeechComponent {
     private int preferredHighlightIndex = 0;
     private int preferredUnderlineIndex = 0;
     private CardOverlay loadedOverlay = null;
+
+    private List<CardOverlay> underlining;
+    private List<CardOverlay> highlighting;
+
+    public List<CardOverlay> getUnderlining() {
+        if (underlining==null){
+            loadOverlay();
+        }
+        return underlining;
+    }
+
+    public List<CardOverlay> getHighlighting() {
+        if (highlighting==null){
+            loadOverlay();
+        }
+        return highlighting;
+    }
 
     public long getTimeStamp() {
         return timeStamp;
@@ -213,19 +231,30 @@ public class Card extends HashIdentifiedSpeechComponent {
             throw new IllegalStateException("Attempted to display card before loading");
         }
         if (loadedOverlay==null){
-            List<CardOverlay> underlining = IOController.getIoController().getOverlayIOManager().getOverlays(getHash(), "Underline");
-            List<CardOverlay> highlighting = IOController.getIoController().getOverlayIOManager().getOverlays(getHash(), "Highlight");
-            CardOverlay underline = null;
-            CardOverlay highlight = null;
-            if (!underlining.isEmpty()){
-                underline = underlining.get(getPreferredUnderlineIndex());
-            }
-            if (!highlighting.isEmpty()){
-                highlight = highlighting.get(getPreferredHighlightIndex());
-            }
-            loadedOverlay = CardOverlay.combineOverlays(underline, highlight);
+            loadOverlay();
         }
         return getCite().getDisplayContent()+"<br>"+loadedOverlay.generateHTML(getText());
+    }
+
+    private void loadOverlay(){
+        HashMap<String, List<CardOverlay>> overlayMap = IOController.getIoController().getOverlayIOManager().getOverlays(getHash());
+        underlining = overlayMap.get("Underline");
+        highlighting = overlayMap.get("Highlight");
+        if (underlining == null){
+            underlining = new ArrayList<>();
+        }
+        if (highlighting == null){
+            highlighting = new ArrayList<>();
+        }
+        CardOverlay underline = null;
+        CardOverlay highlight = null;
+        if (!underlining.isEmpty()){
+            underline = underlining.get(getPreferredUnderlineIndex());
+        }
+        if (!highlighting.isEmpty()){
+            highlight = highlighting.get(getPreferredHighlightIndex());
+        }
+        loadedOverlay = CardOverlay.combineOverlays(underline, highlight);
     }
 
     @Override

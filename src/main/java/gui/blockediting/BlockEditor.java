@@ -82,7 +82,7 @@ public class BlockEditor {
 
                 ComboBox<CardOverlay> underlinesBox = new ComboBox<>();
                 ObservableList<CardOverlay> underliningOverlayList = FXCollections.observableArrayList();
-                underliningOverlayList.addAll(IOController.getIoController().getOverlayIOManager().getOverlays(((Card) child).getHash(), "Underline"));
+                underliningOverlayList.addAll(((Card) child).getUnderlining());
                 underlinesBox.setItems(FXCollections.observableList((underliningOverlayList)));
                 overlaySelectors.getChildren().add(underlinesBox);
                 underlinesBox.getSelectionModel().select(((Card) child).getPreferredUnderlineIndex());
@@ -97,7 +97,7 @@ public class BlockEditor {
 
                 ComboBox<CardOverlay> highlightsBox = new ComboBox<>();
                 ObservableList<CardOverlay> highlightingOverlaysList = FXCollections.observableArrayList();
-                highlightingOverlaysList.addAll(IOController.getIoController().getOverlayIOManager().getOverlays(((Card) child).getHash(), "Highlight"));
+                highlightingOverlaysList.addAll(((Card) child).getHighlighting());
                 highlightsBox.setItems(FXCollections.observableList((highlightingOverlaysList)));
                 overlaySelectors.getChildren().add(highlightsBox);
                 highlightsBox.getSelectionModel().select(((Card) child).getPreferredHighlightIndex());
