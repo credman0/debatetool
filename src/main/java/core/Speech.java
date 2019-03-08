@@ -92,6 +92,11 @@ public class Speech extends HashIdentifiedSpeechComponent{
         for (SpeechComponent component:contents){
             labelledLists[0].add(component.getClass().getName());
             labelledLists[1].add(component.getStorageString());
+            String state = component.getStateString();
+            if (state!=null){
+                labelledLists[0].add("STATE");
+                labelledLists[1].add(state);
+            }
         }
         return labelledLists;
     }
@@ -102,6 +107,11 @@ public class Speech extends HashIdentifiedSpeechComponent{
         for (int i = 0; i < labels.size(); i++){
             try {
                 contents.add(SpeechComponent.importFromData(labels.get(i),values.get(i+1)));
+                // check for optional state string
+                if (i < labels.size()-1 && labels.get(i+1).equals("STATE")){
+                    contents.get(contents.size()-1).restoreState(values.get(i+2));
+                    i++;
+                }
             } catch (IOException e) {
                 e.printStackTrace();
             }

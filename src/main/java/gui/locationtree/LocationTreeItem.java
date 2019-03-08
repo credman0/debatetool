@@ -65,7 +65,9 @@ public class LocationTreeItem extends TreeItem<LocationTreeItemContent> {
     }
 
     public List<String> getPath(){
-        if (getParent().getParent()==null){
+        if (getParent() == null){
+            return new ArrayList<>();
+        }else if (getParent().getParent()==null){
             List<String> path = new ArrayList<>();
             path.add(getValue().toString());
             return path;

@@ -7,6 +7,7 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
+import javafx.collections.ObservableList;
 import javafx.concurrent.Worker;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
@@ -56,15 +57,59 @@ public class SpeechEditor {
             HBox tagLine = new HBox();
             tagLine.getChildren().add(new Label((i+1) + ")"));
             WebView speechContentView = new WebView();
-            speechContentView.getEngine().load(WEBVIEW_HTML);
             speechContentView.getEngine().getLoadWorker().stateProperty().addListener(new ContentLoader(child,speechContentView));
+            speechContentView.getEngine().load(WEBVIEW_HTML);
             speechContentView.setDisable(true);
             if (child.getClass().isAssignableFrom(Card.class)){
                 ComboBox<String> tagsBox = new ComboBox<>();
                 tagsBox.setItems(FXCollections.observableList(((Card) child).getTags()));
                 tagLine.getChildren().add(tagsBox);
+                tagsBox.getSelectionModel().select(((Card) child).getTagIndex());
+                tagsBox.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() {
+                    @Override
+                    public void changed(ObservableValue<? extends Number> observableValue, Number number, Number t1) {
+                        ((Card) child).setTagIndex((Integer) t1);
+                    }
+                });
+                componentBox.getChildren().add(tagLine);
+
+                // TODO database access optimization
+
+                HBox overlaySelectors = new HBox();
+
+                ComboBox<CardOverlay> underlinesBox = new ComboBox<>();
+                ObservableList<CardOverlay> underliningOverlayList = FXCollections.observableArrayList();
+                underliningOverlayList.addAll(IOController.getIoController().getOverlayIOManager().getOverlays(((Card) child).getHash(), "Underline"));
+                underlinesBox.setItems(FXCollections.observableList((underliningOverlayList)));
+                overlaySelectors.getChildren().add(underlinesBox);
+                underlinesBox.getSelectionModel().select(((Card) child).getPreferredUnderlineIndex());
+                underlinesBox.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() {
+                    @Override
+                    public void changed(ObservableValue<? extends Number> observableValue, Number number, Number t1) {
+                        ((Card) child).setPreferredUnderlineIndex((Integer) t1);
+                        speechContentView.getEngine().getLoadWorker().stateProperty().addListener(new ContentLoader(child,speechContentView));
+                        speechContentView.getEngine().load(WEBVIEW_HTML);
+                    }
+                });
+
+                ComboBox<CardOverlay> highlightsBox = new ComboBox<>();
+                ObservableList<CardOverlay> highlightingOverlaysList = FXCollections.observableArrayList();
+                highlightingOverlaysList.addAll(IOController.getIoController().getOverlayIOManager().getOverlays(((Card) child).getHash(), "Highlight"));
+                highlightsBox.setItems(FXCollections.observableList((highlightingOverlaysList)));
+                overlaySelectors.getChildren().add(highlightsBox);
+                highlightsBox.getSelectionModel().select(((Card) child).getPreferredHighlightIndex());
+                highlightsBox.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() {
+                    @Override
+                    public void changed(ObservableValue<? extends Number> observableValue, Number number, Number t1) {
+                        ((Card) child).setPreferredHighlightIndex((Integer) t1);
+                        speechContentView.getEngine().getLoadWorker().stateProperty().addListener(new ContentLoader(child,speechContentView));
+                        speechContentView.getEngine().load(WEBVIEW_HTML);
+                    }
+                });
+                componentBox.getChildren().add(overlaySelectors);
+            }else {
+                componentBox.getChildren().add(tagLine);
             }
-            componentBox.getChildren().add(tagLine);
             // http://stackoverflow.com/questions/11206942/how-to-hide-scrollbars-in-the-javafx-webview
             speechContentView.getChildrenUnmodifiable().addListener(new ListChangeListener<Node>() {
                 @Override public void onChanged(Change<? extends Node> change) {
