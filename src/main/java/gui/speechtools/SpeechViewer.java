@@ -39,6 +39,7 @@ public class SpeechViewer {
 
     private void generateContents(){
         String contents = speech.getDisplayContent();
+        webview.getEngine().load(WEBVIEW_HTML);
         webview.getEngine().getLoadWorker().stateProperty().addListener(new ContentLoader(contents));
         // http://stackoverflow.com/questions/11206942/how-to-hide-scrollbars-in-the-javafx-webview
         webview.getChildrenUnmodifiable().addListener(new ListChangeListener<Node>() {

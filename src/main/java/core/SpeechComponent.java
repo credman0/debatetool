@@ -11,6 +11,15 @@ public abstract class SpeechComponent implements Serializable {
     public abstract boolean isLoaded();
     public abstract String getDisplayContent();
     public abstract String getStorageString();
+
+    /**
+     * A string containing additional information about the special state of an object, IE current tag/overlays
+     * @return
+     */
+    public abstract String getStateString();
+    public void restoreState(String s){
+        throw new UnsupportedOperationException();
+    }
     public abstract SpeechComponent clone();
     public abstract String getLabel();
 

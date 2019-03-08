@@ -244,6 +244,19 @@ public class Card extends HashIdentifiedSpeechComponent {
     }
 
     @Override
+    public String getStateString() {
+        return getTagIndex() + ":" + getPreferredUnderlineIndex() + ":" + getPreferredHighlightIndex();
+    }
+
+    @Override
+    public void restoreState(String stateString){
+        String[] states = stateString.split(":");
+        tagIndex = Integer.parseInt(states[0]);
+        preferredUnderlineIndex = Integer.parseInt(states[1]);
+        preferredHighlightIndex = Integer.parseInt(states[2]);
+    }
+
+    @Override
     public void load() throws IOException {
         Card self = (Card) IOController.getIoController().getComponentIOManager().retrieveSpeechComponent(hash);
         // TODO maybe a better way to import this information

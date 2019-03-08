@@ -44,6 +44,10 @@ public class SpeechEditor {
         }
     }
 
+    public Speech getSpeech(){
+        return speech;
+    }
+
     private void generateContents(){
         viewerArea.getChildren().clear();
         for (int i = 0; i < speechTreeView.getRoot().getChildren().size(); i++){

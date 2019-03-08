@@ -62,6 +62,13 @@ public class BlockEditor {
                 ComboBox<String> tagsBox = new ComboBox<>();
                 tagsBox.setItems(FXCollections.observableList(((Card) child).getTags()));
                 tagLine.getChildren().add(tagsBox);
+                tagsBox.getSelectionModel().select(((Card) child).getTagIndex());
+                tagsBox.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() {
+                    @Override
+                    public void changed(ObservableValue<? extends Number> observableValue, Number number, Number t1) {
+                        ((Card) child).setTagIndex((Integer) t1);
+                    }
+                });
             }
             componentBox.getChildren().add(tagLine);
             // http://stackoverflow.com/questions/11206942/how-to-hide-scrollbars-in-the-javafx-webview

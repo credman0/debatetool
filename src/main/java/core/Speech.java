@@ -26,7 +26,7 @@ public class Speech extends HashIdentifiedSpeechComponent{
     public String getDisplayContent(){
         StringBuilder contentsBuilder = new StringBuilder();
         for (int i = 0; i < contents.size(); i++) {
-            contentsBuilder.append("<p>"+(i+1)+"</p>");
+            contentsBuilder.append("<p><n>"+(i+1)+"</n></p>");
             SpeechComponent component = contents.get(i);
             contentsBuilder.append(component.getDisplayContent());
         }
@@ -35,6 +35,11 @@ public class Speech extends HashIdentifiedSpeechComponent{
 
     @Override
     public String getStorageString() {
+        return null;
+    }
+
+    @Override
+    public String getStateString() {
         return null;
     }
 

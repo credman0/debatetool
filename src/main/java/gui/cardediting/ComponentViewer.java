@@ -7,6 +7,7 @@ import core.Speech;
 import gui.blockediting.BlockEditor;
 import gui.locationtree.LocationTreeItem;
 import gui.speechtools.SpeechEditor;
+import gui.speechtools.SpeechViewer;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
@@ -17,7 +18,7 @@ public class ComponentViewer {
     private CardEditor cardEditor;
     private CardCutter cardCutter;
     private SpeechEditor speechEditor;
-    private CardViewer cardViewer;
+    private SpeechViewer speechViewer;
     private BorderPane viewerPane;
     private BlockEditor blockEditor;
     private boolean editMode;
@@ -37,7 +38,11 @@ public class ComponentViewer {
             blockEditor.open((Block) component);
         }else if (component.getClass().isAssignableFrom(Speech.class)){
             currentViewMode = ViewType.SPEECH;
-            speechEditor.open((Speech) component);
+            if (editMode) {
+                speechEditor.open((Speech) component);
+            }else{
+                speechViewer.open((Speech) component);
+            }
         }else{
             throw new IllegalArgumentException("Unrecognized type: " + component.getClass());
         }
@@ -67,7 +72,10 @@ public class ComponentViewer {
             speechEditor = speechEditLoader.getController();
             speechEditor.init();
 
-            cardViewer = cardEditor;
+            FXMLLoader speechViewLoader = new FXMLLoader(getClass().getClassLoader().getResource("speech_viewer.fxml"));
+            speechViewLoader.load();
+            speechViewer = speechViewLoader.getController();
+
             editMode = true;
         } catch (IOException e) {
             e.printStackTrace();
@@ -85,7 +93,12 @@ public class ComponentViewer {
                     return cardCutter.getPane();
                 }
             case SPEECH:
-                return speechEditor.getPane();
+
+                if (editMode) {
+                    return speechEditor.getPane();
+                } else {
+                    return speechViewer.getPane();
+                }
 
             default:
                 throw new IllegalStateException("Invalid View Mode");
@@ -126,16 +139,19 @@ public class ComponentViewer {
 
             case CARD:
                 if (editMode) {
-                    cardViewer = cardEditor;
                     viewerPane.setCenter(cardEditor.getPane());
                 } else {
-                    cardViewer = cardCutter;
                     viewerPane.setCenter(cardCutter.getPane());
                 }
                 break;
 
             case SPEECH:
-                viewerPane.setCenter(speechEditor.getPane());
+                if (editMode) {
+                    viewerPane.setCenter(speechEditor.getPane());
+                } else {
+                    viewerPane.setCenter(speechViewer.getPane());
+                }
+
                 break;
 
             default:
@@ -145,13 +161,18 @@ public class ComponentViewer {
     }
 
     public void togglePanes() {
-        if (editMode) {
-            cardEditor.swapTo(cardCutter);
-            editMode = false;
-        } else {
-            cardCutter.swapTo(cardEditor);
-            editMode = true;
+        if (currentViewMode==ViewType.CARD) {
+            if (editMode) {
+                cardEditor.swapTo(cardCutter);
+            } else {
+                cardCutter.swapTo(cardEditor);
+            }
+        }else if (currentViewMode==ViewType.SPEECH) {
+            if (editMode){
+                speechViewer.open(speechEditor.getSpeech());
+            }
         }
+        editMode = !editMode;
         updateViewerPane();
     }
 

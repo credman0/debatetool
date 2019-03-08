@@ -37,6 +37,9 @@ public class Block extends HashIdentifiedSpeechComponent {
         for (int i = 0; i < contents.size(); i++) {
             contentsBuilder.append("<n>"+toAlphabet(i) + ") </n>");
             SpeechComponent component = contents.get(i);
+            if (component.getClass().isAssignableFrom(Card.class)){
+                contentsBuilder.append("<n>"+((Card) component).getActiveTag() + "</n><br>");
+            }
             contentsBuilder.append(component.getDisplayContent() + "<br>");
         }
         return contentsBuilder.toString();
@@ -45,6 +48,11 @@ public class Block extends HashIdentifiedSpeechComponent {
     @Override
     public String getStorageString() {
         return IOUtil.encodeString(getHash());
+    }
+
+    @Override
+    public String getStateString() {
+        return null;
     }
 
     @Override
@@ -105,6 +113,11 @@ public class Block extends HashIdentifiedSpeechComponent {
         for (SpeechComponent component:contents){
             labelledLists[0].add(component.getClass().getName());
             labelledLists[1].add(component.getStorageString());
+            String state = component.getStateString();
+            if (state!=null){
+                labelledLists[0].add("STATE");
+                labelledLists[1].add(state);
+            }
         }
         return labelledLists;
     }
@@ -115,6 +128,11 @@ public class Block extends HashIdentifiedSpeechComponent {
         for (int i = 0; i < labels.size(); i++){
             try {
                 contents.add(SpeechComponent.importFromData(labels.get(i),values.get(i+1)));
+                // check for optional state string
+                if (i < labels.size()-1 && labels.get(i+1).equals("STATE")){
+                    contents.get(contents.size()-1).restoreState(values.get(i+2));
+                    i++;
+                }
             } catch (IOException e) {
                 e.printStackTrace();
             }

@@ -25,6 +25,11 @@ public class Analytic extends SpeechComponent {
     }
 
     @Override
+    public String getStateString() {
+        return null;
+    }
+
+    @Override
     public void load() throws IOException {
         // nothing to do
     }
