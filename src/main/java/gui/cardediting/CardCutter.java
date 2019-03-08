@@ -88,7 +88,23 @@ public class CardCutter extends CardViewer {
                     }
                     tagChoice.getItems().add(tagChoice.getItems().size()-1, trialName);
                     tagChoice.getSelectionModel().select(tagChoice.getItems().size()-2);
+                    tagChoice.getEditor().requestFocus();
+                    tagChoice.getEditor().selectAll();
                     return;
+                }else if (o==null || t1==null){
+                    return;
+                } else {
+                    if (o.equals(t1)){
+                        return;
+                    }
+                    if (tagChoice.getItems().contains(t1)){
+                        // TODO probably do something other than just wordlessly reject duplicate tags
+                        return;
+                    }
+
+                    int index = tagChoice.getItems().indexOf(o);
+                    tagChoice.getItems().set(index, t1);
+
                 }
             }
         });

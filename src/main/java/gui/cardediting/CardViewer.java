@@ -39,7 +39,7 @@ public abstract class CardViewer {
     }
 
     public Card getCard(){
-        if (card==null){
+            if (card==null){
             card = new Card(new Cite("","",""),"");
         }
         return card;
