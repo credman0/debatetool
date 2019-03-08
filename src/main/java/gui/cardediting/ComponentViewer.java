@@ -170,6 +170,8 @@ public class ComponentViewer {
         }else if (currentViewMode==ViewType.SPEECH) {
             if (editMode){
                 speechViewer.open(speechEditor.getSpeech());
+            }else{
+                speechEditor.open(speechViewer.getSpeech());
             }
         }
         editMode = !editMode;

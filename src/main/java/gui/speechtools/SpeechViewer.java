@@ -53,6 +53,10 @@ public class SpeechViewer {
         });
     }
 
+    public Speech getSpeech() {
+        return speech;
+    }
+
     private class ContentLoader implements ChangeListener<Worker.State>{
 
         private String content;

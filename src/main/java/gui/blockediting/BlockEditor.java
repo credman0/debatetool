@@ -12,12 +12,14 @@ import javafx.collections.ObservableList;
 import javafx.concurrent.Worker;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
-import javafx.scene.control.*;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.control.TreeItem;
+import javafx.scene.control.TreeView;
 import javafx.scene.layout.*;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
-import javafx.scene.text.TextFlow;
 import javafx.scene.web.WebView;
 
 import java.io.IOException;
@@ -57,7 +59,7 @@ public class BlockEditor {
             HBox tagLine = new HBox();;
             Text label = new Text(Block.toAlphabet(i) + ")");
             label.setFont(Font.font("Arial", FontWeight.BOLD, 20));
-            tagLine.getChildren().add(new TextFlow(label));
+            tagLine.getChildren().add(label);
             WebView blockContentsView = new WebView();
             blockContentsView.getEngine().getLoadWorker().stateProperty().addListener(new ContentLoader(child,blockContentsView));
             blockContentsView.getEngine().load(WEBVIEW_HTML);

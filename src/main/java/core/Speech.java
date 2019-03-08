@@ -26,8 +26,12 @@ public class Speech extends HashIdentifiedSpeechComponent{
     public String getDisplayContent(){
         StringBuilder contentsBuilder = new StringBuilder();
         for (int i = 0; i < contents.size(); i++) {
-            contentsBuilder.append("<p><n>"+(i+1)+")</n></p>");
+            contentsBuilder.append("<p><n>"+(i+1)+") </n>");
             SpeechComponent component = contents.get(i);
+            if (component.getClass().isAssignableFrom(Card.class)){
+                contentsBuilder.append("<n>"+((Card) component).getActiveTag() + "</n>");
+            }
+            contentsBuilder.append("</p>");
             contentsBuilder.append(component.getDisplayContent());
         }
         return contentsBuilder.toString();
