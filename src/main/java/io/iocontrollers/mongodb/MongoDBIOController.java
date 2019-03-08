@@ -13,7 +13,7 @@ import io.structureio.mongodb.MongoDBStructureIOManager;
 import java.io.IOException;
 
 public class MongoDBIOController implements IOController {
-    MongoClient mongoClient = new MongoClient((String) SettingsHandler.getSetting("mongod_ip"), 27017);
+    MongoClient mongoClient = new MongoClient(SettingsHandler.getSetting("mongod_ip"), Integer.parseInt(SettingsHandler.getSetting("mongod_port")));
     private ComponentIOManager componentIOManager = new MongoDBComponentIOManager(mongoClient);
     private StructureIOManager structureIOManager = new MongoDBStructureIOManager(mongoClient);
     private OverlayIOManager overlayIOManager = new MongoDBOverlayIOManager(mongoClient);

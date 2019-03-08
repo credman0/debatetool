@@ -14,6 +14,9 @@ import java.util.Properties;
 
 public class SettingsHandler {
     private static StringProperty mongoIP = new SimpleStringProperty("");
+    private static final String DEFAULT_MONGO_IP = "127.0.0.1";
+    private static StringProperty mongoPort = new SimpleStringProperty("");
+    private static final String DEFAULT_MONGO_PORT = "27017";
     private static Properties properties = new Properties();
     private static PreferencesFx preferencesFx;
     static{
@@ -25,20 +28,31 @@ public class SettingsHandler {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        String portString = properties.getProperty("mongod_port");
+        if (portString == null){
+            // TODO standardize default properties somewhere
+            mongoPort.setValue(DEFAULT_MONGO_PORT);
+            properties.setProperty("mongod_port", DEFAULT_MONGO_PORT);
+        }else{
+            mongoPort.setValue(portString);
+        }
+
         String ipString = properties.getProperty("mongod_ip");
         if (ipString == null){
             // TODO standardize default properties somewhere
-            mongoIP.setValue("127.0.0.1");
-            properties.setProperty("mongod_ip", "127.0.0.1");
+            mongoIP.setValue(DEFAULT_MONGO_IP);
+            properties.setProperty("mongod_ip", DEFAULT_MONGO_IP);
         }else{
             mongoIP.setValue(ipString);
         }
 
         preferencesFx =
                 PreferencesFx.of(SettingsHandler.class,
-                        Category.of("Category Title",
-                                Group.of("Group Title",
-                                        Setting.of("Setting Title", mongoIP)
+                        Category.of("Mongo Database Settings",
+                                Group.of("Server",
+                                        Setting.of("Mongodb IP", mongoIP),
+                                        Setting.of("Mongodb Port", mongoPort)
                                 )
                         )
                 ).addEventHandler(PreferencesFxEvent.EVENT_PREFERENCES_SAVED, new EventHandler<PreferencesFxEvent>() {
@@ -56,7 +70,7 @@ public class SettingsHandler {
         preferencesFx.show();
     }
 
-    public static Object getSetting(String name){
+    public static String getSetting(String name){
         return properties.getProperty(name);
     }
 
@@ -65,6 +79,11 @@ public class SettingsHandler {
         String mongoIPProperty = properties.getProperty("mongod_ip");
         if (mongoIPProperty==null || !mongoIP.getValue().equals(mongoIPProperty)) {
             properties.put("mongod_ip", mongoIP.getValue());
+            changed = true;
+        }
+        String mongoPortProperty = properties.getProperty("mongod_port");
+        if (mongoPortProperty==null || !mongoPort.getValue().equals(mongoIPProperty)) {
+            properties.put("mongod_port", mongoPort.getValue());
             changed = true;
         }
         if (changed) {
