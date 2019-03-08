@@ -67,6 +67,11 @@ public class SpeechComponentCellFactory implements Callback<TreeView<SpeechCompo
 
     private void dragDone(DragEvent event, TreeCell<SpeechComponent> cell) {
         if (event.isAccepted()) {
+            /*
+            So for some reason the first time you call this something is null that shouldn't be and everything breaks,
+            so I call it once first because I don't have the energy to find out what javafx is screwing up this time.
+            */
+            cell.getTreeItem().getParent();
             cell.getTreeItem().getParent().getChildren().remove(cell.getTreeItem());
         }
         event.consume();
