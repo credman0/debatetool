@@ -3,6 +3,7 @@ package gui.cardediting;
 import core.Block;
 import core.HashIdentifiedSpeechComponent;
 import core.Speech;
+import core.SpeechComponent;
 import gui.SettingsHandler;
 import gui.locationtree.LocationTreeItem;
 import gui.locationtree.LocationTreeItemContent;
@@ -14,6 +15,7 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -22,6 +24,7 @@ import javafx.scene.input.*;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import javafx.util.Callback;
+import scripting.JythonScripter;
 
 import javax.swing.*;
 import java.io.IOException;
@@ -32,6 +35,7 @@ import java.util.Date;
 import java.util.List;
 
 public class CardCreator{
+    @FXML private Menu scriptsMenu;
     @FXML protected BorderPane viewerPane;
     @FXML protected Label currentPathLabel;
     @FXML protected TreeTableView directoryView;
@@ -39,6 +43,7 @@ public class CardCreator{
     private StringProperty currentPathString = new SimpleStringProperty("");
     private ComponentViewer componentViewer;
     private LocationTreeItem openedNode;
+    private SpeechComponent openedComponent;
 
     public LocationTreeItem getOpenedNode(){
         return openedNode;
@@ -70,11 +75,18 @@ public class CardCreator{
         });
         currentPathLabel.textProperty().bind(currentPathString);
         viewerPane.setCenter(componentViewer.getPane());
+        scriptsMenu.setOnShowing(new EventHandler<Event>() {
+            @Override
+            public void handle(Event event) {
+                refreshScripts();
+            }
+        });
     }
 
     private void open(HashIdentifiedSpeechComponent component){
         componentViewer.open(component);
         openedNode = currentNode;
+        openedComponent = component;
     }
 
     private void populateDirectoryView(){
@@ -337,5 +349,24 @@ public class CardCreator{
 
     public void showSettings(ActionEvent actionEvent) {
         SettingsHandler.showDialog();
+    }
+
+    public void refreshScripts() {
+        String[] scripts = JythonScripter.getScripts();
+        scriptsMenu.getItems().clear();
+        for (String script:scripts){
+            MenuItem item = new MenuItem(script);
+            item.setOnAction(new EventHandler<ActionEvent>() {
+                @Override
+                public void handle(ActionEvent actionEvent) {
+                    try {
+                        JythonScripter.runScript(script, openedComponent);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+            scriptsMenu.getItems().add(item);
+        }
     }
 }

@@ -31,6 +31,11 @@
                         <MenuItem text="Settings" onAction="#showSettings"/>
                     </items>
                 </Menu>
+                <Menu text="Scripts" fx:id="scriptsMenu">
+                    <items>
+                        <MenuItem text=""/>
+                    </items>
+                </Menu>
                 <Menu text="Help">
                     <items>
                         <MenuItem text="Search" disable="true"/>
