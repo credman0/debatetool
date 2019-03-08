@@ -169,6 +169,9 @@ public class Card extends HashIdentifiedSpeechComponent {
     }
 
     public String getActiveTag(){
+        if (tags.isEmpty()){
+            return "<empty>";
+        }
         return tags.get(tagIndex);
     }
 

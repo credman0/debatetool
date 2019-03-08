@@ -14,6 +14,10 @@ import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
+import javafx.scene.text.Text;
+import javafx.scene.text.TextFlow;
 import javafx.scene.web.WebView;
 
 import java.io.IOException;
@@ -50,8 +54,10 @@ public class BlockEditor {
         for (int i = 0; i < blockTreeView.getRoot().getChildren().size(); i++){
             SpeechComponent child = (SpeechComponent) ((TreeItem) blockTreeView.getRoot().getChildren().get(i)).getValue();
             VBox componentBox = new VBox();
-            HBox tagLine = new HBox();
-            tagLine.getChildren().add(new Label(Block.toAlphabet(i) + ")"));
+            HBox tagLine = new HBox();;
+            Text label = new Text(Block.toAlphabet(i) + ")");
+            label.setFont(Font.font("Arial", FontWeight.BOLD, 20));
+            tagLine.getChildren().add(new TextFlow(label));
             WebView blockContentsView = new WebView();
             blockContentsView.getEngine().getLoadWorker().stateProperty().addListener(new ContentLoader(child,blockContentsView));
             blockContentsView.getEngine().load(WEBVIEW_HTML);

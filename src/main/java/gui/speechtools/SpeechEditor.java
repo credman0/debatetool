@@ -11,8 +11,14 @@ import javafx.collections.ObservableList;
 import javafx.concurrent.Worker;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
-import javafx.scene.control.*;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.control.TreeItem;
+import javafx.scene.control.TreeView;
 import javafx.scene.layout.*;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
+import javafx.scene.text.Text;
 import javafx.scene.web.WebView;
 
 import java.io.IOException;
@@ -55,7 +61,9 @@ public class SpeechEditor {
             SpeechComponent child = (SpeechComponent) ((TreeItem) speechTreeView.getRoot().getChildren().get(i)).getValue();
             VBox componentBox = new VBox();
             HBox tagLine = new HBox();
-            tagLine.getChildren().add(new Label((i+1) + ")"));
+            Text label = new Text((i+1) + ")");
+            label.setFont(Font.font("Arial", FontWeight.BOLD, 20));
+            tagLine.getChildren().add(label);
             WebView speechContentView = new WebView();
             speechContentView.getEngine().getLoadWorker().stateProperty().addListener(new ContentLoader(child,speechContentView));
             speechContentView.getEngine().load(WEBVIEW_HTML);
@@ -72,6 +80,7 @@ public class SpeechEditor {
                     }
                 });
                 componentBox.getChildren().add(tagLine);
+                tagsBox.prefWidthProperty().bind(((Region)tagsBox.getParent()).widthProperty());
 
                 // TODO database access optimization
 
