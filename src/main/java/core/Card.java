@@ -201,6 +201,7 @@ public class Card extends HashIdentifiedSpeechComponent {
         if (!tags.contains(tag)){
             tags.add(tag);
         }
+        setModified(true);
     }
 
     @Override

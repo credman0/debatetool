@@ -71,6 +71,9 @@ public class Block extends HashIdentifiedSpeechComponent {
     }
 
     public void addComponent(SpeechComponent component){
+        if (component.getClass().isAssignableFrom(Speech.class) || component.getClass().isAssignableFrom(Block.class)){
+            throw new IllegalArgumentException("Attempted to add component of illegal type: " + component.getClass());
+        }
         contents.add(component);
         setModified(true);
     }
@@ -120,6 +123,7 @@ public class Block extends HashIdentifiedSpeechComponent {
 
     @Override
     public void load() throws IOException {
+        // TODO these database calls should be grouped
         for (SpeechComponent component:contents){
             component.load();
         }

@@ -1,11 +1,14 @@
 package gui.cardediting;
 
+import io.iocontrollers.IOController;
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 
 import java.io.IOException;
 
@@ -22,8 +25,18 @@ public class CardCreatorLauncher extends Application {
                     Scene scene = new Scene(root);
                     primaryStage.setScene(scene);
                     primaryStage.show();
+                    primaryStage.setTitle("Debate Tool");
                     ((CardCreator)loader.getController()).init();
-
+                    primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+                        @Override
+                        public void handle(WindowEvent windowEvent) {
+                            try {
+                                IOController.getIoController().close();
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    });
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

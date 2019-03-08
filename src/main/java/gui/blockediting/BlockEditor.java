@@ -35,13 +35,13 @@ public class BlockEditor {
     final static String WEBVIEW_HTML = BlockEditor.class.getClassLoader().getResource("BlockViewer.html").toExternalForm();
 
     public void open(Block block) {
-        if (!block.isLoaded()){
-            try {
-                block.load();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+        // TODO try to not reload blocks when unnecessary
+        try {
+            block.load();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
+
         this.block = block;
         populateTree();
         generateContents();
