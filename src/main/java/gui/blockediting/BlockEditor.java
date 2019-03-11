@@ -78,8 +78,6 @@ public class BlockEditor {
                 componentBox.getChildren().add(tagLine);
                 tagsBox.prefWidthProperty().bind(((Region)tagsBox.getParent()).widthProperty());
 
-                // TODO database access optimization
-
                 HBox overlaySelectors = new HBox();
 
                 ComboBox<CardOverlay> underlinesBox = new ComboBox<>();
