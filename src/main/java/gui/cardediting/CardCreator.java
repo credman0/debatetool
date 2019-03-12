@@ -1,9 +1,6 @@
 package gui.cardediting;
 
-import core.Block;
-import core.HashIdentifiedSpeechComponent;
-import core.Speech;
-import core.SpeechComponent;
+import core.*;
 import gui.SettingsHandler;
 import gui.locationtree.LocationTreeItem;
 import gui.locationtree.LocationTreeItemContent;
@@ -20,6 +17,8 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.TreeItemPropertyValueFactory;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.*;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
@@ -96,7 +95,15 @@ public class CardCreator{
         TreeTableColumn<LocationTreeItemContent, Date> timeColumn = new TreeTableColumn<>("Date");
         directoryView.getColumns().setAll(labelColumn,timeColumn);
         labelColumn.setCellValueFactory(new TreeItemPropertyValueFactory("display"));
+
+        // This anonymous class is pretty hideous but slightly inconvenient to put into its own class so I'm slgihtly sorry
         labelColumn.setCellFactory(new Callback<TreeTableColumn<LocationTreeItemContent, String>, TreeTableCell<LocationTreeItemContent, String>>() {
+            private void setIcon (TreeTableCell cell, Image iconImage){
+                ImageView icon = new ImageView(iconImage);
+                icon.setFitWidth(24);
+                icon.setFitHeight(24);
+                cell.setGraphic(icon);
+            }
             @Override
             public TreeTableCell<LocationTreeItemContent, String> call(TreeTableColumn<LocationTreeItemContent, String> locationTreeItemContentStringTreeTableColumn) {
                 TreeTableCell<LocationTreeItemContent, String> cell = new TreeTableCell<>() {
@@ -110,9 +117,38 @@ public class CardCreator{
                             setText(null);
                         } else {
                             setText(content);
+                            LocationTreeItem item = (LocationTreeItem) getTreeTableRow().getTreeItem();
+                            if (!item.isLeaf()) {
+                                setIcon(this, LocationTreeItem.DIRECTORY_CLOSED);
+
+                                // cannot use "this" inside the listener
+                                TreeTableCell cell1 = this;
+                                item.expandedProperty().addListener(new ChangeListener<Boolean>() {
+                                    @Override
+                                    public void changed(ObservableValue<? extends Boolean> observableValue, Boolean aBoolean, Boolean t1) {
+                                        if (t1){
+                                            setIcon(cell1, LocationTreeItem.DIRECTORY_OPEN);
+                                        }else{
+                                            setIcon(cell1, LocationTreeItem.DIRECTORY_CLOSED);
+                                        }
+                                    }
+                                });
+                            }else{
+                                if (item.getValue().getSpeechComponent().getClass().isAssignableFrom(Block.class)){
+                                    setIcon(this, LocationTreeItem.LETTER_B);
+                                }else if (item.getValue().getSpeechComponent().getClass().isAssignableFrom(Card.class)){
+                                    setIcon(this, LocationTreeItem.LETTER_C);
+                                }else if (item.getValue().getSpeechComponent().getClass().isAssignableFrom(Speech.class)){
+                                    setIcon(this, LocationTreeItem.LETTER_S);
+                                }
+                            }
                         }
+
                     }
                 };
+
+
+
                 cell.setOnContextMenuRequested(new EventHandler<ContextMenuEvent>() {
                     @Override
                     public void handle(ContextMenuEvent contextMenuEvent) {
@@ -291,10 +327,13 @@ public class CardCreator{
 
             }
             private void recurseSort(TreeItem item, Comparator<TreeItem> comparator){
-                item.getChildren().sort(comparator);
-                ObservableList<TreeItem> children = item.getChildren();
-                for (TreeItem child:children) {
-                    recurseSort(child, comparator);
+                // always sort root, otherwise don't force children to load
+                if (!(LocationTreeItem.class.isInstance(item)) || ((LocationTreeItem)item).isChildrenLoaded()) {
+                    item.getChildren().sort(comparator);
+                    ObservableList<TreeItem> children = item.getChildren();
+                    for (TreeItem child : children) {
+                        recurseSort(child, comparator);
+                    }
                 }
             }
         });

@@ -4,6 +4,7 @@ import core.HashIdentifiedSpeechComponent;
 import io.iocontrollers.IOController;
 import javafx.collections.ObservableList;
 import javafx.scene.control.TreeItem;
+import javafx.scene.image.Image;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -12,6 +13,15 @@ import java.util.List;
 
 public class LocationTreeItem extends TreeItem<LocationTreeItemContent> {
     private boolean childrenLoaded = false ;
+    public final static Image DIRECTORY_CLOSED = new Image(LocationTreeItem.class.getResource("/icons/Places-folder-icon.png").toExternalForm());
+    public final static Image DIRECTORY_OPEN = new Image(LocationTreeItem.class.getResource("/icons/Places-folder-empty-icon.png").toExternalForm());
+    public final static Image LETTER_B = new Image(LocationTreeItem.class.getResource("/icons/Letter-B-blue-icon.png").toExternalForm());
+    public final static Image LETTER_C = new Image(LocationTreeItem.class.getResource("/icons/Letter-C-pink-icon.png").toExternalForm());
+    public final static Image LETTER_S = new Image(LocationTreeItem.class.getResource("/icons/Letter-S-lg-icon.png").toExternalForm());
+
+    public boolean isChildrenLoaded() {
+        return childrenLoaded;
+    }
 
     /**
      * Create a tree branch that contains children that are potentially either leaves, or branches that contain leaves.
@@ -20,6 +30,7 @@ public class LocationTreeItem extends TreeItem<LocationTreeItemContent> {
     public LocationTreeItem(LocationTreeItemContent content){
         super();
         this.setValue(content);
+
     }
 
     @Override

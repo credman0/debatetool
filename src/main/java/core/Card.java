@@ -126,7 +126,7 @@ public class Card extends HashIdentifiedSpeechComponent {
 
     @Override
     public String getLabel() {
-        return getCite().author+" "+getCite().getDate();
+        return getActiveTag()+"\n"+getCite().author+" "+getCite().getDate();
     }
 
     @Override
