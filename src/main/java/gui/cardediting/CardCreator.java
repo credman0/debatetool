@@ -266,6 +266,33 @@ public class CardCreator{
                                 });
                                 localMenu.getItems().add(changeBlockName);
                             }
+                            // add speech rename action only to block
+                            if ((cell.getTreeTableRow().getTreeItem().getValue().getSpeechComponent() != null) && Speech.class.isInstance(cell.getTreeTableRow().getTreeItem().getValue().getSpeechComponent())) {
+                                localMenu.getItems().add(new SeparatorMenuItem());
+
+                                MenuItem changeSpeechName = new MenuItem("Rename Block");
+                                changeSpeechName.setOnAction(new EventHandler<ActionEvent>() {
+                                    @Override
+                                    public void handle(ActionEvent actionEvent) {
+                                        localMenu.hide();
+                                        Speech cellSpeech = (Speech) cell.getTreeTableRow().getTreeItem().getValue().getSpeechComponent();
+                                        String name = JOptionPane.showInputDialog("Enter name", cellSpeech.getName());
+                                        byte[] oldHash = cellSpeech.getHash();
+                                        cellSpeech.setName(name);
+                                        try {
+                                            IOController.getIoController().getComponentIOManager().storeSpeechComponent(cellSpeech);
+                                            IOController.getIoController().getStructureIOManager().replaceContent(cellSpeech.getPath(), oldHash, cellSpeech.getHash());
+                                        } catch (IOException e) {
+                                            e.printStackTrace();
+                                        }
+                                        // force change the text of the cell
+                                        cell.setText(name);
+                                        componentViewer.open(cellSpeech);
+                                    }
+                                });
+                                localMenu.getItems().add(changeSpeechName);
+
+                            }
                         }
                         cell.setContextMenu(localMenu);
                         cell.getContextMenu().show(cell.getTreeTableView(),contextMenuEvent.getScreenX(),contextMenuEvent.getScreenY());

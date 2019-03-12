@@ -143,4 +143,17 @@ public class Speech extends HashIdentifiedSpeechComponent{
     public SpeechComponent getComponent(int i) {
         return contents.get(i);
     }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+        setModified(true);
+    }
+
+    public List<String> getPath() {
+        return path;
+    }
 }
