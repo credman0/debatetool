@@ -77,6 +77,7 @@ public class SpeechEditor {
                     @Override
                     public void changed(ObservableValue<? extends Number> observableValue, Number number, Number t1) {
                         ((Card) child).setTagIndex((Integer) t1);
+                        speechTreeView.refresh();
                     }
                 });
                 componentBox.getChildren().add(tagLine);

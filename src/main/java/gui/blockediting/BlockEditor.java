@@ -73,6 +73,7 @@ public class BlockEditor {
                     @Override
                     public void changed(ObservableValue<? extends Number> observableValue, Number number, Number t1) {
                         ((Card) child).setTagIndex((Integer) t1);
+                        blockTreeView.refresh();
                     }
                 });
                 componentBox.getChildren().add(tagLine);
