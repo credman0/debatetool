@@ -192,7 +192,7 @@ public class CardCreator{
                         newBlockItem.setOnAction(new EventHandler<ActionEvent>() {
                             @Override
                             public void handle(ActionEvent actionEvent) {
-                                String name  = IOUtil.getSafeNameAgainstTreeItemList("New Block", currentNode.getParent().getChildren());
+                                String name  = IOUtil.getSafeNameAgainstTreeItemList("New Block", currentNode.getChildren());
                                 Block newBlock = new Block(getCurrentNode().getPath(), name);
                                 currentNode.getChildren().add(new LocationTreeItem(new LocationTreeItemContent(newBlock)));
                                 IOController.getIoController().getStructureIOManager().addContent(getCurrentNode().getPath(), newBlock.getHash());
@@ -210,7 +210,7 @@ public class CardCreator{
                         newSpeechItem.setOnAction(new EventHandler<ActionEvent>() {
                             @Override
                             public void handle(ActionEvent actionEvent) {
-                                String name  = IOUtil.getSafeNameAgainstTreeItemList("New Speech", currentNode.getParent().getChildren());
+                                String name  = IOUtil.getSafeNameAgainstTreeItemList("New Speech", currentNode.getChildren());
                                 Speech newSpeech = new Speech(getCurrentNode().getPath(),name);
                                 currentNode.getChildren().add(new LocationTreeItem(new LocationTreeItemContent(newSpeech)));
                                 IOController.getIoController().getStructureIOManager().addContent(getCurrentNode().getPath(), newSpeech.getHash());
@@ -238,7 +238,7 @@ public class CardCreator{
                                         if (name == null){
                                             return;
                                         }
-                                        name  = IOUtil.getSafeNameAgainstTreeItemList(name, currentNode.getParent().getChildren());
+                                        name  = IOUtil.getSafeNameAgainstTreeItemList(name,  currentNode.getChildren());
 
                                         List<String> path = currentNode.getPath();
                                         path.remove(path.size() - 1);

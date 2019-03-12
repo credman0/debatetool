@@ -215,6 +215,7 @@ public class IOUtil {
     }
 
     private static boolean containsString(List<TreeItem<LocationTreeItemContent>> list, String name){
+        System.out.println(list);
         for (TreeItem<LocationTreeItemContent> treeItem: list){
             if (treeItem.getValue().toString().equals(name)){
                 return true;
