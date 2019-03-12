@@ -3,6 +3,7 @@ package gui.cardediting;
 import com.sun.javafx.webkit.WebConsoleListener;
 import core.Card;
 import core.CardOverlay;
+import io.IOUtil;
 import io.iocontrollers.IOController;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleObjectProperty;
@@ -80,13 +81,8 @@ public class CardCutter extends CardViewer {
             @Override
             public void changed(ObservableValue observableValue, Object o, Object t1) {
                 if (TagChoiceAction.class.isInstance(t1)){
-                    String trialName = "New Tag";
-                    int index = 0;
-                    while (tagChoice.getItems().contains(trialName)){
-                        trialName = "New Tag (" + index +")";
-                        index++;
-                    }
-                    tagChoice.getItems().add(tagChoice.getItems().size()-1, trialName);
+                    String name = IOUtil.getSafeNameAgainstList("New Tag", tagChoice.getItems());
+                    tagChoice.getItems().add(tagChoice.getItems().size()-1, name);
                     tagChoice.getSelectionModel().select(tagChoice.getItems().size()-2);
                     tagChoice.getEditor().requestFocus();
                     tagChoice.getEditor().selectAll();

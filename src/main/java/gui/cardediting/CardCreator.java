@@ -5,6 +5,7 @@ import gui.SettingsHandler;
 import gui.locationtree.LocationTreeItem;
 import gui.locationtree.LocationTreeItemContent;
 import gui.speechtools.SpeechComponentCellFactory;
+import io.IOUtil;
 import io.iocontrollers.IOController;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
@@ -170,15 +171,18 @@ public class CardCreator{
                             @Override
                             public void handle(ActionEvent actionEvent) {
                                 List<String> effectivePath;
+                                String name;
                                 if (cell.isEmpty()){
                                     // if we are on an empty cell, create a top-level directory
-                                    root.getChildren().add(new LocationTreeItem(new LocationTreeItemContent("New Directory")));
+                                    name  = IOUtil.getSafeNameAgainstTreeItemList("New Directory", root.getChildren());
+                                    root.getChildren().add(new LocationTreeItem(new LocationTreeItemContent(name)));
                                     effectivePath = new ArrayList<>();
                                 }else{
-                                    currentNode.getChildren().add(new LocationTreeItem(new LocationTreeItemContent("New Directory")));
+                                    name  = IOUtil.getSafeNameAgainstTreeItemList("New Directory", currentNode.getChildren());
+                                    currentNode.getChildren().add(new LocationTreeItem(new LocationTreeItemContent(name)));
                                     effectivePath = getCurrentNode().getPath();
                                 }
-                                IOController.getIoController().getStructureIOManager().addChild(effectivePath, "New Directory");
+                                IOController.getIoController().getStructureIOManager().addChild(effectivePath, name);
                                 localMenu.hide();
                             }
                         });
@@ -188,15 +192,16 @@ public class CardCreator{
                         newBlockItem.setOnAction(new EventHandler<ActionEvent>() {
                             @Override
                             public void handle(ActionEvent actionEvent) {
-                                Block newBlock = new Block(getCurrentNode().getPath(), "New Block");
+                                String name  = IOUtil.getSafeNameAgainstTreeItemList("New Block", currentNode.getParent().getChildren());
+                                Block newBlock = new Block(getCurrentNode().getPath(), name);
                                 currentNode.getChildren().add(new LocationTreeItem(new LocationTreeItemContent(newBlock)));
                                 IOController.getIoController().getStructureIOManager().addContent(getCurrentNode().getPath(), newBlock.getHash());
                                 try {
                                     IOController.getIoController().getComponentIOManager().storeSpeechComponent(newBlock);
                                 } catch (IOException e) {
                                     e.printStackTrace();
-                                }
-                                localMenu.hide();
+                                    }
+                                    localMenu.hide();
                             }
                         });
                         localMenu.getItems().add(newBlockItem);
@@ -205,7 +210,8 @@ public class CardCreator{
                         newSpeechItem.setOnAction(new EventHandler<ActionEvent>() {
                             @Override
                             public void handle(ActionEvent actionEvent) {
-                                Speech newSpeech = new Speech(getCurrentNode().getPath(),"New Speech");
+                                String name  = IOUtil.getSafeNameAgainstTreeItemList("New Speech", currentNode.getParent().getChildren());
+                                Speech newSpeech = new Speech(getCurrentNode().getPath(),name);
                                 currentNode.getChildren().add(new LocationTreeItem(new LocationTreeItemContent(newSpeech)));
                                 IOController.getIoController().getStructureIOManager().addContent(getCurrentNode().getPath(), newSpeech.getHash());
                                 try {
@@ -229,6 +235,10 @@ public class CardCreator{
                                     public void handle(ActionEvent actionEvent) {
                                         localMenu.hide();
                                         String name = JOptionPane.showInputDialog("Enter name");
+                                        if (name == null){
+                                            return;
+                                        }
+                                        name  = IOUtil.getSafeNameAgainstTreeItemList(name, currentNode.getParent().getChildren());
 
                                         List<String> path = currentNode.getPath();
                                         path.remove(path.size() - 1);
@@ -251,6 +261,10 @@ public class CardCreator{
                                         localMenu.hide();
                                         Block cellBlock = (Block) cell.getTreeTableRow().getTreeItem().getValue().getSpeechComponent();
                                         String name = JOptionPane.showInputDialog("Enter name", cellBlock.getName());
+                                        if (name == null){
+                                            return;
+                                        }
+                                        name  = IOUtil.getSafeNameAgainstTreeItemList(name, cell.getTreeTableRow().getTreeItem().getParent().getChildren());
                                         byte[] oldHash = cellBlock.getHash();
                                         cellBlock.setName(name);
                                         try {
@@ -277,6 +291,10 @@ public class CardCreator{
                                         localMenu.hide();
                                         Speech cellSpeech = (Speech) cell.getTreeTableRow().getTreeItem().getValue().getSpeechComponent();
                                         String name = JOptionPane.showInputDialog("Enter name", cellSpeech.getName());
+                                        if (name == null){
+                                            return;
+                                        }
+                                        name  = IOUtil.getSafeNameAgainstTreeItemList(name, cell.getTreeTableRow().getTreeItem().getParent().getChildren());
                                         byte[] oldHash = cellSpeech.getHash();
                                         cellSpeech.setName(name);
                                         try {
