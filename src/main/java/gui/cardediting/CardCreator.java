@@ -110,29 +110,39 @@ public class CardCreator{
                     {
                         setContextMenu(new ContextMenu());
                     }
+                    LocationTreeItem previousItem = null;
+                    ChangeListener<Boolean> previousListener =  null;
                     @Override
                     protected void updateItem(String content, boolean empty){
                         super.updateItem(content, empty);
+                        if (previousListener!=null && previousItem!=null) {
+                            previousItem.expandedProperty().removeListener(previousListener);
+                            previousListener = null;
+                        }
+                        LocationTreeItem item = (LocationTreeItem) getTreeTableRow().getTreeItem();
+                        previousItem = item;
                         if(empty || content==null) {
                             setText(null);
+                            setGraphic(null);
                         } else {
                             setText(content);
-                            LocationTreeItem item = (LocationTreeItem) getTreeTableRow().getTreeItem();
                             if (!item.isLeaf()) {
-                                setIcon(this, LocationTreeItem.DIRECTORY_CLOSED);
+                                if (item.isExpanded()) {
+                                    setIcon(this, LocationTreeItem.DIRECTORY_OPEN);
+                                }else{
+                                    setIcon(this, LocationTreeItem.DIRECTORY_CLOSED);
+                                }
 
                                 // cannot use "this" inside the listener
                                 TreeTableCell cell1 = this;
-                                item.expandedProperty().addListener(new ChangeListener<Boolean>() {
-                                    @Override
-                                    public void changed(ObservableValue<? extends Boolean> observableValue, Boolean aBoolean, Boolean t1) {
-                                        if (t1){
-                                            setIcon(cell1, LocationTreeItem.DIRECTORY_OPEN);
-                                        }else{
-                                            setIcon(cell1, LocationTreeItem.DIRECTORY_CLOSED);
-                                        }
+                                previousListener = (observableValue, aBoolean, t1) -> {
+                                    if (t1){
+                                        setIcon(cell1, LocationTreeItem.DIRECTORY_OPEN);
+                                    }else{
+                                        setIcon(cell1, LocationTreeItem.DIRECTORY_CLOSED);
                                     }
-                                });
+                                };
+                                item.expandedProperty().addListener(previousListener);
                             }else{
                                 if (item.getValue().getSpeechComponent().getClass().isAssignableFrom(Block.class)){
                                     setIcon(this, LocationTreeItem.LETTER_B);
