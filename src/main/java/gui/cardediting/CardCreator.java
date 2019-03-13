@@ -54,10 +54,10 @@ public class CardCreator{
         populateDirectoryView();
         // Selection listener for tracking current node
         directoryView.getSelectionModel().selectedItemProperty().addListener((observableValue, oldV, newV) -> {
-            LocationTreeItem newItem = ((LocationTreeItem)newV);
-            if (newItem==null){
+            if (newV==null){
                 return;
             }
+            LocationTreeItem newItem = ((LocationTreeItem)newV);
             if (newItem.isLeaf()){
                 setCurrentNode((LocationTreeItem) newItem.getParent());
             }else{
@@ -91,7 +91,11 @@ public class CardCreator{
 
     private void populateDirectoryView(){
         List<String> rootFolders = IOController.getIoController().getStructureIOManager().getRoot();
-        TreeItem<LocationTreeItemContent> root = new TreeItem<>();
+        LocationTreeItem root = new LocationTreeItem(null){
+            public boolean isLeaf(){
+                return false;
+            }
+        };
         TreeTableColumn<LocationTreeItemContent, String> labelColumn = new TreeTableColumn<>("Name");
         TreeTableColumn<LocationTreeItemContent, Date> timeColumn = new TreeTableColumn<>("Date");
         directoryView.getColumns().setAll(labelColumn,timeColumn);
@@ -115,6 +119,10 @@ public class CardCreator{
                     ChangeListener<Boolean> previousListener =  null;
                     @Override
                     protected void updateItem(String content, boolean empty){
+                        if (getTreeTableRow().getTreeItem()==null || getTreeTableRow().getTreeItem().getValue() == null){
+                            // there is an empty cell added if the root is otherwise empty -- ignore it
+                            return;
+                        }
                         super.updateItem(content, empty);
                         if (previousListener!=null && previousItem!=null) {
                             previousItem.expandedProperty().removeListener(previousListener);
@@ -172,6 +180,9 @@ public class CardCreator{
                             public void handle(ActionEvent actionEvent) {
                                 List<String> effectivePath;
                                 String name;
+                                // if the list was "empty", it will have one null element we want to remove
+                                currentNode.getChildren().removeIf(
+                                        locationTreeItemContentTreeItem -> locationTreeItemContentTreeItem.getValue()==null);
                                 if (cell.isEmpty()){
                                     // if we are on an empty cell, create a top-level directory
                                     name  = IOUtil.getSafeNameAgainstTreeItemList("New Directory", root.getChildren());
@@ -192,6 +203,9 @@ public class CardCreator{
                         newBlockItem.setOnAction(new EventHandler<ActionEvent>() {
                             @Override
                             public void handle(ActionEvent actionEvent) {
+                                // if the list was "empty", it will have one null element we want to remove
+                                currentNode.getChildren().removeIf(
+                                        locationTreeItemContentTreeItem -> locationTreeItemContentTreeItem.getValue()==null);
                                 String name  = IOUtil.getSafeNameAgainstTreeItemList("New Block", currentNode.getChildren());
                                 Block newBlock = new Block(getCurrentNode().getPath(), name);
                                 currentNode.getChildren().add(new LocationTreeItem(new LocationTreeItemContent(newBlock)));
@@ -210,6 +224,9 @@ public class CardCreator{
                         newSpeechItem.setOnAction(new EventHandler<ActionEvent>() {
                             @Override
                             public void handle(ActionEvent actionEvent) {
+                                // if the list was "empty", it will have one null element we want to remove
+                                currentNode.getChildren().removeIf(
+                                        locationTreeItemContentTreeItem -> locationTreeItemContentTreeItem.getValue()==null);
                                 String name  = IOUtil.getSafeNameAgainstTreeItemList("New Speech", currentNode.getChildren());
                                 Speech newSpeech = new Speech(getCurrentNode().getPath(),name);
                                 currentNode.getChildren().add(new LocationTreeItem(new LocationTreeItemContent(newSpeech)));
@@ -280,11 +297,11 @@ public class CardCreator{
                                 });
                                 localMenu.getItems().add(changeBlockName);
                             }
-                            // add speech rename action only to block
+                            // add speech rename action only to speech
                             if ((cell.getTreeTableRow().getTreeItem().getValue().getSpeechComponent() != null) && Speech.class.isInstance(cell.getTreeTableRow().getTreeItem().getValue().getSpeechComponent())) {
                                 localMenu.getItems().add(new SeparatorMenuItem());
 
-                                MenuItem changeSpeechName = new MenuItem("Rename Block");
+                                MenuItem changeSpeechName = new MenuItem("Rename Speech");
                                 changeSpeechName.setOnAction(new EventHandler<ActionEvent>() {
                                     @Override
                                     public void handle(ActionEvent actionEvent) {
@@ -398,6 +415,15 @@ public class CardCreator{
                 directoryView.sort();
             }
         });
+        // we have to add something, or javafx adds a placeholder
+        if (root.getChildren().isEmpty()){
+            root.getChildren().add(new LocationTreeItem(null){
+                public boolean isLeaf(){
+                    return true;
+                }
+            });
+        }
+        currentNode = root;
     }
 
     @FXML

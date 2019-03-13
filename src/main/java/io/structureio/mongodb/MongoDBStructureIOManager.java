@@ -1,6 +1,7 @@
 package io.structureio.mongodb;
 
 import com.mongodb.MongoClient;
+import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
@@ -64,7 +65,11 @@ public class MongoDBStructureIOManager implements StructureIOManager {
 
     @Override
     public List<String> getRoot() {
-        return (List<String>) collection.find(Filters.size("Path", 0)).first().get("Children");
+        FindIterable<Document> root = collection.find(Filters.size("Path", 0));
+        if (root.first()==null){
+            return new ArrayList<>();
+        }
+        return (List<String>) root.first().get("Children");
     }
 
     @Override

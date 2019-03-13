@@ -4,6 +4,7 @@ import gui.locationtree.LocationTreeItemContent;
 import javafx.scene.control.TreeItem;
 import javafx.util.Pair;
 
+import javax.annotation.Nonnull;
 import javax.imageio.IIOException;
 import java.io.DataInput;
 import java.io.DataOutput;
@@ -214,10 +215,9 @@ public class IOUtil {
         return trialName;
     }
 
-    private static boolean containsString(List<TreeItem<LocationTreeItemContent>> list, String name){
-        System.out.println(list);
+    private static boolean containsString(List<TreeItem<LocationTreeItemContent>> list, @Nonnull String name){
         for (TreeItem<LocationTreeItemContent> treeItem: list){
-            if (treeItem.getValue().toString().equals(name)){
+            if (name.equals(treeItem.getValue().toString())){
                 return true;
             }
         }
