@@ -68,9 +68,9 @@ public class CardCreator{
     }
     public void init(){
         activeGUI = this;
+        populateDirectoryView();
         componentViewer = new ComponentViewer();
         componentViewer.init(viewerPane);
-        populateDirectoryView();
         // Selection listener for tracking current node
         directoryView.getSelectionModel().selectedItemProperty().addListener((observableValue, oldV, newV) -> {
             if (newV==null){
@@ -458,7 +458,7 @@ public class CardCreator{
             currentPathString.set("Please select a location");
             return;
         }
-        componentViewer.save(currentNode);
+        componentViewer.save(currentNode.getPath());
         currentNode.reloadChildren();
         // TODO don't need to do a full reload here
         openedNode.reloadChildren();

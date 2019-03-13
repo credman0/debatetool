@@ -30,7 +30,13 @@ public abstract class CardViewer {
 
     public void save(List<String> path) {
         try {
+            if (card == null){
+                return;
+            }
             IOController.getIoController().getComponentIOManager().storeSpeechComponent(card);
+            if (path==null){
+                return;
+            }
             IOController.getIoController().getStructureIOManager().addContent(path, card.getHash());
         } catch (
                 IOException e) {

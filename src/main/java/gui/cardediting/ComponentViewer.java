@@ -5,7 +5,6 @@ import core.Card;
 import core.HashIdentifiedSpeechComponent;
 import core.Speech;
 import gui.blockediting.BlockEditor;
-import gui.locationtree.LocationTreeItem;
 import gui.speechtools.SpeechEditor;
 import gui.speechtools.SpeechViewer;
 import javafx.fxml.FXMLLoader;
@@ -13,6 +12,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 
 import java.io.IOException;
+import java.util.List;
 
 public class ComponentViewer {
     private CardEditor cardEditor;
@@ -25,7 +25,7 @@ public class ComponentViewer {
     private enum ViewType {BLOCK, CARD, SPEECH};
     private ViewType currentViewMode = ViewType.CARD;
     public void open(HashIdentifiedSpeechComponent component){
-
+        save();
         if (component.getClass().isAssignableFrom(Card.class)){
             currentViewMode = ViewType.CARD;
             if (editMode){
@@ -105,7 +105,11 @@ public class ComponentViewer {
         }
     }
 
-    public void save(LocationTreeItem currentNode){
+    public void save(){
+        save(null);
+    }
+
+    public void save(List<String> path){
         switch (currentViewMode) {
             case BLOCK:
                 blockEditor.save();
@@ -113,9 +117,9 @@ public class ComponentViewer {
 
             case CARD:
                 if (editMode) {
-                    cardEditor.save(currentNode.getPath());
+                    cardEditor.save(path);
                 } else {
-                    cardCutter.save(currentNode.getPath());
+                    cardCutter.save(path);
                 }
                 break;
 
