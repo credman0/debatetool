@@ -131,6 +131,34 @@ public class ComponentViewer {
     public void clear() {
     }
 
+    public void refresh(){
+        switch (currentViewMode) {
+            case BLOCK:
+                blockEditor.refresh();
+                break;
+
+            case CARD:
+                if (editMode) {
+                    cardEditor.refresh();
+                } else {
+                    cardCutter.refresh();
+                }
+                break;
+
+            case SPEECH:
+                if (editMode) {
+                    speechEditor.refresh();
+                } else {
+                    speechEditor.refresh();
+                }
+
+                break;
+
+            default:
+                throw new IllegalStateException("Invalid View Mode");
+        }
+    }
+
     public void updateViewerPane(){
         switch (currentViewMode) {
             case BLOCK:

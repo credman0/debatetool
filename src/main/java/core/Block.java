@@ -86,6 +86,11 @@ public class Block extends HashIdentifiedSpeechComponent {
         setModified(true);
     }
 
+    public void removeComponent(SpeechComponent component){
+        contents.remove(component);
+        setModified(true);
+    }
+
     public SpeechComponent getComponent(int i){
         return contents.get(i);
     }

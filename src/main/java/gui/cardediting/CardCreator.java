@@ -59,6 +59,10 @@ public class CardCreator{
         ((LocationTreeItem)directoryView.getRoot()).reloadChildrenRecursive();
     }
 
+    public void refreshViewer(){
+        componentViewer.refresh();
+    }
+
     public LocationTreeItem getOpenedNode(){
         return openedNode;
     }

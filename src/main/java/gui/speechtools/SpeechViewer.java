@@ -37,6 +37,10 @@ public class SpeechViewer {
         generateContents();
     }
 
+    public void refresh(){
+        generateContents();
+    }
+
     private void generateContents(){
         String contents = speech.getDisplayContent();
         webview.getEngine().getLoadWorker().stateProperty().addListener(new ContentLoader(contents));

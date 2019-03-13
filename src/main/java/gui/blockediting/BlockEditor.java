@@ -192,7 +192,11 @@ public class BlockEditor {
                 generateContents();
             }
         });
+    }
 
+    public void refresh(){
+        populateTree();
+        generateContents();
     }
 
     private void populateTree(){

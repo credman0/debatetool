@@ -46,4 +46,6 @@ public abstract class CardViewer {
     }
 
     public abstract Pane getPane();
+
+    public abstract void refresh();
 }

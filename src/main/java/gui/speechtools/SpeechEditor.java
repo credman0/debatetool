@@ -145,6 +145,17 @@ public class SpeechEditor {
         }
     }
 
+    public void refresh() {
+        try {
+            // reloading speeches allows us to make sure the blocks didn't change
+            speech.reload();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        populateTree();
+        generateContents();
+    }
+
     private class ContentLoader implements ChangeListener<Worker.State>{
         private final WebView contentView;
         private final SpeechComponent component;

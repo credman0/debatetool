@@ -51,4 +51,9 @@ public class CardEditor extends CardViewer{
         return mainPane;
     }
 
+    @Override
+    public void refresh() {
+        // TODO do something? (if necessary)
+    }
+
 }

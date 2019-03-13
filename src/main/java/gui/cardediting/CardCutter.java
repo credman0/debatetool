@@ -328,4 +328,9 @@ public class CardCutter extends CardViewer {
     public Pane getPane() {
         return mainPane;
     }
+
+    @Override
+    public void refresh() {
+        // TODO do something if things break;
+    }
 }
