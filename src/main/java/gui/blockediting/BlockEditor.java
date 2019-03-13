@@ -10,21 +10,19 @@ import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Worker;
+import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.control.TreeItem;
-import javafx.scene.control.TreeView;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
+import javafx.scene.control.*;
+import javafx.scene.input.*;
 import javafx.scene.layout.*;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.scene.web.WebView;
 
+import javax.swing.*;
 import java.io.IOException;
 import java.util.List;
 import java.util.Set;
@@ -66,7 +64,6 @@ public class BlockEditor {
             WebView blockContentsView = new WebView();
             blockContentsView.getEngine().getLoadWorker().stateProperty().addListener(new ContentLoader(child,blockContentsView));
             blockContentsView.getEngine().load(WEBVIEW_HTML);
-            blockContentsView.setDisable(true);
             if (child.getClass().isAssignableFrom(Card.class)){
                 ComboBox<String> tagsBox = new ComboBox<>();
                 tagsBox.setItems(FXCollections.observableList(((Card) child).getTags()));
@@ -124,6 +121,29 @@ public class BlockEditor {
                     Set<Node> scrolls = blockContentsView.lookupAll(".scroll-bar");
                     for (Node scroll : scrolls) {
                         scroll.setVisible(false);
+                    }
+                }
+            });
+
+            ContextMenu localMenu = new ContextMenu();
+            MenuItem newAnalyticItem =new MenuItem("Insert Analytic Above");
+            newAnalyticItem.setOnAction(new EventHandler<ActionEvent>() {
+                @Override
+                public void handle(ActionEvent actionEvent) {
+                    updateBlockContents();
+                    block.insertComponentAbove(child, new Analytic(JOptionPane.showInputDialog("Analytic Content")));
+                    refresh();
+                }
+            });
+            localMenu.getItems().add(newAnalyticItem);
+            blockContentsView.setContextMenuEnabled(false);
+            blockContentsView.setOnMouseClicked(new EventHandler<MouseEvent>() {
+                @Override
+                public void handle(MouseEvent mouseEvent) {
+                    if(mouseEvent.getButton().equals(MouseButton.SECONDARY)){
+                        localMenu.show(blockContentsView, mouseEvent.getScreenX(), mouseEvent.getScreenY());
+                    }else{
+                        localMenu.hide();
                     }
                 }
             });

@@ -96,6 +96,13 @@ public class Block extends HashIdentifiedSpeechComponent {
         setModified(true);
     }
 
+    public void insertComponentAbove(SpeechComponent component1, SpeechComponent toInsert){
+        int index = contents.indexOf(component1);
+        if (index>=0){
+            contents.add(index, toInsert);
+        }
+    }
+
     public SpeechComponent getComponent(int i){
         return contents.get(i);
     }
