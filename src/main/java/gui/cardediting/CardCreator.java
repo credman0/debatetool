@@ -1,16 +1,19 @@
 package gui.cardediting;
 
+import com.jfoenix.controls.JFXChipView;
 import core.*;
 import gui.SettingsHandler;
 import gui.locationtree.LocationTreeItem;
 import gui.locationtree.LocationTreeItemContent;
 import gui.speechtools.SpeechComponentCellFactory;
 import io.IOUtil;
+import io.filters.Filter;
 import io.iocontrollers.IOController;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
@@ -35,10 +38,11 @@ import java.util.Date;
 import java.util.List;
 
 public class CardCreator{
+    @FXML private JFXChipView <String> filterChipView;
     @FXML private Menu scriptsMenu;
-    @FXML protected BorderPane viewerPane;
-    @FXML protected Label currentPathLabel;
-    @FXML protected TreeTableView directoryView;
+    @FXML private BorderPane viewerPane;
+    @FXML private Label currentPathLabel;
+    @FXML private TreeTableView directoryView;
     private LocationTreeItem currentNode;
     private StringProperty currentPathString = new SimpleStringProperty("");
     private ComponentViewer componentViewer;
@@ -90,6 +94,18 @@ public class CardCreator{
             @Override
             public void handle(Event event) {
                 refreshScripts();
+            }
+        });
+
+        filterChipView.getChips().addListener((ListChangeListener<String>) change ->{
+            while (change.next()){
+                if(change.wasAdded()) {
+                    Filter.addParsed(change.getAddedSubList().get(0), change.getFrom());
+                    refreshDirectories();
+                }else if (change.wasRemoved()){
+                    Filter.removedParsed(change.getFrom());
+                    refreshDirectories();
+                }
             }
         });
     }

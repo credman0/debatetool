@@ -17,6 +17,7 @@ public class Filter {
     public enum Type{CONTAINS}
     private static List<ComponentFilter> componentFilters = new ArrayList<>();
     private static List<StructureFilter> structureFilters = new ArrayList<>();
+    private static List<Object> filterIndexes = new ArrayList<>();
     private static Set<byte[]> matchingComponents;
     public static void addComponentFilter(ComponentFilter filter){
         componentFilters.add(filter);
@@ -39,6 +40,17 @@ public class Filter {
             filtersList.add(filter.toBson());
         }
         return Filters.or(filtersList);
+    }
+
+    public static void addParsed(String filter, int index){
+        StructureFilter newFilter = new StructureFilter("Path", filter, Type.CONTAINS);
+        structureFilters.add(newFilter);
+        filterIndexes.add(index, newFilter);
+    }
+
+    public static void removedParsed(int index){
+        Object filter = filterIndexes.remove(index);
+        structureFilters.remove(filter);
     }
 
     public static void resetFilters(){
