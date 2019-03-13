@@ -9,10 +9,13 @@ import gui.speechtools.SpeechComponentCellFactory;
 import io.IOUtil;
 import io.filters.Filter;
 import io.iocontrollers.IOController;
+import javafx.beans.binding.Bindings;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -25,6 +28,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.*;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 import scripting.JythonScripter;
@@ -38,6 +42,9 @@ import java.util.Date;
 import java.util.List;
 
 public class CardCreator{
+    @FXML private Text viewerLabel;
+    @FXML private Button backButton;
+    @FXML private Button forwardButton;
     @FXML private JFXChipView <String> filterChipView;
     @FXML private Menu scriptsMenu;
     @FXML private BorderPane viewerPane;
@@ -48,6 +55,8 @@ public class CardCreator{
     private ComponentViewer componentViewer;
     private LocationTreeItem openedNode;
     private SpeechComponent openedComponent;
+    private ObservableList<HashIdentifiedSpeechComponent> editHistory = FXCollections.observableArrayList();
+    private SimpleIntegerProperty editHistoryIndex = new SimpleIntegerProperty(this, "editHistoryIndex", 0);
 
     private static CardCreator activeGUI;
 
@@ -66,7 +75,10 @@ public class CardCreator{
     public LocationTreeItem getOpenedNode(){
         return openedNode;
     }
+
     public void init(){
+        backButton.disableProperty().bind(Bindings.lessThanOrEqual(editHistoryIndex,0));
+        forwardButton.disableProperty().bind(Bindings.greaterThanOrEqual(editHistoryIndex,Bindings.subtract(Bindings.size(editHistory),1)));
         activeGUI = this;
         populateDirectoryView();
         componentViewer = new ComponentViewer();
@@ -114,10 +126,21 @@ public class CardCreator{
         });
     }
 
-    private void open(HashIdentifiedSpeechComponent component){
+    private void open(HashIdentifiedSpeechComponent component, boolean track){
         componentViewer.open(component);
         openedNode = currentNode;
         openedComponent = component;
+        viewerLabel.setText(component.getLabel());
+        if (track) {
+            if (editHistoryIndex.get() < editHistory.size() - 1) {
+                editHistory.remove(editHistoryIndex.get(), editHistory.size() - 1);
+            }
+            editHistoryIndex.set(editHistoryIndex.get()+1);
+            editHistory.add(component);
+        }
+    }
+    private void open(HashIdentifiedSpeechComponent component){
+        open(component,true);
     }
 
     private void populateDirectoryView(){
@@ -514,5 +537,15 @@ public class CardCreator{
             });
             scriptsMenu.getItems().add(item);
         }
+    }
+
+    public void historyBack(ActionEvent actionEvent) {
+        editHistoryIndex.set(editHistoryIndex.get()-1);
+        open(editHistory.get(editHistoryIndex.get()),false);
+    }
+
+    public void historyForward(ActionEvent actionEvent) {
+        editHistoryIndex.set(editHistoryIndex.get()+1);
+        open(editHistory.get(editHistoryIndex.get()),false);
     }
 }

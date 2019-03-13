@@ -1,9 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.BorderPane?>
-<?import java.lang.String?>
 <?import com.jfoenix.controls.JFXChipView?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+<?import java.lang.String?>
 <BorderPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
             fx:controller="gui.cardediting.CardCreator"
@@ -63,6 +67,37 @@
             </BorderPane>
 
             <BorderPane fx:id="viewerPane" >
+                <top>
+                    <HBox>
+                        <Button fx:id="backButton" onAction="#historyBack" disable="true">
+                            <graphic>
+                                <ImageView fitHeight="24" fitWidth="24">
+                                    <image>
+                                        <Image url="icons/backword1.png"/>
+                                    </image>
+                                </ImageView>
+                            </graphic>
+                        </Button>
+                        <Button fx:id="forwardButton" onAction="#historyForward" disable="true">
+                            <graphic>
+                                <ImageView fitHeight="24" fitWidth="24">
+                                    <image>
+                                        <Image url="icons/forward1.png"/>
+                                    </image>
+                                </ImageView>
+                            </graphic>
+                        </Button>
+                        <BorderPane HBox.hgrow="ALWAYS">
+                            <center>
+                                <Text fx:id="viewerLabel" text="Hello World" textAlignment="CENTER">
+                                    <font>
+                                        <Font name="Arial Bold" size="20"/>
+                                    </font>
+                                </Text>
+                            </center>
+                        </BorderPane>
+                    </HBox>
+                </top>
             </BorderPane>
         </SplitPane>
 

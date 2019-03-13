@@ -1,6 +1,7 @@
 package gui.blockediting;
 
 import core.*;
+import gui.cardediting.CardCreator;
 import gui.speechtools.SpeechComponentCellFactory;
 import io.iocontrollers.IOController;
 import javafx.application.Platform;
@@ -159,6 +160,8 @@ public class BlockEditor {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        // TODO replace this line
+        CardCreator.getActiveGUI().refreshDirectories();
     }
 
     private void updateBlockContents(){
