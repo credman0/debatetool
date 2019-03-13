@@ -8,6 +8,7 @@ import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Indexes;
 import com.mongodb.client.model.UpdateOptions;
 import com.mongodb.client.model.Updates;
+import io.filters.Filter;
 import io.structureio.StructureIOManager;
 import org.bson.Document;
 import org.bson.conversions.Bson;
@@ -31,11 +32,17 @@ public class MongoDBStructureIOManager implements StructureIOManager {
         collection.createIndex(Indexes.ascending("Path"));
     }
 
+
     @Override
-    public List<String> getChildren(List<String> path) {
+    public List<String> getChildren(List<String> path){
+        return getChildren(path, true);
+    }
+    @Override
+    public List<String> getChildren(List<String> path, boolean filtered) {
         FindIterable<Document> documents;
+        Bson filter;
         if (path.isEmpty()){
-            documents = collection.find(Filters.exists("Path."+path.size()));
+            filter = Filters.exists("Path."+path.size());
         }else {
             // Because a filter might match something deep in the tree, we need to return if there is a wanted node deeper
             // on the path as well (so build a query that is matches anywhere the first elements on the path)
@@ -45,8 +52,15 @@ public class MongoDBStructureIOManager implements StructureIOManager {
             }
             // also only include paths that are longer than the current one (exclude self)
             pathFiltersList.add(Filters.exists("Path."+path.size()));
-            documents = collection.find(Filters.and(pathFiltersList));
+            filter = Filters.and(pathFiltersList);
         }
+        if (filtered){
+            Bson contentFilters = Filter.generateFilters();
+            if (contentFilters!=null){
+                filter = Filters.and(filter, contentFilters);
+            }
+        }
+        documents = collection.find(filter);
 
         // for each document, return only the next step in the path after the query path
         //  -- uses a set, so we don't get duplicates if multiple nodes match

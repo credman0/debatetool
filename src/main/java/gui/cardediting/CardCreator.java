@@ -45,10 +45,21 @@ public class CardCreator{
     private LocationTreeItem openedNode;
     private SpeechComponent openedComponent;
 
+    private static CardCreator activeGUI;
+
+    public static CardCreator getActiveGUI() {
+        return activeGUI;
+    }
+
+    public void refreshDirectories(){
+        ((LocationTreeItem)directoryView.getRoot()).reloadChildrenRecursive();
+    }
+
     public LocationTreeItem getOpenedNode(){
         return openedNode;
     }
     public void init(){
+        activeGUI = this;
         componentViewer = new ComponentViewer();
         componentViewer.init(viewerPane);
         populateDirectoryView();

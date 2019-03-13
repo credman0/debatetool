@@ -5,6 +5,9 @@ import java.util.List;
 
 public interface StructureIOManager extends Closeable, AutoCloseable {
     List<String> getChildren(List<String> path);
+
+    List<String> getChildren(List<String> path, boolean filtered);
+
     List<byte[]> getContent(List<String> path);
     List<String> getRoot();
     void addChild(List<String> path, String name);

@@ -69,6 +69,16 @@ public class LocationTreeItem extends TreeItem<LocationTreeItemContent> {
         }
     }
 
+    public void reloadChildrenRecursive(){
+        if (!childrenLoaded || isLeaf()){
+            return;
+        }
+        for (TreeItem<LocationTreeItemContent> child:getChildren()){
+            ((LocationTreeItem)child).reloadChildrenRecursive();
+        }
+        reloadChildren();
+    }
+
 
     @Override
     public boolean isLeaf(){
