@@ -119,21 +119,21 @@ public class CardCreator{
                     ChangeListener<Boolean> previousListener =  null;
                     @Override
                     protected void updateItem(String content, boolean empty){
-                        if (getTreeTableRow().getTreeItem()==null || getTreeTableRow().getTreeItem().getValue() == null){
-                            // there is an empty cell added if the root is otherwise empty -- ignore it
-                            return;
-                        }
                         super.updateItem(content, empty);
-                        if (previousListener!=null && previousItem!=null) {
-                            previousItem.expandedProperty().removeListener(previousListener);
-                            previousListener = null;
-                        }
-                        LocationTreeItem item = (LocationTreeItem) getTreeTableRow().getTreeItem();
-                        previousItem = item;
                         if(empty || content==null) {
                             setText(null);
                             setGraphic(null);
                         } else {
+                            if (getTreeTableRow().getTreeItem()==null || getTreeTableRow().getTreeItem().getValue() == null){
+                                // there is an empty cell added if the root is otherwise empty -- ignore it
+                                return;
+                            }
+                            if (previousListener!=null && previousItem!=null) {
+                                previousItem.expandedProperty().removeListener(previousListener);
+                                previousListener = null;
+                            }
+                            LocationTreeItem item = (LocationTreeItem) getTreeTableRow().getTreeItem();
+                            previousItem = item;
                             setText(content);
                             if (!item.isLeaf()) {
                                 if (item.isExpanded()) {
