@@ -65,8 +65,14 @@ public class Speech extends HashIdentifiedSpeechComponent{
         setModified(true);
     }
 
+    public void removeComponent(SpeechComponent component){
+        contents.remove(component);
+        setModified(true);
+    }
+
     public void reload() throws IOException {
         // TODO more elegant fix than querying the database?
+        setModified(true);
         Speech newSpeech = (Speech) IOController.getIoController().getComponentIOManager().retrieveSpeechComponent(getHash());
         loaded = false;
         this.contents = newSpeech.contents;
@@ -123,11 +129,8 @@ public class Speech extends HashIdentifiedSpeechComponent{
     }
 
     @Override
-    public String getHashedString() {
-        StringBuilder builder = new StringBuilder();
-        builder.append(String.join("/"+path.size(),path));
-        builder.append(name);
-        return builder.toString();
+    public String getHashString() {
+        return HashIdentifiedSpeechComponent.getPositionalHashString(path, name);
     }
 
     @Override

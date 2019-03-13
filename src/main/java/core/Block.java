@@ -91,6 +91,11 @@ public class Block extends HashIdentifiedSpeechComponent {
         setModified(true);
     }
 
+    public void removeComponent(int index){
+        contents.remove(index);
+        setModified(true);
+    }
+
     public SpeechComponent getComponent(int i){
         return contents.get(i);
     }
@@ -154,11 +159,8 @@ public class Block extends HashIdentifiedSpeechComponent {
     }
 
     @Override
-    public String getHashedString() {
-        StringBuilder builder = new StringBuilder();
-        builder.append(String.join("/"+path.size(),path));
-        builder.append(name);
-        return builder.toString();
+    public String getHashString() {
+        return HashIdentifiedSpeechComponent.getPositionalHashString(path,name);
     }
 
     @Override

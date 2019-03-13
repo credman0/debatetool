@@ -10,12 +10,15 @@ import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Worker;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.*;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
@@ -130,15 +133,19 @@ public class BlockEditor {
     }
 
     public void save() {
-        List<TreeItem> children = blockTreeView.getRoot().getChildren();
-        block.clearContents();
-        for (TreeItem child:children){
-            block.addComponent((SpeechComponent) child.getValue());
-        }
+        updateBlockContents();
         try {
             IOController.getIoController().getComponentIOManager().storeSpeechComponent(block);
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    private void updateBlockContents(){
+        List<TreeItem> children = blockTreeView.getRoot().getChildren();
+        block.clearContents();
+        for (TreeItem child:children){
+            block.addComponent((SpeechComponent) child.getValue());
         }
     }
 
@@ -182,6 +189,19 @@ public class BlockEditor {
 
     public void init() {
         blockTreeView.setCellFactory(new SpeechComponentCellFactory(true, Card.class, Analytic.class));
+        blockTreeView.setOnKeyPressed(new EventHandler<KeyEvent>() {
+            @Override
+            public void handle(KeyEvent keyEvent) {
+                if (keyEvent.getCode().equals(KeyCode.DELETE)){
+                    TreeItem<SpeechComponent> item = (TreeItem<SpeechComponent>) blockTreeView.getSelectionModel().getSelectedItem();
+                    if (item!=null){
+                        updateBlockContents();
+                        block.removeComponent(item.getValue());
+                        refresh();
+                    }
+                }
+            }
+        });
     }
 
     private void setRoot(TreeItem<SpeechComponent> root){

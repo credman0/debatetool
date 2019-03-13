@@ -299,7 +299,7 @@ public class Card extends HashIdentifiedSpeechComponent {
     }
 
     @Override
-    public String getHashedString() {
+    public String getHashString() {
         return text+cite.toString();
     }
 

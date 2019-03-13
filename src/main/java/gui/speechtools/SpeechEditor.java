@@ -9,12 +9,15 @@ import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Worker;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.*;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
@@ -133,15 +136,19 @@ public class SpeechEditor {
     }
 
     public void save() {
-        List<TreeItem> children = speechTreeView.getRoot().getChildren();
-        speech.clearContents();
-        for (TreeItem child:children){
-            speech.addComponent((SpeechComponent) child.getValue());
-        }
+        updateSpeechContents();
         try {
             IOController.getIoController().getComponentIOManager().storeSpeechComponent(speech);
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    private void updateSpeechContents(){
+        List<TreeItem> children = speechTreeView.getRoot().getChildren();
+        speech.clearContents();
+        for (TreeItem child:children){
+            speech.addComponent((SpeechComponent) child.getValue());
         }
     }
 
@@ -204,6 +211,19 @@ public class SpeechEditor {
             @Override
             public void onChanged(Change<? extends TreeItem<SpeechComponent>> change) {
                 generateContents();
+            }
+        });
+        speechTreeView.setOnKeyPressed(new EventHandler<KeyEvent>() {
+            @Override
+            public void handle(KeyEvent keyEvent) {
+                if (keyEvent.getCode().equals(KeyCode.DELETE)){
+                    TreeItem<SpeechComponent> item = (TreeItem<SpeechComponent>) speechTreeView.getSelectionModel().getSelectedItem();
+                    if (item!=null){
+                        updateSpeechContents();
+                        speech.removeComponent(item.getValue());
+                        refresh();
+                    }
+                }
             }
         });
 

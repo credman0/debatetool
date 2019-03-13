@@ -6,6 +6,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.List;
 
 public abstract class HashIdentifiedSpeechComponent extends SpeechComponent {
     private boolean modified = false;
@@ -54,16 +55,10 @@ public abstract class HashIdentifiedSpeechComponent extends SpeechComponent {
         }
     }
 
-    public abstract String getHashedString();
+    public abstract String getHashString();
 
     protected byte[] generateHash() {
-        MessageDigest dg = null;
-        try {
-            dg = MessageDigest.getInstance("MD5");
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        }
-        return dg.digest(getHashedString().getBytes(StandardCharsets.UTF_8));
+        return performHash(getHashString());
     }
 
     public final byte[] getHash() {
@@ -71,6 +66,23 @@ public abstract class HashIdentifiedSpeechComponent extends SpeechComponent {
             hash = generateHash();
         }
         return hash;
+    }
+
+    public static byte[] performHash(String hashedString){
+        MessageDigest dg = null;
+        try {
+            dg = MessageDigest.getInstance("MD5");
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+        return dg.digest(hashedString.getBytes(StandardCharsets.UTF_8));
+    }
+
+    public static String getPositionalHashString(List<String> path, String name){
+        StringBuilder builder = new StringBuilder();
+        builder.append(String.join("/"+path.size(),path));
+        builder.append(name);
+        return builder.toString();
     }
 
     public abstract HashIdentifiedSpeechComponent clone();

@@ -4,10 +4,7 @@ import com.mongodb.MongoClient;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
-import com.mongodb.client.model.Filters;
-import com.mongodb.client.model.Indexes;
-import com.mongodb.client.model.UpdateOptions;
-import com.mongodb.client.model.Updates;
+import com.mongodb.client.model.*;
 import io.filters.Filter;
 import io.structureio.StructureIOManager;
 import org.bson.Document;
@@ -147,6 +144,17 @@ public class MongoDBStructureIOManager implements StructureIOManager {
         pathUpdateList.add(Updates.set("Path."+path.size(), newName));
         Bson pathFilter = Filters.and(pathFiltersList);
         Bson pathUpdate = Updates.combine(pathUpdateList);
+        // before changing the paths, we need to make sure to update the hashes of any components whose hash will change
+        // TODO try to reduce the number of transactions here
+        /*FindIterable<Document> changedDirectories = collection.find(pathFilter);
+        List<WriteModel<Document>> writes = new ArrayList<WriteModel<Document>>();
+        for (Document document:changedDirectories){
+            List<Bson> pipeline = new ArrayList<>();
+            List<Variable<Object>> let = new ArrayList<>();
+            pipeline.
+            UpdateOneModel update = new UpdateOneModel(document, Aggregates.lookup("SpeechComponents",);
+            writes.add(update);
+        }*/
         // find documents that are prefixed with every element of the path and replace those path elements
         collection.updateMany(pathFilter,pathUpdate);
     }
