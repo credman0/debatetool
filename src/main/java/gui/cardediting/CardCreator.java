@@ -364,11 +364,6 @@ public class CardCreator{
             return cell;
         });
         timeColumn.setCellValueFactory(new TreeItemPropertyValueFactory("date"));
-
-        for (String name:rootFolders){
-
-            root.getChildren().add(new LocationTreeItem(new LocationTreeItemContent(name)));
-        }
         directoryView.setColumnResizePolicy(TreeTableView.CONSTRAINED_RESIZE_POLICY);
         directoryView.setShowRoot(false);
         directoryView.setRoot(root);

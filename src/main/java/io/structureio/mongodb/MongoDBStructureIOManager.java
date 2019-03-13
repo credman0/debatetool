@@ -15,7 +15,9 @@ import org.bson.types.Binary;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class MongoDBStructureIOManager implements StructureIOManager {
     MongoClient mongoClient;
@@ -31,16 +33,32 @@ public class MongoDBStructureIOManager implements StructureIOManager {
 
     @Override
     public List<String> getChildren(List<String> path) {
-        Document document = collection.find(Filters.eq("Path", path)).first();
-        List<String> children = null;
-        if (document != null) {
-            children = (List<String>) document.get("Children");
+        FindIterable<Document> documents;
+        if (path.isEmpty()){
+            documents = collection.find(Filters.exists("Path."+path.size()));
+        }else {
+            // Because a filter might match something deep in the tree, we need to return if there is a wanted node deeper
+            // on the path as well (so build a query that is matches anywhere the first elements on the path)
+            ArrayList<Bson> pathFiltersList = new ArrayList<>(path.size());
+            for (int i = 0; i < path.size(); i++) {
+                pathFiltersList.add(Filters.eq("Path." + i, path.get(i)));
+            }
+            // also only include paths that are longer than the current one (exclude self)
+            pathFiltersList.add(Filters.exists("Path."+path.size()));
+            documents = collection.find(Filters.and(pathFiltersList));
         }
-        if (children == null) {
-            return new ArrayList<>();
-        } else {
-            return children;
+
+        // for each document, return only the next step in the path after the query path
+        //  -- uses a set, so we don't get duplicates if multiple nodes match
+        Set<String> children = new HashSet<>();
+        if (documents != null) {
+            for (Document document : documents){
+                children.add(((List<String>)document.get("Path")).get(path.size()));
+            }
         }
+
+        return new ArrayList<>(children);
+
     }
 
     @Override
@@ -65,16 +83,17 @@ public class MongoDBStructureIOManager implements StructureIOManager {
 
     @Override
     public List<String> getRoot() {
-        FindIterable<Document> root = collection.find(Filters.size("Path", 0));
-        if (root.first()==null){
-            return new ArrayList<>();
-        }
-        return (List<String>) root.first().get("Children");
+        return getChildren(new ArrayList<>());
     }
 
     @Override
     public void addChild(List<String> path, String name) {
-        collection.updateOne(Filters.eq("Path", path), Updates.addToSet("Children", name),upsertOption);
+        Document child = new Document();
+        // TODO adding then removing not thread safe/generally ugly
+        path.add(name);
+        child.put("Path", path);
+        collection.insertOne(child);
+        path.remove(path.size()-1);
     }
 
     @Override
@@ -116,11 +135,6 @@ public class MongoDBStructureIOManager implements StructureIOManager {
         Bson pathUpdate = Updates.combine(pathUpdateList);
         // find documents that are prefixed with every element of the path and replace those path elements
         collection.updateMany(pathFilter,pathUpdate);
-
-        // now change the way that the document is found by its parent
-        Bson parentFilter = Filters.eq("Path", path);
-        collection.updateOne(parentFilter, Updates.pull("Children",name));
-        collection.updateOne(parentFilter, Updates.push("Children",newName));
     }
 
     @Override
