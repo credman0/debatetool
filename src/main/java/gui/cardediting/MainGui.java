@@ -2,6 +2,7 @@ package gui.cardediting;
 
 import com.jfoenix.controls.JFXChipView;
 import com.jfoenix.controls.JFXSpinner;
+import com.jfoenix.controls.JFXToggleButton;
 import core.*;
 import gui.SettingsHandler;
 import gui.locationtree.LocationTreeItem;
@@ -43,6 +44,7 @@ import java.util.Date;
 import java.util.List;
 
 public class MainGui {
+    @FXML private JFXToggleButton editToggle;
     @FXML private Text viewerLabel;
     @FXML private Button backButton;
     @FXML private Button forwardButton;
@@ -127,6 +129,14 @@ public class MainGui {
                     Filter.removedParsed(change.getFrom());
                     refreshDirectories();
                 }
+            }
+        });
+
+        componentViewer.bindEditMode(editToggle.selectedProperty());
+        editToggle.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                componentViewer.updateEdit();
             }
         });
     }

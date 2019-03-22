@@ -8,49 +8,55 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 <?import java.lang.String?>
+<?import com.jfoenix.controls.JFXToggleButton?>
 <BorderPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
             fx:controller="gui.cardediting.MainGui"
             prefHeight="720.0" prefWidth="1280.0">
     <top>
-        <MenuBar fx:id="menuBar">
-            <menus>
-                <Menu text="File">
-                    <items>
-                        <MenuItem text="New Card" onAction="#newCardAction" accelerator="SHORTCUT+N"/>
-                        <MenuItem text="Save Card" onAction="#save" accelerator="SHORTCUT+S"/>
-                        <SeparatorMenuItem/>
-                        <MenuItem text="Exit" onAction="#exit" accelerator="SHORTCUT+Q"/>
-                    </items>
-                </Menu>
-                <Menu text="Edit">
-                    <items>
-                        <MenuItem text="Copy"/>
-                        <MenuItem text="Paste"/>
-                        <SeparatorMenuItem/>
-                        <MenuItem text="Toggle Edit Mode" onAction="#toggleEdit" accelerator="SHORTCUT+E"/>
-                    </items>
-                </Menu>
-                <Menu text="Preferences">
-                    <items>
-                        <MenuItem text="Settings" onAction="#showSettings"/>
-                    </items>
-                </Menu>
-                <Menu text="Scripts" fx:id="scriptsMenu">
-                    <items>
-                        <MenuItem text=""/>
-                    </items>
-                </Menu>
-                <Menu text="Help">
-                    <items>
-                        <MenuItem text="Search" disable="true"/>
-                        <MenuItem text="Online Manual" visible="false"/>
-                        <SeparatorMenuItem />
-                        <MenuItem text="About"/>
-                    </items>
-                </Menu>
-            </menus>
-        </MenuBar>
+        <VBox>
+            <MenuBar fx:id="menuBar">
+                <menus>
+                    <Menu text="File">
+                        <items>
+                            <MenuItem text="New Card" onAction="#newCardAction" accelerator="SHORTCUT+N"/>
+                            <MenuItem text="Save Card" onAction="#save" accelerator="SHORTCUT+S"/>
+                            <SeparatorMenuItem/>
+                            <MenuItem text="Exit" onAction="#exit" accelerator="SHORTCUT+Q"/>
+                        </items>
+                    </Menu>
+                    <Menu text="Edit">
+                        <items>
+                            <MenuItem text="Copy"/>
+                            <MenuItem text="Paste"/>
+                            <SeparatorMenuItem/>
+                            <MenuItem text="Toggle Edit Mode" onAction="#toggleEdit" accelerator="SHORTCUT+E"/>
+                        </items>
+                    </Menu>
+                    <Menu text="Preferences">
+                        <items>
+                            <MenuItem text="Settings" onAction="#showSettings"/>
+                        </items>
+                    </Menu>
+                    <Menu text="Scripts" fx:id="scriptsMenu">
+                        <items>
+                            <MenuItem text=""/>
+                        </items>
+                    </Menu>
+                    <Menu text="Help">
+                        <items>
+                            <MenuItem text="Search" disable="true"/>
+                            <MenuItem text="Online Manual" visible="false"/>
+                            <SeparatorMenuItem />
+                            <MenuItem text="About"/>
+                        </items>
+                    </Menu>
+                </menus>
+            </MenuBar>
+            <HBox>
+                <JFXToggleButton fx:id="editToggle" text="Edit Mode"/>
+            </HBox>
+        </VBox>
     </top>
     <center>
         <SplitPane dividerPositions="0.3">

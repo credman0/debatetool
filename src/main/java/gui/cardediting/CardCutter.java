@@ -285,6 +285,9 @@ public class CardCutter extends CardViewer {
 
     @Override
     public void save(List<String> path) {
+        if (tagsList.isEmpty()){
+            return;
+        }
         IOController.getIoController().getOverlayIOManager().saveOverlays(getCard().getHash(), highlightingOverlayList, "Highlight");
         IOController.getIoController().getOverlayIOManager().saveOverlays(getCard().getHash(), underliningOverlayList, "Underline");
         getCard().setTags(tagsList.subList(0, tagsList.size()-1));

@@ -7,6 +7,8 @@ import core.Speech;
 import gui.blockediting.BlockEditor;
 import gui.speechtools.SpeechEditor;
 import gui.speechtools.SpeechViewer;
+import javafx.beans.property.Property;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
@@ -21,15 +23,19 @@ public class ComponentViewer {
     private SpeechViewer speechViewer;
     private BorderPane viewerPane;
     private BlockEditor blockEditor;
-    private boolean editMode;
+    private SimpleBooleanProperty editMode = new SimpleBooleanProperty(true);
     private enum ViewType {BLOCK, CARD, SPEECH};
     private ViewType currentViewMode = ViewType.CARD;
+
+    public void bindEditMode(Property<Boolean> property){
+        property.bindBidirectional(editMode);
+    }
 
     public void open(HashIdentifiedSpeechComponent component){
         save();
         if (component.getClass().isAssignableFrom(Card.class)){
             currentViewMode = ViewType.CARD;
-            if (editMode){
+            if (editMode.get()){
                 cardEditor.open((Card) component);
             }else{
                 cardCutter.open((Card) component);
@@ -39,7 +45,7 @@ public class ComponentViewer {
             blockEditor.open((Block) component);
         }else if (component.getClass().isAssignableFrom(Speech.class)){
             currentViewMode = ViewType.SPEECH;
-            if (editMode) {
+            if (editMode.get()) {
                 speechEditor.open((Speech) component);
             }else{
                 speechViewer.open((Speech) component);
@@ -77,7 +83,7 @@ public class ComponentViewer {
             speechViewLoader.load();
             speechViewer = speechViewLoader.getController();
 
-            editMode = true;
+            editMode.set(true);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -88,14 +94,13 @@ public class ComponentViewer {
             case BLOCK:
                 return blockEditor.getPane();
             case CARD:
-                if (editMode) {
+                if (editMode.get()) {
                     return cardEditor.getPane();
                 } else {
                     return cardCutter.getPane();
                 }
             case SPEECH:
-
-                if (editMode) {
+                if (editMode.get()) {
                     return speechEditor.getPane();
                 } else {
                     return speechViewer.getPane();
@@ -117,7 +122,7 @@ public class ComponentViewer {
                 break;
 
             case CARD:
-                if (editMode) {
+                if (editMode.get()) {
                     cardEditor.save(path);
                 } else {
                     cardCutter.save(path);
@@ -143,7 +148,7 @@ public class ComponentViewer {
                 break;
 
             case CARD:
-                if (editMode) {
+                if (editMode.get()) {
                     cardEditor.refresh();
                 } else {
                     cardCutter.refresh();
@@ -151,7 +156,7 @@ public class ComponentViewer {
                 break;
 
             case SPEECH:
-                if (editMode) {
+                if (editMode.get()) {
                     speechEditor.refresh();
                 } else {
                     speechEditor.refresh();
@@ -171,7 +176,7 @@ public class ComponentViewer {
                 break;
 
             case CARD:
-                if (editMode) {
+                if (editMode.get()) {
                     viewerPane.setCenter(cardEditor.getPane());
                 } else {
                     viewerPane.setCenter(cardCutter.getPane());
@@ -179,7 +184,7 @@ public class ComponentViewer {
                 break;
 
             case SPEECH:
-                if (editMode) {
+                if (editMode.get()) {
                     viewerPane.setCenter(speechEditor.getPane());
                 } else {
                     viewerPane.setCenter(speechViewer.getPane());
@@ -194,25 +199,29 @@ public class ComponentViewer {
     }
 
     public void togglePanes() {
+        editMode.set(!editMode.get());
+        updateEdit();
+    }
+
+    public void updateEdit(){
         if (currentViewMode==ViewType.CARD) {
-            if (editMode) {
-                cardEditor.swapTo(cardCutter);
-            } else {
+            if (editMode.get()) {
                 cardCutter.swapTo(cardEditor);
+            } else {
+                cardEditor.swapTo(cardCutter);
             }
         }else if (currentViewMode==ViewType.SPEECH) {
-            if (editMode){
-                speechViewer.open(speechEditor.getSpeech());
-            }else{
+            if (editMode.get()){
                 speechEditor.open(speechViewer.getSpeech());
+            }else{
+                speechViewer.open(speechEditor.getSpeech());
             }
         }
-        editMode = !editMode;
         updateViewerPane();
     }
 
     public void newCard() {
-        editMode = true;
+        editMode.set(true);
         currentViewMode = ViewType.CARD;
         updateViewerPane();
     }
