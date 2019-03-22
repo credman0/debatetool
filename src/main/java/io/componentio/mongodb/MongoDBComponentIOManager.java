@@ -15,6 +15,7 @@ import org.bson.types.Binary;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class MongoDBComponentIOManager implements ComponentIOManager {
@@ -33,17 +34,21 @@ public class MongoDBComponentIOManager implements ComponentIOManager {
     }
 
     @Override
-    public ArrayList<HashIdentifiedSpeechComponent> retrieveSpeechComponents(byte[][] hashes) throws IOException {
+    public HashMap<Binary, HashIdentifiedSpeechComponent> retrieveSpeechComponents(List<byte[]> hashes) throws IOException {
         List<Bson> fetchFilterList = new ArrayList<>();
         for (byte[] hash:hashes){
             fetchFilterList.add(Filters.eq("Hash", hash));
         }
+        if (fetchFilterList.isEmpty()){
+            return new HashMap<>();
+        }
         Bson fetchFilter = Filters.or(fetchFilterList);
         FindIterable<Document> foundDocuments = collection.find(fetchFilter);
 
-        ArrayList<HashIdentifiedSpeechComponent> speechComponents = new ArrayList<>(hashes.length);
+        HashMap<Binary,HashIdentifiedSpeechComponent> speechComponents = new HashMap<>(hashes.size()*2);
         for (Document doc:foundDocuments){
-            speechComponents.add(fromDocument(doc, ((Binary) doc.get("Hash")).getData()));
+            Binary binaryHash = (Binary) doc.get("Hash");
+            speechComponents.put(binaryHash, fromDocument(doc, binaryHash.getData()));
         }
         return speechComponents;
     }

@@ -1,13 +1,18 @@
 package gui.locationtree;
 
+import com.jfoenix.controls.JFXSpinner;
 import core.HashIdentifiedSpeechComponent;
 import io.iocontrollers.IOController;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.value.ChangeListener;
 import javafx.collections.ObservableList;
 import javafx.scene.control.TreeItem;
 import javafx.scene.image.Image;
+import org.bson.types.Binary;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 
@@ -18,6 +23,15 @@ public class LocationTreeItem extends TreeItem<LocationTreeItemContent> {
     public final static Image LETTER_B = new Image(LocationTreeItem.class.getResource("/icons/Letter-B-blue-icon.png").toExternalForm());
     public final static Image LETTER_C = new Image(LocationTreeItem.class.getResource("/icons/Letter-C-pink-icon.png").toExternalForm());
     public final static Image LETTER_S = new Image(LocationTreeItem.class.getResource("/icons/Letter-S-lg-icon.png").toExternalForm());
+    private SimpleBooleanProperty loadingProperty = new SimpleBooleanProperty(false);
+
+    public void addLoadingListener(ChangeListener<Boolean> listener){
+        loadingProperty.addListener(listener);
+    }
+
+    public void removeLoadingListener(ChangeListener<Boolean> listener){
+        loadingProperty.removeListener(listener);
+    }
 
     public boolean isChildrenLoaded() {
         return childrenLoaded;
@@ -39,6 +53,7 @@ public class LocationTreeItem extends TreeItem<LocationTreeItemContent> {
             return super.getChildren();
         }
         childrenLoaded = true;
+        loadingProperty.set(true);
         List<TreeItem<LocationTreeItemContent>> children = new ArrayList<>();
         List<String> path = getPath();
         List<String> childrenDirs = IOController.getIoController().getStructureIOManager().getChildren(path);
@@ -46,16 +61,16 @@ public class LocationTreeItem extends TreeItem<LocationTreeItemContent> {
         for (String name:childrenDirs){
             children.add(new LocationTreeItem(new LocationTreeItemContent(name)));
         }
-        // TODO use group fetch function of io manager
-        for (byte[] hash:contentIDs) {
-            HashIdentifiedSpeechComponent content = null;
-            try {
-                content = IOController.getIoController().getComponentIOManager().retrieveSpeechComponent(hash);
-            } catch (IOException e) {
-                e.printStackTrace();
+        try {
+            HashMap<Binary, HashIdentifiedSpeechComponent> components = IOController.getIoController().getComponentIOManager().retrieveSpeechComponents(contentIDs);
+            for (byte[] hash:contentIDs) {
+                HashIdentifiedSpeechComponent content = components.get(new Binary(hash));
+                children.add(new LocationTreeItem(new LocationTreeItemContent(content)));
             }
-            children.add(new LocationTreeItem(new LocationTreeItemContent(content)));
+        } catch (IOException e) {
+            e.printStackTrace();
         }
+        loadingProperty.set(false);
         super.getChildren().addAll(children);
         return super.getChildren();
     }

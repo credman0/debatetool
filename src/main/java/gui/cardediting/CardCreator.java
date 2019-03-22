@@ -1,6 +1,7 @@
 package gui.cardediting;
 
 import com.jfoenix.controls.JFXChipView;
+import com.jfoenix.controls.JFXSpinner;
 import core.*;
 import gui.SettingsHandler;
 import gui.locationtree.LocationTreeItem;
@@ -100,7 +101,7 @@ public class CardCreator{
             if(mouseEvent.getClickCount() == 2) {
                 LocationTreeItem node = (LocationTreeItem) directoryView.getSelectionModel().getSelectedItem();
                 if (node != null && node.isLeaf()){
-                    open(node.getValue().getSpeechComponent().clone());
+                    open(node.getValue().getSpeechComponent());
                 }
             }
         });
@@ -170,7 +171,8 @@ public class CardCreator{
                         setContextMenu(new ContextMenu());
                     }
                     LocationTreeItem previousItem = null;
-                    ChangeListener<Boolean> previousListener =  null;
+                    ChangeListener<Boolean> previousExpandedListener =  null;
+                    ChangeListener<Boolean> previousLoadingListener =  null;
                     @Override
                     protected void updateItem(String content, boolean empty){
                         super.updateItem(content, empty);
@@ -182,9 +184,11 @@ public class CardCreator{
                                 // there is an empty cell added if the root is otherwise empty -- ignore it
                                 return;
                             }
-                            if (previousListener!=null && previousItem!=null) {
-                                previousItem.expandedProperty().removeListener(previousListener);
-                                previousListener = null;
+                            if (previousExpandedListener !=null && previousItem!=null) {
+                                previousItem.expandedProperty().removeListener(previousExpandedListener);
+                                previousItem.removeLoadingListener(previousLoadingListener);
+                                previousExpandedListener = null;
+                                previousLoadingListener = null;
                             }
                             LocationTreeItem item = (LocationTreeItem) getTreeTableRow().getTreeItem();
                             previousItem = item;
@@ -198,14 +202,30 @@ public class CardCreator{
 
                                 // cannot use "this" inside the listener
                                 TreeTableCell cell1 = this;
-                                previousListener = (observableValue, aBoolean, t1) -> {
+                                previousExpandedListener = (observableValue, aBoolean, t1) -> {
                                     if (t1){
                                         setIcon(cell1, LocationTreeItem.DIRECTORY_OPEN);
                                     }else{
                                         setIcon(cell1, LocationTreeItem.DIRECTORY_CLOSED);
                                     }
                                 };
-                                item.expandedProperty().addListener(previousListener);
+                                item.expandedProperty().addListener(previousExpandedListener);
+
+                                previousLoadingListener = new ChangeListener<Boolean>() {
+                                    @Override
+                                    public void changed(ObservableValue<? extends Boolean> observableValue, Boolean aBoolean, Boolean t1) {
+                                        if (t1){
+                                            cell1.setGraphic(new JFXSpinner());
+                                        }else{
+                                            if (item.isExpanded()) {
+                                                setIcon(cell1, LocationTreeItem.DIRECTORY_OPEN);
+                                            }else{
+                                                setIcon(cell1, LocationTreeItem.DIRECTORY_CLOSED);
+                                            }
+                                        }
+                                    }
+                                };
+                                item.addLoadingListener(previousLoadingListener);
                             }else{
                                 if (item.getValue().getSpeechComponent().getClass().isAssignableFrom(Block.class)){
                                     setIcon(this, LocationTreeItem.LETTER_B);
