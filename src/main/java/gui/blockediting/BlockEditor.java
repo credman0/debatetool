@@ -1,7 +1,6 @@
 package gui.blockediting;
 
 import core.*;
-import gui.cardediting.CardCreator;
 import gui.speechtools.SpeechComponentCellFactory;
 import io.iocontrollers.IOController;
 import javafx.application.Platform;

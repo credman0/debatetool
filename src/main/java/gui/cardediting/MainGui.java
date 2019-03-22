@@ -42,7 +42,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
-public class CardCreator{
+public class MainGui {
     @FXML private Text viewerLabel;
     @FXML private Button backButton;
     @FXML private Button forwardButton;
@@ -59,9 +59,9 @@ public class CardCreator{
     private ObservableList<HashIdentifiedSpeechComponent> editHistory = FXCollections.observableArrayList();
     private SimpleIntegerProperty editHistoryIndex = new SimpleIntegerProperty(this, "editHistoryIndex", 0);
 
-    private static CardCreator activeGUI;
+    private static MainGui activeGUI;
 
-    public static CardCreator getActiveGUI() {
+    public static MainGui getActiveGUI() {
         return activeGUI;
     }
 

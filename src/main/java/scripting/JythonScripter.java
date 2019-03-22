@@ -1,7 +1,7 @@
 package scripting;
 
 import core.SpeechComponent;
-import gui.cardediting.CardCreator;
+import gui.cardediting.MainGui;
 import io.iocontrollers.IOController;
 import org.python.core.PySyntaxError;
 import org.python.util.PythonInterpreter;
@@ -17,7 +17,7 @@ public class JythonScripter {
         interp.set("structureManager", IOController.getIoController().getStructureIOManager());
         interp.set("componentManager", IOController.getIoController().getComponentIOManager());
         interp.set("overlayManager", IOController.getIoController().getOverlayIOManager());
-        interp.set("GUI", CardCreator.getActiveGUI());
+        interp.set("GUI", MainGui.getActiveGUI());
         try(BufferedReader reader = new BufferedReader(new FileReader(SCRIPT_PATH+"/"+name))) {
             String line = reader.readLine();
             while (line != null) {

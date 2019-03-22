@@ -12,21 +12,21 @@ import javafx.stage.WindowEvent;
 
 import java.io.IOException;
 
-public class CardCreatorLauncher extends Application {
+public class MainGuiLauncher extends Application {
     @Override
     public void start(Stage primaryStage) {
         Platform.runLater(new Runnable() {
             @Override
             public void run() {
                 try {
-                    FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("card_creator.fxml"));
+                    FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("main_gui.fxml"));
                     Parent root = loader.load();
                     //root.setStyle();
                     Scene scene = new Scene(root);
                     primaryStage.setScene(scene);
                     primaryStage.show();
                     primaryStage.setTitle("Debate Tool");
-                    ((CardCreator)loader.getController()).init();
+                    ((MainGui)loader.getController()).init();
                     primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
                         @Override
                         public void handle(WindowEvent windowEvent) {
