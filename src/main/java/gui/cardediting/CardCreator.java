@@ -522,6 +522,9 @@ public class CardCreator{
 
     public void refreshScripts() {
         String[] scripts = JythonScripter.getScripts();
+        if (scripts == null){
+            return;
+        }
         scriptsMenu.getItems().clear();
         for (String script:scripts){
             MenuItem item = new MenuItem(script);
@@ -529,6 +532,7 @@ public class CardCreator{
                 @Override
                 public void handle(ActionEvent actionEvent) {
                     try {
+                        scriptsMenu.hide();
                         JythonScripter.runScript(script, openedComponent);
                     } catch (IOException e) {
                         e.printStackTrace();

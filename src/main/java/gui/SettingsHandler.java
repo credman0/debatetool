@@ -20,13 +20,17 @@ public class SettingsHandler {
     private static Properties properties = new Properties();
     private static PreferencesFx preferencesFx;
     static{
-        try {
-            InputStream in = new FileInputStream("config.properties");
-            properties.load(in);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
+        if (new File("config.properties").exists()) {
+            try {
+                InputStream in = new FileInputStream("config.properties");
+                properties.load(in);
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }else{
+            properties = new Properties();
         }
 
         String portString = properties.getProperty("mongod_port");
