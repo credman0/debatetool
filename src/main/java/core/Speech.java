@@ -52,9 +52,7 @@ public class Speech extends HashIdentifiedSpeechComponent{
     }
 
     public void load() throws IOException {
-        for (SpeechComponent content:contents){
-            content.load();
-        }
+        IOController.getIoController().getComponentIOManager().loadAll(this);
         loaded = true;
     }
 

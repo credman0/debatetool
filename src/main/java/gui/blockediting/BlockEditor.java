@@ -160,8 +160,8 @@ public class BlockEditor {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        // TODO replace this line
-        CardCreator.getActiveGUI().refreshDirectories();
+
+        List<String> fullpath = block.getPath();
     }
 
     private void updateBlockContents(){

@@ -7,8 +7,9 @@ import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Indexes;
 import com.mongodb.client.model.Updates;
-import core.HashIdentifiedSpeechComponent;
+import core.*;
 import io.componentio.ComponentIOManager;
+import io.iocontrollers.IOController;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.bson.types.Binary;
@@ -71,6 +72,63 @@ public class MongoDBComponentIOManager implements ComponentIOManager {
     @Override
     public void deleteSpeechComponent(byte[] hash) throws IOException {
         collection.findOneAndDelete(Filters.eq("Hash", hash));
+    }
+
+    @Override
+    public void loadAll(HashIdentifiedSpeechComponent component) throws IOException {
+        if (Block.class.isInstance(component)) {
+            Block block = (Block) component;
+            ArrayList<byte[]> cardHashes = new ArrayList<>(block.size());
+            ArrayList<Card> cards = new ArrayList<>(block.size());
+            appendBlockCards(block,cardHashes,cards);
+            loadCards(cardHashes,cards);
+        }else if (Speech.class.isInstance(component)) {
+            Speech speech = (Speech) component;
+            ArrayList<byte[]> cardHashes = new ArrayList<>(speech.size());
+            ArrayList<Card> cards = new ArrayList<>(speech.size());
+            for (int i = 0; i < speech.size(); i++){
+                SpeechComponent speechComponent = speech.getComponent(i);
+                if (Card.class.isInstance(speechComponent)){
+                    cardHashes.add(((HashIdentifiedSpeechComponent)speechComponent).getHash());
+                    cards.add((Card) speechComponent);
+                }else if (Block.class.isInstance(speechComponent)){
+                    appendBlockCards(((Block) speechComponent), cardHashes,cards);
+                }else{
+                    throw new IllegalStateException("Illegal component in speech: "+speechComponent.getClass());
+                }
+            }
+            loadCards(cardHashes,cards);
+        } else {
+            throw new IllegalArgumentException("Unrecognized type: " + component.getClass());
+        }
+    }
+
+    private void appendBlockCards(Block block, List<byte[]> cardHashes, List<Card> cards){
+        for (int i = 0; i < block.size(); i++){
+            SpeechComponent blockComponent = block.getComponent(i);
+            if (Card.class.isInstance(blockComponent)){
+                cardHashes.add(((HashIdentifiedSpeechComponent)blockComponent).getHash());
+                cards.add((Card) blockComponent);
+            }else if (Analytic.class.isInstance(blockComponent)){
+                // nothing to load
+            }else{
+                throw new IllegalStateException("Illegal component in block: "+blockComponent.getClass());
+            }
+        }
+    }
+
+    private void loadCards(List<byte[]> cardHashes, List<Card> cards) throws IOException {
+        // TODO combine this into one request
+        HashMap<Binary, HashIdentifiedSpeechComponent> loadedComponents = retrieveSpeechComponents(cardHashes);
+        HashMap<Binary, HashMap<String, List<CardOverlay>>> allOverlays = IOController.getIoController().getOverlayIOManager().getAllOverlays(cardHashes);
+        for (Card cardToLoad:cards){
+            Binary cardBinaryHash = new Binary(cardToLoad.getHash());
+            cardToLoad.setTo((Card) loadedComponents.get(cardBinaryHash));
+            HashMap<String, List<CardOverlay>> cardOverlays = allOverlays.get(cardBinaryHash);
+            if (cardOverlays!=null) {
+                cardToLoad.assignOverlaysFromMap(cardOverlays);
+            }
+        }
     }
 
     @Override

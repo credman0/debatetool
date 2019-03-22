@@ -73,6 +73,10 @@ public class CardCreator{
         componentViewer.refresh();
     }
 
+    public boolean treeContainsPath(List<String> path){
+        return ((LocationTreeItem)directoryView.getRoot()).contains(path);
+    }
+
     public LocationTreeItem getOpenedNode(){
         return openedNode;
     }

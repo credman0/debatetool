@@ -11,6 +11,7 @@ import com.mongodb.client.model.Updates;
 import core.CardOverlay;
 import io.overlayio.OverlayIOManager;
 import org.bson.Document;
+import org.bson.conversions.Bson;
 import org.bson.types.Binary;
 
 import java.io.IOException;
@@ -53,6 +54,28 @@ public class MongoDBOverlayIOManager implements OverlayIOManager {
         collection.updateOne(Filters.and(Filters.eq("Hash", cardHash),Filters.eq("Type", type)), Updates.set("Names", names),upsertOption);
         collection.updateOne(Filters.and(Filters.eq("Hash", cardHash),Filters.eq("Type", type)), Updates.set("OverlayPositions", overlayPositions),upsertOption);
         collection.updateOne(Filters.and(Filters.eq("Hash", cardHash),Filters.eq("Type", type)), Updates.set("OverlayTypes", overlayTypes),upsertOption);
+    }
+
+    @Override
+    public HashMap<Binary, HashMap<String, List<CardOverlay>>> getAllOverlays(List<byte[]> cardHashes) {
+        List<Bson> fetchFilterList = new ArrayList<>();
+        for (byte[] hash:cardHashes){
+            fetchFilterList.add(Filters.eq("Hash", hash));
+        }
+        if (fetchFilterList.isEmpty()){
+            return new HashMap<>();
+        }
+        Bson fetchFilter = Filters.or(fetchFilterList);
+        FindIterable<Document> foundDocuments = collection.find(fetchFilter);
+        HashMap<Binary, HashMap<String, List<CardOverlay>>> allOverlays = new HashMap<>();
+        for (Document document:foundDocuments){
+            Binary binaryHash = (Binary) document.get("Hash");
+            if (!allOverlays.containsKey(binaryHash)){
+                allOverlays.put(binaryHash, new HashMap<>());
+            }
+            allOverlays.get(binaryHash).put(document.getString("Type"),fromDocument(document));
+        }
+        return allOverlays;
     }
 
     @Override

@@ -1,6 +1,7 @@
 package core;
 
 import io.IOUtil;
+import io.iocontrollers.IOController;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -158,13 +159,9 @@ public class Block extends HashIdentifiedSpeechComponent {
 
     @Override
     public void load() throws IOException {
-        // TODO these database calls should be grouped
-        for (SpeechComponent component:contents){
-            component.load();
-        }
+        IOController.getIoController().getComponentIOManager().loadAll(this);
         loaded = true;
     }
-
     @Override
     public String getHashString() {
         return HashIdentifiedSpeechComponent.getPositionalHashString(path,name);

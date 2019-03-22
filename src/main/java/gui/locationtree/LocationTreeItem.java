@@ -94,6 +94,21 @@ public class LocationTreeItem extends TreeItem<LocationTreeItemContent> {
         reloadChildren();
     }
 
+    // TODO this method is inefficient on several levels - will matter with a large tree
+    public boolean contains(List<String> path){
+        if (isLeaf()){
+            return getPath().equals(path);
+        }
+        if (isChildrenLoaded()) {
+            for (TreeItem<LocationTreeItemContent> child : getChildren()) {
+                if (((LocationTreeItem) child).getPath().equals(path) || ((LocationTreeItem) child).contains(path)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
 
     @Override
     public boolean isLeaf(){

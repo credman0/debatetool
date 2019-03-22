@@ -12,6 +12,6 @@ public interface ComponentIOManager extends Closeable, AutoCloseable {
     HashIdentifiedSpeechComponent retrieveSpeechComponent(byte[] hash) throws IOException;
     HashMap<Binary, HashIdentifiedSpeechComponent> retrieveSpeechComponents(List<byte[]> hashes) throws IOException;
     void storeSpeechComponent(HashIdentifiedSpeechComponent speechComponent) throws IOException;
-
     void deleteSpeechComponent(byte[] hash) throws IOException;
+    void loadAll(HashIdentifiedSpeechComponent component) throws IOException;
 }

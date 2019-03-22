@@ -238,6 +238,10 @@ public class Card extends HashIdentifiedSpeechComponent {
 
     private void loadOverlay(){
         HashMap<String, List<CardOverlay>> overlayMap = IOController.getIoController().getOverlayIOManager().getOverlays(getHash());
+        assignOverlaysFromMap(overlayMap);
+    }
+
+    public void assignOverlaysFromMap(HashMap<String, List<CardOverlay>> overlayMap){
         underlining = overlayMap.get("Underline");
         highlighting = overlayMap.get("Highlight");
         if (underlining == null){
@@ -292,10 +296,15 @@ public class Card extends HashIdentifiedSpeechComponent {
     public void load() throws IOException {
         Card self = (Card) IOController.getIoController().getComponentIOManager().retrieveSpeechComponent(hash);
         // TODO maybe a better way to import this information
-        this.text = self.text;
-        this.cite = self.cite;
-        this.timeStamp = self.timeStamp;
-        this.tags = self.tags;
+        setTo(self);
+    }
+
+    public void setTo(Card card){
+        this.text = card.text;
+        this.cite = card.cite;
+        this.timeStamp = card.timeStamp;
+        this.tags = card.tags;
+
     }
 
     @Override
