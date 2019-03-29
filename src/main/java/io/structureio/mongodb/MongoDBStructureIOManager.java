@@ -162,7 +162,7 @@ public class MongoDBStructureIOManager implements StructureIOManager {
 
     @Override
     public void getSafeChildRename(List<String> path, String base) {
-        throw new ExecutionControl.NotImplementedException("Safe child rename not implemented");
+        throw new UnsupportedOperationException("Safe child rename not implemented");
     }
 
     @Override
