@@ -17,6 +17,8 @@ public class SettingsHandler {
     private static final String DEFAULT_MONGO_IP = "127.0.0.1";
     private static StringProperty mongoPort = new SimpleStringProperty("");
     private static final String DEFAULT_MONGO_PORT = "27017";
+    private static StringProperty username = new SimpleStringProperty("");
+    private static StringProperty password = new SimpleStringProperty("");
     private static Properties properties = new Properties();
     private static PreferencesFx preferencesFx;
     static{
@@ -51,13 +53,19 @@ public class SettingsHandler {
             mongoIP.setValue(ipString);
         }
 
+        username.set(properties.getProperty("username"));
+        password.set(properties.getProperty("password"));
+
         preferencesFx =
                 PreferencesFx.of(SettingsHandler.class,
                         Category.of("Mongo Database Settings",
                                 Group.of("Server",
                                         Setting.of("Mongodb IP", mongoIP),
                                         Setting.of("Mongodb Port", mongoPort)
-                                )
+                                ),
+                                Group.of("Account",
+                                        Setting.of("Username",username),
+                                        Setting.of("Password",password))
                         )
                 ).addEventHandler(PreferencesFxEvent.EVENT_PREFERENCES_SAVED, new EventHandler<PreferencesFxEvent>() {
                     @Override
@@ -88,6 +96,17 @@ public class SettingsHandler {
         String mongoPortProperty = properties.getProperty("mongod_port");
         if (mongoPortProperty==null || !mongoPort.getValue().equals(mongoIPProperty)) {
             properties.put("mongod_port", mongoPort.getValue());
+            changed = true;
+        }
+        String usernameProperty = properties.getProperty("username");
+        if (usernameProperty==null || !username.getValue().equals(usernameProperty)) {
+            properties.put("username", username.getValue());
+            changed = true;
+        }
+        // TODO do not store this in plaintext
+        String passwordProperty = properties.getProperty("password");
+        if (passwordProperty==null || !password.getValue().equals(passwordProperty)) {
+            properties.put("password", password.getValue());
             changed = true;
         }
         if (changed) {

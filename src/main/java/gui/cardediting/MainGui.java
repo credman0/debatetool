@@ -336,7 +336,7 @@ public class MainGui {
 
                         if (!cell.isEmpty()){
                             if (cell.getTreeTableRow().getTreeItem().getValue().getSpeechComponent()==null) {
-                                //TODO reimplement directory rename
+                                //TODO reimplement directory rename (solve #38)
 
                                 // Add directory actions only to directories
                                 /*

@@ -1,6 +1,8 @@
 package io.iocontrollers.mongodb;
 
 import com.mongodb.MongoClient;
+import com.mongodb.MongoCredential;
+import com.mongodb.ServerAddress;
 import gui.SettingsHandler;
 import io.componentio.ComponentIOManager;
 import io.componentio.mongodb.MongoDBComponentIOManager;
@@ -11,12 +13,28 @@ import io.structureio.StructureIOManager;
 import io.structureio.mongodb.MongoDBStructureIOManager;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 public class MongoDBIOController implements IOController {
-    MongoClient mongoClient = new MongoClient(SettingsHandler.getSetting("mongod_ip"), Integer.parseInt(SettingsHandler.getSetting("mongod_port")));
-    private ComponentIOManager componentIOManager = new MongoDBComponentIOManager(mongoClient);
-    private StructureIOManager structureIOManager = new MongoDBStructureIOManager(mongoClient);
-    private OverlayIOManager overlayIOManager = new MongoDBOverlayIOManager(mongoClient);
+    MongoClient mongoClient;
+    private ComponentIOManager componentIOManager;
+    private StructureIOManager structureIOManager;
+    private OverlayIOManager overlayIOManager;
+
+    public MongoDBIOController(){
+        // TODO add handling for missing/wrong credentials
+        String username = SettingsHandler.getSetting("username");
+        char[] password = SettingsHandler.getSetting("password").toCharArray();
+        MongoCredential credential = MongoCredential.createCredential(username,
+                "UDT",
+                password);
+        ArrayList<MongoCredential> credentialList = new ArrayList<>();
+        credentialList.add(credential);
+        mongoClient = new MongoClient(new ServerAddress(SettingsHandler.getSetting("mongod_ip"), Integer.parseInt(SettingsHandler.getSetting("mongod_port"))),credentialList);
+        componentIOManager = new MongoDBComponentIOManager(mongoClient);
+        structureIOManager = new MongoDBStructureIOManager(mongoClient);
+        overlayIOManager = new MongoDBOverlayIOManager(mongoClient);
+    }
 
     @Override
     public ComponentIOManager getComponentIOManager() {
