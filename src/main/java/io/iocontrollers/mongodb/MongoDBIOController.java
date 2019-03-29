@@ -1,9 +1,7 @@
 package io.iocontrollers.mongodb;
 
-import com.mongodb.MongoClient;
-import com.mongodb.MongoClientOptions;
-import com.mongodb.MongoCredential;
-import com.mongodb.ServerAddress;
+import com.mongodb.*;
+import gui.LoginDialog;
 import gui.SettingsHandler;
 import io.componentio.ComponentIOManager;
 import io.componentio.mongodb.MongoDBComponentIOManager;
@@ -12,6 +10,9 @@ import io.overlayio.OverlayIOManager;
 import io.overlayio.mongodb.MongoDBOverlayIOManager;
 import io.structureio.StructureIOManager;
 import io.structureio.mongodb.MongoDBStructureIOManager;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
+import javafx.util.Pair;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -22,17 +23,30 @@ public class MongoDBIOController implements IOController {
     private StructureIOManager structureIOManager;
     private OverlayIOManager overlayIOManager;
 
+    private void attemptAuthentication(){
+        try {
+            Pair<String, String> credentialStrings = LoginDialog.showDialog();
+            MongoCredential credential = MongoCredential.createCredential(credentialStrings.getKey(),
+                    "UDT",
+                    credentialStrings.getValue().toCharArray());
+            mongoClient = new MongoClient(new ServerAddress(SettingsHandler.getSetting("mongod_ip"), Integer.parseInt(SettingsHandler.getSetting("mongod_port"))), credential, MongoClientOptions.builder().build());
+            // setup if the database authenticated properly
+            componentIOManager = new MongoDBComponentIOManager(mongoClient);
+            structureIOManager = new MongoDBStructureIOManager(mongoClient);
+            overlayIOManager = new MongoDBOverlayIOManager(mongoClient);
+        }catch (MongoSecurityException e){
+            // -4 is error authenticating
+            if (e.getCode()==-4){
+                new Alert(Alert.AlertType.ERROR, "Authentication failed!", ButtonType.OK).showAndWait();
+                attemptAuthentication();
+            }else {
+                e.printStackTrace();
+            }
+        }
+    }
     public MongoDBIOController(){
-        // TODO add handling for missing/wrong credentials
-        String username = SettingsHandler.getSetting("username");
-        char[] password = SettingsHandler.getSetting("password").toCharArray();
-        MongoCredential credential = MongoCredential.createCredential(username,
-                "UDT",
-                password);
-        mongoClient = new MongoClient(new ServerAddress(SettingsHandler.getSetting("mongod_ip"), Integer.parseInt(SettingsHandler.getSetting("mongod_port"))),credential, MongoClientOptions.builder().build());
-        componentIOManager = new MongoDBComponentIOManager(mongoClient);
-        structureIOManager = new MongoDBStructureIOManager(mongoClient);
-        overlayIOManager = new MongoDBOverlayIOManager(mongoClient);
+
+        attemptAuthentication();
     }
 
     @Override
