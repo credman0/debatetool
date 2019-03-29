@@ -19,4 +19,6 @@ public interface StructureIOManager extends Closeable, AutoCloseable {
     List<String> getBlockPath(byte[] hash);
 
     void renameDirectory(List<String> path, String name, String newName);
+
+    void getSafeChildRename(List<String> path, String base);
 }

@@ -7,6 +7,7 @@ import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.*;
 import io.filters.Filter;
 import io.structureio.StructureIOManager;
+import jdk.jshell.spi.ExecutionControl;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.bson.types.Binary;
@@ -157,6 +158,11 @@ public class MongoDBStructureIOManager implements StructureIOManager {
         }*/
         // find documents that are prefixed with every element of the path and replace those path elements
         collection.updateMany(pathFilter,pathUpdate);
+    }
+
+    @Override
+    public void getSafeChildRename(List<String> path, String base) {
+        throw new ExecutionControl.NotImplementedException("Safe child rename not implemented");
     }
 
     @Override
