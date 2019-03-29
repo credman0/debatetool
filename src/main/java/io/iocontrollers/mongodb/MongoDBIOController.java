@@ -1,6 +1,7 @@
 package io.iocontrollers.mongodb;
 
 import com.mongodb.MongoClient;
+import com.mongodb.MongoClientOptions;
 import com.mongodb.MongoCredential;
 import com.mongodb.ServerAddress;
 import gui.SettingsHandler;
@@ -28,9 +29,7 @@ public class MongoDBIOController implements IOController {
         MongoCredential credential = MongoCredential.createCredential(username,
                 "UDT",
                 password);
-        ArrayList<MongoCredential> credentialList = new ArrayList<>();
-        credentialList.add(credential);
-        mongoClient = new MongoClient(new ServerAddress(SettingsHandler.getSetting("mongod_ip"), Integer.parseInt(SettingsHandler.getSetting("mongod_port"))),credentialList);
+        mongoClient = new MongoClient(new ServerAddress(SettingsHandler.getSetting("mongod_ip"), Integer.parseInt(SettingsHandler.getSetting("mongod_port"))),credential, MongoClientOptions.builder().build());
         componentIOManager = new MongoDBComponentIOManager(mongoClient);
         structureIOManager = new MongoDBStructureIOManager(mongoClient);
         overlayIOManager = new MongoDBOverlayIOManager(mongoClient);
