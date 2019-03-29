@@ -271,13 +271,18 @@ public class MainGui {
                                 // if the list was "empty", it will have one null element we want to remove
                                 currentNode.getChildren().removeIf(
                                         locationTreeItemContentTreeItem -> locationTreeItemContentTreeItem.getValue()==null);
+                                String baseName = JOptionPane.showInputDialog("Directory name", "New Directory");
+                                if (baseName == null){
+                                    baseName = "New Directory";
+                                }
                                 if (cell.isEmpty()){
+
                                     // if we are on an empty cell, create a top-level directory
-                                    name  = IOUtil.getSafeNameAgainstTreeItemList("New Directory", root.getChildren());
+                                    name  = IOUtil.getSafeNameAgainstTreeItemList(baseName, root.getChildren());
                                     root.getChildren().add(new LocationTreeItem(new LocationTreeItemContent(name)));
                                     effectivePath = new ArrayList<>();
                                 }else{
-                                    name  = IOUtil.getSafeNameAgainstTreeItemList("New Directory", currentNode.getChildren());
+                                    name  = IOUtil.getSafeNameAgainstTreeItemList(baseName, currentNode.getChildren());
                                     currentNode.getChildren().add(new LocationTreeItem(new LocationTreeItemContent(name)));
                                     effectivePath = getCurrentNode().getPath();
                                 }
@@ -331,7 +336,10 @@ public class MainGui {
 
                         if (!cell.isEmpty()){
                             if (cell.getTreeTableRow().getTreeItem().getValue().getSpeechComponent()==null) {
+                                //TODO reimplement directory rename
+
                                 // Add directory actions only to directories
+                                /*
                                 localMenu.getItems().add(new SeparatorMenuItem());
 
                                 MenuItem changeDirectoryName = new MenuItem("Change Directory Name");
@@ -354,6 +362,7 @@ public class MainGui {
                                     }
                                 });
                                 localMenu.getItems().add(changeDirectoryName);
+                                */
                             }
                             // add block rename action only to block
                             if ((cell.getTreeTableRow().getTreeItem().getValue().getSpeechComponent() != null) && Block.class.isInstance(cell.getTreeTableRow().getTreeItem().getValue().getSpeechComponent())) {
