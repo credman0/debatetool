@@ -7,6 +7,7 @@ import core.Speech;
 import gui.blockediting.BlockEditor;
 import gui.speechtools.SpeechEditor;
 import gui.speechtools.SpeechViewer;
+import io.iocontrollers.IOController;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.fxml.FXMLLoader;
@@ -33,6 +34,13 @@ public class ComponentViewer {
 
     public void open(HashIdentifiedSpeechComponent component){
         save();
+        if (!IOController.getIoController().getDBLock().tryLock(component.getHash())){
+            System.out.println("lock failed");
+            return;
+        }
+        // TODO change this to onyl the currnet document
+        IOController.getIoController().getDBLock().unlockAllExcept(component.getHash());
+
         if (component.getClass().isAssignableFrom(Card.class)){
             currentViewMode = ViewType.CARD;
             if (editMode.get()){

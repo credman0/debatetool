@@ -553,6 +553,7 @@ public class MainGui {
     }
 
     public void exit() throws IOException {
+        IOController.getIoController().close();
         // need some handle to the stage, so the viewerPane chosen arbitrarily
         ((Stage)viewerPane.getScene().getWindow()).close();
     }

@@ -4,7 +4,9 @@ import com.mongodb.*;
 import gui.LoginDialog;
 import gui.SettingsHandler;
 import io.accounts.AdminManager;
+import io.accounts.DBLock;
 import io.accounts.mongodb.MongoDBAdminManager;
+import io.accounts.mongodb.MongoDBLock;
 import io.componentio.ComponentIOManager;
 import io.componentio.mongodb.MongoDBComponentIOManager;
 import io.iocontrollers.IOController;
@@ -25,6 +27,7 @@ public class MongoDBIOController implements IOController {
     private StructureIOManager structureIOManager;
     private OverlayIOManager overlayIOManager;
     private AdminManager adminManager;
+    private DBLock dbLock;
 
     private void attemptAuthentication(){
         try {
@@ -40,6 +43,7 @@ public class MongoDBIOController implements IOController {
             componentIOManager = new MongoDBComponentIOManager(mongoClient);
             structureIOManager = new MongoDBStructureIOManager(mongoClient);
             overlayIOManager = new MongoDBOverlayIOManager(mongoClient);
+            dbLock = new MongoDBLock(mongoClient);
         }catch (MongoSecurityException e){
             // -4 is error authenticating
             if (e.getCode()==-4){
@@ -76,7 +80,13 @@ public class MongoDBIOController implements IOController {
     }
 
     @Override
+    public DBLock getDBLock(){
+        return dbLock;
+    }
+
+    @Override
     public void close() throws IOException {
+        dbLock.unlockAll();
         mongoClient.close();
     }
 }

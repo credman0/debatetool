@@ -1,6 +1,7 @@
 package io.iocontrollers;
 
 import io.accounts.AdminManager;
+import io.accounts.DBLock;
 import io.componentio.ComponentIOManager;
 import io.iocontrollers.mongodb.MongoDBIOController;
 import io.overlayio.OverlayIOManager;
@@ -20,4 +21,6 @@ public interface IOController extends Closeable, AutoCloseable {
     OverlayIOManager getOverlayIOManager();
 
     AdminManager getAdminManager();
+
+    DBLock getDBLock();
 }
