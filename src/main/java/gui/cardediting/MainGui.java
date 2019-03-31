@@ -144,6 +144,12 @@ public class MainGui {
     }
 
     private void open(HashIdentifiedSpeechComponent component, boolean track){
+        if (!IOController.getIoController().getDBLock().tryLock(component.getHash())){
+            System.out.println("lock failed");
+            return;
+        }
+        // TODO change this to onyl the currnet document
+        IOController.getIoController().getDBLock().unlockAllExcept(component.getHash());
         componentViewer.open(component);
         openedNode = currentNode;
         openedComponent = component;
@@ -533,6 +539,7 @@ public class MainGui {
     }
 
     public void newCardAction(){
+        viewerLabel.setText("");
         componentViewer.newCard();
     }
     public String getCurrentPathString() {

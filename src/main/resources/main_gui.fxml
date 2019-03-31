@@ -102,7 +102,7 @@
                         </Button>
                         <BorderPane HBox.hgrow="ALWAYS">
                             <center>
-                                <Text fx:id="viewerLabel" text="Hello World" textAlignment="CENTER">
+                                <Text fx:id="viewerLabel" text="" textAlignment="CENTER">
                                     <font>
                                         <Font name="Arial Bold" size="20"/>
                                     </font>
@@ -115,9 +115,4 @@
         </SplitPane>
 
     </center>
-    <stylesheets>
-        <String fx:value="css/jfoenix-fonts.css"/>
-        <String fx:value="css/jfoenix-design.css"/>
-        <String fx:value="css/jfoenix-main-demo.css"/>
-    </stylesheets>
 </BorderPane>

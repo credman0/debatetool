@@ -21,8 +21,11 @@ public class MongoDBLock implements DBLock {
         database = mongoClient.getDatabase("UDT");
         collection = database.getCollection("Locks");
         collection.createIndex(Indexes.hashed("Hash"));
+        // TODO don't drop indexes on every start
+        collection.dropIndexes();
+        // TODO prevent this from cleaning up locks when still connected
         collection.createIndex(Indexes.ascending("time"),
-                new IndexOptions().expireAfter(1L, TimeUnit.MINUTES));
+                new IndexOptions().expireAfter(10L, TimeUnit.MINUTES));
     }
 
     @Override

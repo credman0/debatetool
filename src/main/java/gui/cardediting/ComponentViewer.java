@@ -34,12 +34,6 @@ public class ComponentViewer {
 
     public void open(HashIdentifiedSpeechComponent component){
         save();
-        if (!IOController.getIoController().getDBLock().tryLock(component.getHash())){
-            System.out.println("lock failed");
-            return;
-        }
-        // TODO change this to onyl the currnet document
-        IOController.getIoController().getDBLock().unlockAllExcept(component.getHash());
 
         if (component.getClass().isAssignableFrom(Card.class)){
             currentViewMode = ViewType.CARD;
