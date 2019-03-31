@@ -5,6 +5,7 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ButtonType?>
+<?import javafx.scene.control.PasswordField?>
 <DialogPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
             fx:controller="gui.LoginDialog"
@@ -15,7 +16,7 @@
         <Label text="Username:"/>
         <TextField fx:id="usernameField"/>
         <Label text="Password:"/>
-        <TextField fx:id="passwordField"/>
+        <PasswordField fx:id="passwordField"/>
     </VBox>
 </content>
     <buttonTypes>

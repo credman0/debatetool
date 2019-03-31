@@ -44,6 +44,8 @@ import java.util.Date;
 import java.util.List;
 
 public class MainGui {
+    @FXML private MenuItem authAdminMenuItem;
+    @FXML private MenuItem createUserMenuItem;
     @FXML private JFXToggleButton editToggle;
     @FXML private Text viewerLabel;
     @FXML private Button backButton;
@@ -594,5 +596,17 @@ public class MainGui {
     public void historyForward(ActionEvent actionEvent) {
         editHistoryIndex.set(editHistoryIndex.get()+1);
         open(editHistory.get(editHistoryIndex.get()),false);
+    }
+
+    public void adminAuthenticate(ActionEvent actionEvent) {
+        boolean success = IOController.getIoController().getAdminManager().authenticateAsAdmin();
+        if (success){
+            authAdminMenuItem.setDisable(true);
+            createUserMenuItem.setDisable(false);
+        }
+    }
+
+    public void adminCreateUser(ActionEvent actionEvent) {
+        boolean success = IOController.getIoController().getAdminManager().createUser();
     }
 }

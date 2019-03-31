@@ -38,6 +38,13 @@
                             <MenuItem text="Settings" onAction="#showSettings"/>
                         </items>
                     </Menu>
+                    <Menu text="Database">
+                        <items>
+                            <MenuItem text="Authenticate as Administrator" fx:id="authAdminMenuItem" onAction="#adminAuthenticate"/>
+                            <SeparatorMenuItem/>
+                            <MenuItem text="Create new user" fx:id="createUserMenuItem" onAction="#adminCreateUser" disable="true"/>
+                        </items>
+                    </Menu>
                     <Menu text="Scripts" fx:id="scriptsMenu">
                         <items>
                             <MenuItem text=""/>

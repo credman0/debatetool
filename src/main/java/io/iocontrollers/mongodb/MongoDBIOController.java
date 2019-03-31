@@ -3,6 +3,8 @@ package io.iocontrollers.mongodb;
 import com.mongodb.*;
 import gui.LoginDialog;
 import gui.SettingsHandler;
+import io.accounts.AdminManager;
+import io.accounts.mongodb.MongoDBAdminManager;
 import io.componentio.ComponentIOManager;
 import io.componentio.mongodb.MongoDBComponentIOManager;
 import io.iocontrollers.IOController;
@@ -18,14 +20,18 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 public class MongoDBIOController implements IOController {
-    MongoClient mongoClient;
+    private MongoClient mongoClient;
     private ComponentIOManager componentIOManager;
     private StructureIOManager structureIOManager;
     private OverlayIOManager overlayIOManager;
+    private AdminManager adminManager;
 
     private void attemptAuthentication(){
         try {
             Pair<String, String> credentialStrings = LoginDialog.showDialog();
+            if (credentialStrings == null){
+                return;
+            }
             MongoCredential credential = MongoCredential.createCredential(credentialStrings.getKey(),
                     "UDT",
                     credentialStrings.getValue().toCharArray());
@@ -45,7 +51,7 @@ public class MongoDBIOController implements IOController {
         }
     }
     public MongoDBIOController(){
-
+        adminManager = new MongoDBAdminManager();
         attemptAuthentication();
     }
 
@@ -62,6 +68,11 @@ public class MongoDBIOController implements IOController {
     @Override
     public OverlayIOManager getOverlayIOManager() {
         return overlayIOManager;
+    }
+
+    @Override
+    public AdminManager getAdminManager(){
+        return adminManager;
     }
 
     @Override
