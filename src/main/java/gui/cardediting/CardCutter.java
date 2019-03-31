@@ -288,6 +288,9 @@ public class CardCutter extends CardViewer {
         if (tagsList.isEmpty()){
             return;
         }
+        tagChoice.getEditor().commitValue();
+        highlightChoice.getEditor().commitValue();
+        underlineChoice.getEditor().commitValue();
         IOController.getIoController().getOverlayIOManager().saveOverlays(getCard().getHash(), highlightingOverlayList, "Highlight");
         IOController.getIoController().getOverlayIOManager().saveOverlays(getCard().getHash(), underliningOverlayList, "Underline");
         getCard().setTags(tagsList.subList(0, tagsList.size()-1));
