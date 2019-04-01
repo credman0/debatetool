@@ -25,6 +25,10 @@ import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.cell.TreeItemPropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -36,7 +40,10 @@ import javafx.util.Callback;
 import scripting.JythonScripter;
 
 import javax.swing.*;
+import java.awt.*;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -616,5 +623,31 @@ public class MainGui {
 
     public void adminCreateUser(ActionEvent actionEvent) {
         boolean success = IOController.getIoController().getAdminManager().createUser();
+    }
+
+    private void openWebpage(String url){
+        if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
+            new Thread(() -> {
+                try {
+                    Desktop.getDesktop().browse(new URI(url));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (URISyntaxException e) {
+                    e.printStackTrace();
+                }
+            }).start();
+        }
+    }
+
+    public void openWiki(ActionEvent actionEvent) {
+        openWebpage("https://github.com/credman0/unnamed-debate-tool/wiki");
+    }
+
+    public void openGithub(ActionEvent actionEvent) {
+        openWebpage("https://github.com/credman0/unnamed-debate-tool/");
+    }
+
+    public void openIssues(ActionEvent actionEvent) {
+        openWebpage("https://github.com/credman0/unnamed-debate-tool/issues");
     }
 }

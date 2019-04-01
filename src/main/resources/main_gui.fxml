@@ -27,9 +27,6 @@
                     </Menu>
                     <Menu text="Edit">
                         <items>
-                            <MenuItem text="Copy"/>
-                            <MenuItem text="Paste"/>
-                            <SeparatorMenuItem/>
                             <MenuItem text="Toggle Edit Mode" onAction="#toggleEdit" accelerator="SHORTCUT+E"/>
                         </items>
                     </Menu>
@@ -52,10 +49,14 @@
                     </Menu>
                     <Menu text="Help">
                         <items>
-                            <MenuItem text="Search" disable="true"/>
-                            <MenuItem text="Online Manual" visible="false"/>
-                            <SeparatorMenuItem />
-                            <MenuItem text="About"/>
+                            <MenuItem text="Wiki" onAction="#openWiki"/>
+                        </items>
+                    </Menu>
+                    <Menu text="About">
+                        <items>
+                            <MenuItem text="View source on Github" onAction="#openGithub"/>
+                            <SeparatorMenuItem/>
+                            <MenuItem text="Submit an issue" onAction="#openIssues"/>
                         </items>
                     </Menu>
                 </menus>
