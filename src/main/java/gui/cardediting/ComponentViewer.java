@@ -26,7 +26,7 @@ public class ComponentViewer {
     private SpeechViewer speechViewer;
     private BorderPane viewerPane;
     private BlockEditor blockEditor;
-    private SimpleBooleanProperty editMode = new SimpleBooleanProperty(true);
+    private SimpleBooleanProperty editMode = new SimpleBooleanProperty(false);
     private enum ViewType {BLOCK, CARD, SPEECH};
     private ViewType currentViewMode = ViewType.CARD;
 
@@ -40,9 +40,9 @@ public class ComponentViewer {
         if (component.getClass().isAssignableFrom(Card.class)){
             currentViewMode = ViewType.CARD;
             if (editMode.get()){
-                cardEditor.open((Card) component);
-            }else{
                 cardCutter.open((Card) component);
+            }else{
+                cardEditor.open((Card) component);
             }
         }else if (component.getClass().isAssignableFrom(Block.class)){
             currentViewMode = ViewType.BLOCK;
@@ -88,7 +88,7 @@ public class ComponentViewer {
             speechViewLoader.load();
             speechViewer = speechViewLoader.getController();
 
-            editMode.set(true);
+            editMode.set(false);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -100,9 +100,9 @@ public class ComponentViewer {
                 return blockEditor.getPane();
             case CARD:
                 if (editMode.get()) {
-                    return cardEditor.getPane();
-                } else {
                     return cardCutter.getPane();
+                } else {
+                    return cardEditor.getPane();
                 }
             case SPEECH:
                 if (editMode.get()) {
@@ -132,9 +132,9 @@ public class ComponentViewer {
 
                     case CARD:
                         if (editMode.get()) {
-                            cardEditor.save(path);
-                        } else {
                             cardCutter.save(path);
+                        } else {
+                            cardEditor.save(path);
                         }
                         break;
 
@@ -171,9 +171,9 @@ public class ComponentViewer {
 
             case CARD:
                 if (editMode.get()) {
-                    cardEditor.refresh();
-                } else {
                     cardCutter.refresh();
+                } else {
+                    cardEditor.refresh();
                 }
                 break;
 
@@ -199,9 +199,9 @@ public class ComponentViewer {
 
             case CARD:
                 if (editMode.get()) {
-                    viewerPane.setCenter(cardEditor.getPane());
-                } else {
                     viewerPane.setCenter(cardCutter.getPane());
+                } else {
+                    viewerPane.setCenter(cardEditor.getPane());
                 }
                 break;
 
@@ -228,9 +228,9 @@ public class ComponentViewer {
     public void updateEdit(){
         if (currentViewMode==ViewType.CARD) {
             if (editMode.get()) {
-                cardCutter.swapTo(cardEditor);
-            } else {
                 cardEditor.swapTo(cardCutter);
+            } else {
+                cardCutter.swapTo(cardEditor);
             }
         }else if (currentViewMode==ViewType.SPEECH) {
             if (editMode.get()){
