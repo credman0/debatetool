@@ -1,6 +1,7 @@
 package gui.speechtools;
 
 import core.Speech;
+import gui.SettingsHandler;
 import gui.cardediting.MainGui;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
@@ -68,8 +69,8 @@ public class SpeechViewer {
 
     private void generateContents(){
         String contents = getHtml();
-        webview.getEngine().getLoadWorker().stateProperty().addListener(new ContentLoader(contents));
         webview.getEngine().load(WEBVIEW_HTML);
+        webview.getEngine().getLoadWorker().stateProperty().addListener(new ContentLoader(contents));
         webview.setDisable(true);
         // http://stackoverflow.com/questions/11206942/how-to-hide-scrollbars-in-the-javafx-webview
         webview.getChildrenUnmodifiable().addListener(new ListChangeListener<Node>() {
@@ -96,6 +97,7 @@ public class SpeechViewer {
         @Override
         public void changed(ObservableValue<? extends Worker.State> observableValue, Worker.State oldState, Worker.State newState) {
             if (newState == Worker.State.SUCCEEDED) {
+                webview.getEngine().executeScript("document.getElementById('style').sheet.cssRules[0].style.backgroundColor = '"+ SettingsHandler.getColorTag()+"';");
                 webview.getEngine().executeScript("document.getElementById('textarea').innerHTML = \""+content+"\";");
                 // put the resizing code in a runLater because otherwise for some reason the size is way too large
                 // adapted from http://java-no-makanaikata.blogspot.com/2012/10/javafx-webview-size-trick.html

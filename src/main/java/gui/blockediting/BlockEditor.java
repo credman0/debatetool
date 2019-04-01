@@ -1,6 +1,7 @@
 package gui.blockediting;
 
 import core.*;
+import gui.SettingsHandler;
 import gui.cardediting.MainGui;
 import gui.speechtools.SpeechComponentCellFactory;
 import io.iocontrollers.IOController;
@@ -211,6 +212,7 @@ public class BlockEditor {
         @Override
         public void changed(ObservableValue<? extends Worker.State> observableValue, Worker.State oldState, Worker.State newState) {
             if (newState == Worker.State.SUCCEEDED) {
+                contentView.getEngine().executeScript("document.getElementById('style').sheet.cssRules[0].style.backgroundColor = '"+ SettingsHandler.getColorTag()+"';");
                 contentView.getEngine().executeScript("document.getElementById('textarea').innerHTML = \""+component.getDisplayContent()+"\";");
                 // put the resizing code in a runLater because otherwise for some reason the size is way too large
                 // adapted from http://java-no-makanaikata.blogspot.com/2012/10/javafx-webview-size-trick.html

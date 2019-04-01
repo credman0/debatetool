@@ -3,6 +3,7 @@ package gui.cardediting;
 import com.sun.javafx.webkit.WebConsoleListener;
 import core.Card;
 import core.CardOverlay;
+import gui.SettingsHandler;
 import io.IOUtil;
 import io.iocontrollers.IOController;
 import javafx.beans.binding.Bindings;
@@ -215,6 +216,7 @@ public class CardCutter extends CardViewer {
             return;
         }
         CardOverlay combinedOverlay = CardOverlay.combineOverlays(getActiveUnderlineOverlay(),getActiveHighlightOverlay());
+        cardTextArea.getEngine().executeScript("document.getElementById('style').sheet.cssRules[0].style.backgroundColor = '"+ SettingsHandler.getColorTag()+"';");
         cardTextArea.getEngine().executeScript("document.getElementById('textarea').innerHTML = \""+combinedOverlay.generateHTML(text)+"\";");
     }
 

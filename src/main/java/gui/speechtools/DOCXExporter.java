@@ -1,5 +1,6 @@
 package gui.speechtools;
 
+import gui.SettingsHandler;
 import org.apache.poi.xwpf.usermodel.UnderlinePatterns;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.apache.poi.xwpf.usermodel.XWPFParagraph;
@@ -34,7 +35,7 @@ public class DOCXExporter {
         while (prevEnd < html.length()){
             XWPFRun tmpRun = paragraph.createRun();
             if (highlight>0){
-                tmpRun.setTextHighlightColor(STHighlightColor.CYAN.toString());
+                tmpRun.setTextHighlightColor(SettingsHandler.getSetting("color"));
                 tmpRun.setFontSize(13);
             }
             if (underline>0){
