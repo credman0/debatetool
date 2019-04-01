@@ -310,7 +310,7 @@ public class MainGui {
                                 String name  = IOUtil.getSafeNameAgainstTreeItemList("New Block", currentNode.getChildren());
                                 Block newBlock = new Block(getCurrentNode().getPath(), name);
                                 currentNode.getChildren().add(new LocationTreeItem(new LocationTreeItemContent(newBlock)));
-                                IOController.getIoController().getStructureIOManager().addContent(getCurrentNode().getPath(), newBlock.getHash());
+                                IOController.getIoController().getStructureIOManager().addContent(getCurrentNode().getPath(), newBlock);
                                 try {
                                     IOController.getIoController().getComponentIOManager().storeSpeechComponent(newBlock);
                                 } catch (IOException e) {
@@ -331,7 +331,7 @@ public class MainGui {
                                 String name  = IOUtil.getSafeNameAgainstTreeItemList("New Speech", currentNode.getChildren());
                                 Speech newSpeech = new Speech(getCurrentNode().getPath(),name);
                                 currentNode.getChildren().add(new LocationTreeItem(new LocationTreeItemContent(newSpeech)));
-                                IOController.getIoController().getStructureIOManager().addContent(getCurrentNode().getPath(), newSpeech.getHash());
+                                IOController.getIoController().getStructureIOManager().addContent(getCurrentNode().getPath(), newSpeech);
                                 try {
                                     IOController.getIoController().getComponentIOManager().storeSpeechComponent(newSpeech);
                                 } catch (IOException e) {

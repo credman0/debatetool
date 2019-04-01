@@ -246,6 +246,8 @@ public class CardCutter extends CardViewer {
     public void open(Card card){
         if (getCard()!=null && Arrays.equals(getCurrentHash(), card.getHash())){
             // should already be loaded, don't overwrite stuff
+            highlightChoice.getSelectionModel().select(getCard().getPreferredHighlightIndex());
+            underlineChoice.getSelectionModel().select(getCard().getPreferredUnderlineIndex());
             applyOverlay();
             return;
         }
@@ -260,14 +262,14 @@ public class CardCutter extends CardViewer {
         if (highlightingOverlayList.isEmpty()){
             highlightingOverlayList.add(new CardOverlay("Highlighting"));
         }
-        highlightChoice.getSelectionModel().select(0);
+        highlightChoice.getSelectionModel().select(getCard().getPreferredHighlightIndex());
 
         underliningOverlayList.clear();
         underliningOverlayList.addAll(card.getUnderlining());
         if (underliningOverlayList.isEmpty()){
             underliningOverlayList.add(new CardOverlay("Underlining"));
         }
-        underlineChoice.getSelectionModel().select(0);
+        underlineChoice.getSelectionModel().select(getCard().getPreferredUnderlineIndex());
 
         applyOverlay();
 
@@ -294,6 +296,9 @@ public class CardCutter extends CardViewer {
         IOController.getIoController().getOverlayIOManager().saveOverlays(getCard().getHash(), highlightingOverlayList, "Highlight");
         IOController.getIoController().getOverlayIOManager().saveOverlays(getCard().getHash(), underliningOverlayList, "Underline");
         getCard().setTags(tagsList.subList(0, tagsList.size()-1));
+        getCard().setTagIndex(tagChoice.getSelectionModel().getSelectedIndex());
+        getCard().setPreferredHighlightIndex(highlightChoice.getSelectionModel().getSelectedIndex());
+        getCard().setPreferredUnderlineIndex(underlineChoice.getSelectionModel().getSelectedIndex());
         super.save(path);
     }
 

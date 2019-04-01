@@ -37,7 +37,7 @@ public abstract class CardViewer {
             if (path==null){
                 return;
             }
-            IOController.getIoController().getStructureIOManager().addContent(path, card.getHash());
+            IOController.getIoController().getStructureIOManager().addContent(path, card);
         } catch (
                 IOException e) {
             e.printStackTrace();

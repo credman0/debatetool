@@ -13,7 +13,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
-public class Card extends HashIdentifiedSpeechComponent {
+public class Card extends HashIdentifiedSpeechComponent implements StateRecoverableComponent {
     /**
      * "tags" here used in the debate sense
      */

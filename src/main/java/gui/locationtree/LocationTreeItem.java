@@ -57,18 +57,17 @@ public class LocationTreeItem extends TreeItem<LocationTreeItemContent> {
         List<TreeItem<LocationTreeItemContent>> children = new ArrayList<>();
         List<String> path = getPath();
         List<String> childrenDirs = IOController.getIoController().getStructureIOManager().getChildren(path);
-        List<byte[]> contentIDs = IOController.getIoController().getStructureIOManager().getContent(path);
+        List<HashIdentifiedSpeechComponent> contents = null;
+        try {
+            contents = IOController.getIoController().getStructureIOManager().getContent(path);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         for (String name:childrenDirs){
             children.add(new LocationTreeItem(new LocationTreeItemContent(name)));
         }
-        try {
-            HashMap<Binary, HashIdentifiedSpeechComponent> components = IOController.getIoController().getComponentIOManager().retrieveSpeechComponents(contentIDs);
-            for (byte[] hash:contentIDs) {
-                HashIdentifiedSpeechComponent content = components.get(new Binary(hash));
-                children.add(new LocationTreeItem(new LocationTreeItemContent(content)));
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
+        for (HashIdentifiedSpeechComponent component :contents){
+            children.add(new LocationTreeItem(new LocationTreeItemContent(component)));
         }
         loadingProperty.set(false);
         super.getChildren().addAll(children);

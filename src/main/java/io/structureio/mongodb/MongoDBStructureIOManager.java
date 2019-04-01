@@ -5,18 +5,19 @@ import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.*;
+import core.HashIdentifiedSpeechComponent;
+import core.StateRecoverableComponent;
+import gui.locationtree.LocationTreeItem;
+import gui.locationtree.LocationTreeItemContent;
 import io.filters.Filter;
+import io.iocontrollers.IOController;
 import io.structureio.StructureIOManager;
-import jdk.jshell.spi.ExecutionControl;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.bson.types.Binary;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class MongoDBStructureIOManager implements StructureIOManager {
     MongoClient mongoClient;
@@ -74,11 +75,13 @@ public class MongoDBStructureIOManager implements StructureIOManager {
     }
 
     @Override
-    public List<byte[]> getContent(List<String> path) {
+    public List<HashIdentifiedSpeechComponent> getContent(List<String> path) throws IOException {
         Document document = collection.find(Filters.eq("Path", path)).first();
         List<Binary> binaryList = null;
+        List<Document> contentStates = null;
         if (document != null) {
             binaryList = (List<Binary>) document.get("Content");
+            contentStates = (List<Document>) document.get("ContentState");
         }
         if (binaryList == null){
             return new ArrayList<>();
@@ -88,7 +91,22 @@ public class MongoDBStructureIOManager implements StructureIOManager {
         for (Binary binary:binaryList){
             byteList.add(binary.getData());
         }
-        return byteList;
+        List<HashIdentifiedSpeechComponent> contents = new ArrayList<>();
+        HashMap<Binary, HashIdentifiedSpeechComponent> components = IOController.getIoController().getComponentIOManager().retrieveSpeechComponents(byteList);
+        for (Binary hashBinary:binaryList) {
+            HashIdentifiedSpeechComponent content = components.get(hashBinary);
+            if (content instanceof StateRecoverableComponent && contentStates!=null) {
+                for (int i = 0; i < contentStates.size(); i++) {
+                    Document contentDocument = contentStates.get(i);
+                    Binary documentHash = (Binary) contentDocument.get("Hash");
+                    if (documentHash.equals(hashBinary)) {
+                        content.restoreState(contentDocument.getString("State"));
+                    }
+                }
+            }
+            contents.add(content);
+        }
+        return contents;
     }
 
 
@@ -116,9 +134,20 @@ public class MongoDBStructureIOManager implements StructureIOManager {
     }
 
     @Override
-    public void addContent(List<String> path, byte[] contentID) {
+    public void addContent(List<String> path, HashIdentifiedSpeechComponent component) {
+        List<WriteModel<Document>> bulkWrites = new ArrayList<>();
+        Bson update = Updates.addToSet("Content", component.getHash());
+        bulkWrites.add(new UpdateOneModel<>(Filters.eq("Path", path), update,upsertOption));
+        if (component instanceof StateRecoverableComponent){
+            List <Bson> updateFilters = new ArrayList<>();
+            updateFilters.add(Filters.eq("state.Hash", component.getHash()));
+            UpdateOptions options = new UpdateOptions().upsert(true).arrayFilters(updateFilters);
+            bulkWrites.add(new UpdateOneModel<>(Filters.eq("Path", path), Updates.pull("ContentState", Filters.eq("Hash", component.getHash()))));
+            bulkWrites.add(new UpdateOneModel<>(Filters.eq("Path", path), Updates.push("ContentState", new Document("Hash", component.getHash()).append("State", component.getStateString()))));
+            //bulkWrites.add(new UpdateOneModel<>(Filters.eq("Path", path),Updates.set("ContentState.$[state].State", component.getStateString()), options));
+        }
         // TODO add checks against adding content before creating a tree element
-        collection.updateOne(Filters.eq("Path", path), Updates.addToSet("Content", contentID),upsertOption);
+        collection.bulkWrite(bulkWrites);
     }
 
     @Override
