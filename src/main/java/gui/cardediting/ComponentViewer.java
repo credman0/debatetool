@@ -10,7 +10,9 @@ import gui.speechtools.SpeechViewer;
 import io.iocontrollers.IOController;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.concurrent.Task;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Cursor;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 
@@ -56,6 +58,7 @@ public class ComponentViewer {
             throw new IllegalArgumentException("Unrecognized type: " + component.getClass());
         }
         updateViewerPane();
+
     }
     public void init(BorderPane viewerPane){
         this.viewerPane = viewerPane;
@@ -118,26 +121,43 @@ public class ComponentViewer {
     }
 
     public void save(List<String> path){
-        switch (currentViewMode) {
-            case BLOCK:
-                blockEditor.save();
-                break;
+        Task task = new Task<>() {
+            @Override
+            protected Object call() throws Exception {
+                MainGui.getActiveGUI().getScene().getRoot().setCursor(Cursor.WAIT);
+                switch (currentViewMode) {
+                    case BLOCK:
+                        blockEditor.save();
+                        break;
 
-            case CARD:
-                if (editMode.get()) {
-                    cardEditor.save(path);
-                } else {
-                    cardCutter.save(path);
+                    case CARD:
+                        if (editMode.get()) {
+                            cardEditor.save(path);
+                        } else {
+                            cardCutter.save(path);
+                        }
+                        break;
+
+                    case SPEECH:
+                        speechEditor.save();
+                        break;
+
+                    default:
+                        throw new IllegalStateException("Invalid View Mode");
                 }
-                break;
-
-            case SPEECH:
-                speechEditor.save();
-                break;
-
-            default:
-                throw new IllegalStateException("Invalid View Mode");
+                MainGui.getActiveGUI().getScene().getRoot().setCursor(Cursor.DEFAULT);
+                return null;
+            }
+        };
+        Thread thread = new Thread(task);
+        thread.setDaemon(true);
+        thread.start();
+        try {
+            thread.join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
+
     }
 
     public void clear() {

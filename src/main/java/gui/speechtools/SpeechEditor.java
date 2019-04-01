@@ -1,6 +1,7 @@
 package gui.speechtools;
 
 import core.*;
+import gui.cardediting.MainGui;
 import io.iocontrollers.IOController;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
@@ -8,9 +9,11 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
 import javafx.concurrent.Worker;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ScrollPane;
@@ -42,13 +45,29 @@ public class SpeechEditor {
 
     public void open(Speech speech) {
         if (this.speech == null || speech.getHash()!=this.speech.getHash()) {
-            this.speech = speech;
+            Task task = new Task() {
+                @Override
+                protected Object call() {
+                    MainGui.getActiveGUI().getScene().getRoot().setCursor(Cursor.WAIT);
+                    try {
+                        // reloading speeches allows us to make sure the blocks didn't change
+                        speech.reload();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    MainGui.getActiveGUI().getScene().getRoot().setCursor(Cursor.DEFAULT);
+                    return null;
+                }
+            };
+            Thread thread = new Thread(task);
+            thread.setDaemon(true);
+            thread.start();
             try {
-                // reloading speeches allows us to make sure the blocks didn't change
-                speech.reload();
-            } catch (IOException e) {
+                thread.join();
+            } catch (InterruptedException e) {
                 e.printStackTrace();
             }
+            this.speech = speech;
             populateTree();
             generateContents();
         }

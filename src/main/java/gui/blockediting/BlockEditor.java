@@ -1,6 +1,7 @@
 package gui.blockediting;
 
 import core.*;
+import gui.cardediting.MainGui;
 import gui.speechtools.SpeechComponentCellFactory;
 import io.iocontrollers.IOController;
 import javafx.application.Platform;
@@ -9,10 +10,12 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
 import javafx.concurrent.Worker;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.input.*;
@@ -42,11 +45,28 @@ public class BlockEditor {
 
     public void open(Block block) {
         // TODO try to not reload blocks when unnecessary
+        Task task = new Task() {
+            @Override
+            protected Object call() {
+                MainGui.getActiveGUI().getScene().getRoot().setCursor(Cursor.WAIT);
+                try {
+                    block.load();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                MainGui.getActiveGUI().getScene().getRoot().setCursor(Cursor.DEFAULT);
+                return null;
+            }
+        };
+        Thread thread = new Thread(task);
+        thread.setDaemon(true);
+        thread.start();
         try {
-            block.load();
-        } catch (IOException e) {
+            thread.join();
+        } catch (InterruptedException e) {
             e.printStackTrace();
         }
+
 
         this.block = block;
         populateTree();

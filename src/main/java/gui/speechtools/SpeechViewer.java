@@ -1,12 +1,15 @@
 package gui.speechtools;
 
 import core.Speech;
+import gui.cardediting.MainGui;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ListChangeListener;
+import javafx.concurrent.Task;
 import javafx.concurrent.Worker;
 import javafx.fxml.FXML;
+import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.BorderPane;
@@ -27,11 +30,28 @@ public class SpeechViewer {
 
     public void open(Speech speech) {
         if (!speech.isLoaded()){
+            Task task = new Task() {
+                @Override
+                protected Object call() {
+                    MainGui.getActiveGUI().getScene().getRoot().setCursor(Cursor.WAIT);
+                    try {
+                        speech.load();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    MainGui.getActiveGUI().getScene().getRoot().setCursor(Cursor.DEFAULT);
+                    return null;
+                }
+            };
+            Thread thread = new Thread(task);
+            thread.setDaemon(true);
+            thread.start();
             try {
-                speech.load();
-            } catch (IOException e) {
+                thread.join();
+            } catch (InterruptedException e) {
                 e.printStackTrace();
             }
+
         }
         this.speech = speech;
         generateContents();
