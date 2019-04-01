@@ -45,9 +45,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.Date;
+import java.util.*;
 import java.util.List;
 
 public class MainGui {
@@ -286,9 +284,12 @@ public class MainGui {
                                 // if the list was "empty", it will have one null element we want to remove
                                 currentNode.getChildren().removeIf(
                                         locationTreeItemContentTreeItem -> locationTreeItemContentTreeItem.getValue()==null);
-                                String baseName = JOptionPane.showInputDialog("Directory name", "New Directory");
-                                if (baseName == null){
+                                String baseName;
+                                Optional<String> baseNameResult = showTextDialog("Directory name","Enter a name for the directory", "New Directory");
+                                if (!baseNameResult.isPresent()){
                                     baseName = "New Directory";
+                                }else{
+                                    baseName = baseNameResult.get();
                                 }
                                 if (cell.isEmpty()){
 
@@ -389,9 +390,12 @@ public class MainGui {
                                     public void handle(ActionEvent actionEvent) {
                                         localMenu.hide();
                                         Block cellBlock = (Block) cell.getTreeTableRow().getTreeItem().getValue().getSpeechComponent();
-                                        String name = JOptionPane.showInputDialog("Enter name", cellBlock.getName());
-                                        if (name == null){
+                                        String name;
+                                        Optional<String> baseNameResult = showTextDialog("Block Rename","Enter a new name for the block", cellBlock.getName());
+                                        if (!baseNameResult.isPresent()){
                                             return;
+                                        }else{
+                                            name = baseNameResult.get();
                                         }
                                         name  = IOUtil.getSafeNameAgainstTreeItemList(name, cell.getTreeTableRow().getTreeItem().getParent().getChildren());
                                         byte[] oldHash = cellBlock.getHash();
@@ -419,9 +423,12 @@ public class MainGui {
                                     public void handle(ActionEvent actionEvent) {
                                         localMenu.hide();
                                         Speech cellSpeech = (Speech) cell.getTreeTableRow().getTreeItem().getValue().getSpeechComponent();
-                                        String name = JOptionPane.showInputDialog("Enter name", cellSpeech.getName());
-                                        if (name == null){
+                                        String name;
+                                        Optional<String> baseNameResult = showTextDialog("Speech Rename","Enter a new name for the speech", cellSpeech.getName());
+                                        if (!baseNameResult.isPresent()){
                                             return;
+                                        }else{
+                                            name = baseNameResult.get();
                                         }
                                         name  = IOUtil.getSafeNameAgainstTreeItemList(name, cell.getTreeTableRow().getTreeItem().getParent().getChildren());
                                         byte[] oldHash = cellSpeech.getHash();
@@ -623,6 +630,13 @@ public class MainGui {
 
     public void adminCreateUser(ActionEvent actionEvent) {
         boolean success = IOController.getIoController().getAdminManager().createUser();
+    }
+
+    private Optional<String> showTextDialog(String title, String header, String defaultText){
+        TextInputDialog dialog = new TextInputDialog(defaultText);
+        dialog.setTitle(title);
+        dialog.setHeaderText(header);
+        return dialog.showAndWait();
     }
 
     private void openWebpage(String url){

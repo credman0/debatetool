@@ -25,6 +25,7 @@ import javafx.scene.web.WebView;
 import javax.swing.*;
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 public class BlockEditor {
@@ -131,7 +132,14 @@ public class BlockEditor {
                 @Override
                 public void handle(ActionEvent actionEvent) {
                     updateBlockContents();
-                    block.insertComponentAbove(child, new Analytic(JOptionPane.showInputDialog("Analytic Content")));
+                    TextInputDialog dialog = new TextInputDialog();
+                    dialog.setTitle("Insert Analytic");
+                    dialog.setHeaderText("Enter the analytic text");
+                    Optional<String> result = dialog.showAndWait();
+                    if(!result.isPresent()){
+                        return;
+                    }
+                    block.insertComponentAbove(child, new Analytic(result.get()));
                     refresh();
                 }
             });
