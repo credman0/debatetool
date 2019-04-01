@@ -67,7 +67,7 @@ public class MainGui {
     private LocationTreeItem openedNode;
     private SpeechComponent openedComponent;
     private ObservableList<HashIdentifiedSpeechComponent> editHistory = FXCollections.observableArrayList();
-    private SimpleIntegerProperty editHistoryIndex = new SimpleIntegerProperty(this, "editHistoryIndex", 0);
+    private SimpleIntegerProperty editHistoryIndex = new SimpleIntegerProperty(this, "editHistoryIndex", -1);
 
     private static MainGui activeGUI;
 
@@ -161,6 +161,7 @@ public class MainGui {
         }
         // TODO change this to onyl the currnet document
         IOController.getIoController().getDBLock().unlockAllExcept(component.getHash());
+
         componentViewer.open(component);
         openedNode = currentNode;
         openedComponent = component;
