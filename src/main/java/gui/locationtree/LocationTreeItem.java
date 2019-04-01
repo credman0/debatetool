@@ -2,10 +2,13 @@ package gui.locationtree;
 
 import com.jfoenix.controls.JFXSpinner;
 import core.HashIdentifiedSpeechComponent;
+import gui.cardediting.MainGui;
 import io.iocontrollers.IOController;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
+import javafx.scene.Cursor;
 import javafx.scene.control.TreeItem;
 import javafx.scene.image.Image;
 import org.bson.types.Binary;
@@ -53,24 +56,36 @@ public class LocationTreeItem extends TreeItem<LocationTreeItemContent> {
             return super.getChildren();
         }
         childrenLoaded = true;
-        loadingProperty.set(true);
-        List<TreeItem<LocationTreeItemContent>> children = new ArrayList<>();
-        List<String> path = getPath();
-        List<String> childrenDirs = IOController.getIoController().getStructureIOManager().getChildren(path);
-        List<HashIdentifiedSpeechComponent> contents = null;
-        try {
-            contents = IOController.getIoController().getStructureIOManager().getContent(path);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        for (String name:childrenDirs){
-            children.add(new LocationTreeItem(new LocationTreeItemContent(name)));
-        }
-        for (HashIdentifiedSpeechComponent component :contents){
-            children.add(new LocationTreeItem(new LocationTreeItemContent(component)));
-        }
-        loadingProperty.set(false);
-        super.getChildren().addAll(children);
+        // cannot be accessed from within trhead if not declared here
+        ObservableList<TreeItem<LocationTreeItemContent>> superChildren = super.getChildren();
+        Task task = new Task<>() {
+            @Override
+            protected Object call() throws Exception {
+                MainGui.getActiveGUI().getScene().getRoot().setCursor(Cursor.WAIT);
+                List<TreeItem<LocationTreeItemContent>> children = new ArrayList<>();
+                List<String> path = getPath();
+                List<String> childrenDirs = IOController.getIoController().getStructureIOManager().getChildren(path);
+                List<HashIdentifiedSpeechComponent> contents = null;
+                try {
+                    contents = IOController.getIoController().getStructureIOManager().getContent(path);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                for (String name:childrenDirs){
+                    children.add(new LocationTreeItem(new LocationTreeItemContent(name)));
+                }
+                for (HashIdentifiedSpeechComponent component :contents){
+                    children.add(new LocationTreeItem(new LocationTreeItemContent(component)));
+                }
+                MainGui.getActiveGUI().getScene().getRoot().setCursor(Cursor.DEFAULT);
+                superChildren.addAll(children);
+                return null;
+            }
+        };
+        Thread thread = new Thread(task);
+        thread.setDaemon(true);
+        thread.start();
+
         return super.getChildren();
     }
 

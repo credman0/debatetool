@@ -24,6 +24,7 @@ import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -84,6 +85,11 @@ public class MainGui {
 
     public boolean treeContainsPath(List<String> path){
         return ((LocationTreeItem)directoryView.getRoot()).contains(path);
+    }
+
+    public Scene getScene(){
+        // viewer pane chosen arbitrarily
+        return viewerPane.getScene();
     }
 
     public LocationTreeItem getOpenedNode(){
