@@ -15,6 +15,7 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.web.WebView;
+import org.w3c.dom.Document;
 
 import java.io.IOException;
 import java.util.Set;
@@ -61,8 +62,12 @@ public class SpeechViewer {
         generateContents();
     }
 
+    public String getHtml(){
+        return speech.getDisplayContent();
+    }
+
     private void generateContents(){
-        String contents = speech.getDisplayContent();
+        String contents = getHtml();
         webview.getEngine().getLoadWorker().stateProperty().addListener(new ContentLoader(contents));
         webview.getEngine().load(WEBVIEW_HTML);
         webview.setDisable(true);

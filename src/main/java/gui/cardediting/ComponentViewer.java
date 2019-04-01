@@ -5,9 +5,9 @@ import core.Card;
 import core.HashIdentifiedSpeechComponent;
 import core.Speech;
 import gui.blockediting.BlockEditor;
+import gui.speechtools.DOCXExporter;
 import gui.speechtools.SpeechEditor;
 import gui.speechtools.SpeechViewer;
-import io.iocontrollers.IOController;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.concurrent.Task;
@@ -92,6 +92,11 @@ public class ComponentViewer {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public void exportToDOCX() throws IOException {
+        DOCXExporter.export(speechViewer.getHtml());
+
     }
 
     public Pane getPane() {
