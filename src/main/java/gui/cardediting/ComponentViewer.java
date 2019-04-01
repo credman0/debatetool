@@ -18,6 +18,9 @@ import javafx.scene.layout.Pane;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
+
+import static gui.cardediting.MainGui.showTextDialog;
 
 public class ComponentViewer {
     private CardEditor cardEditor;
@@ -95,8 +98,15 @@ public class ComponentViewer {
     }
 
     public void exportToDOCX() throws IOException {
-        DOCXExporter.export(speechViewer.getHtml());
-
+        if (currentViewMode!=ViewType.SPEECH || editMode.get()){
+            return;
+        }
+        Optional<String> name = showTextDialog("DOCX Export", "Choose a name", speechViewer.getSpeech().getName());
+        String nameString = name.isPresent() ? name.get() : "output.docx";
+        if (!nameString.endsWith(".docx")){
+            nameString = nameString+".docx";
+        }
+        DOCXExporter.export(speechViewer.getHtml(), nameString);
     }
 
     public Pane getPane() {

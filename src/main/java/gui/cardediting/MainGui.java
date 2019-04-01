@@ -638,7 +638,7 @@ public class MainGui {
         boolean success = IOController.getIoController().getAdminManager().createUser();
     }
 
-    private Optional<String> showTextDialog(String title, String header, String defaultText){
+    public static Optional<String> showTextDialog(String title, String header, String defaultText){
         TextInputDialog dialog = new TextInputDialog(defaultText);
         dialog.setTitle(title);
         dialog.setHeaderText(header);

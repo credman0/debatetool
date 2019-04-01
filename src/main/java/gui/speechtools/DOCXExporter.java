@@ -1,10 +1,7 @@
 package gui.speechtools;
 
 import gui.SettingsHandler;
-import org.apache.poi.xwpf.usermodel.UnderlinePatterns;
-import org.apache.poi.xwpf.usermodel.XWPFDocument;
-import org.apache.poi.xwpf.usermodel.XWPFParagraph;
-import org.apache.poi.xwpf.usermodel.XWPFRun;
+import org.apache.poi.xwpf.usermodel.*;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.STHighlightColor;
 
 import java.io.File;
@@ -14,18 +11,19 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class DOCXExporter {
-    public static void export(String html) throws IOException {
+    public static void export(String html, String name) throws IOException {
         XWPFDocument document = new XWPFDocument();
-        XWPFParagraph tmpParagraph = document.createParagraph();
-        parseSpeech(html, tmpParagraph);
-        document.write(new FileOutputStream(new File("out.docx")));
+        parseSpeech(html, document);
+        new File("exports").mkdir();
+        document.write(new FileOutputStream(new File("exports/"+name)));
         document.close();
     }
 
     final static String TAG_REGEX = "<(\\/)?([^>]+)>";
     final static Pattern TAG_PATTERN = Pattern.compile(TAG_REGEX);
     // The html/xml parsing libraries have failed me, so here I am doing it by hand...
-    private static void parseSpeech(String html, XWPFParagraph paragraph){
+    private static void parseSpeech(String html, XWPFDocument document){
+        XWPFParagraph paragraph = document.createParagraph();
         Matcher matcher = TAG_PATTERN.matcher(html);
         int highlight = 0;
         int underline = 0;
@@ -78,7 +76,10 @@ public class DOCXExporter {
                     big++;
                 }
             }else if (matcher.group(2).equals("p")) {
-                tmpRun.addBreak();
+                if (matcher.group(1) == null){
+                    // only when on an opening
+                    paragraph = document.createParagraph();
+                }
             }else{
                 throw new IllegalStateException("Parse found unrecognized symbol: " + matcher.group());
             }
