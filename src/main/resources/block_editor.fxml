@@ -8,7 +8,7 @@
 <BorderPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
             fx:id="mainPane"
-            fx:controller="gui.blockediting.BlockEditor"
+            fx:controller="org.debatetool.gui.blockediting.BlockEditor"
             prefHeight="760" prefWidth="1280">
 <center>
     <SplitPane dividerPositions="0.3">

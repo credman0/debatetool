@@ -8,7 +8,7 @@
 <BorderPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
             fx:id="mainPane"
-            fx:controller="gui.speechtools.SpeechEditor"
+            fx:controller="org.debatetool.gui.speechtools.SpeechEditor"
             prefHeight="760" prefWidth="1280">
 <center>
     <SplitPane dividerPositions="0.3">

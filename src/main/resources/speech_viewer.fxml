@@ -6,7 +6,7 @@
 <BorderPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
             fx:id="mainPane"
-            fx:controller="gui.speechtools.SpeechViewer"
+            fx:controller="org.debatetool.gui.speechtools.SpeechViewer"
             prefHeight="760" prefWidth="1280">
 <center>
     <ScrollPane fx:id="scrollpane" hbarPolicy="NEVER" fitToWidth="true">

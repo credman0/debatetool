@@ -7,7 +7,7 @@
     <properties>
         <maven.compiler.source>1.9</maven.compiler.source>
         <maven.compiler.target>1.9</maven.compiler.target>
-        <mainClass>main.Main</mainClass>
+        <mainClass>org.debatetool.main.Main</mainClass>
     </properties>
     <pluginRepositories>
         <pluginRepository>
@@ -52,7 +52,7 @@
                         <manifest>
                             <addClasspath>true</addClasspath>
                             <classpathPrefix>lib/</classpathPrefix>
-                            <mainClass>main.Main</mainClass>
+                            <mainClass>org.debatetool.main.Main</mainClass>
                         </manifest>
                     </archive>
                 </configuration>

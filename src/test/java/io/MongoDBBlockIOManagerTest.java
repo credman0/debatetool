@@ -1,12 +1,12 @@
 package io;
 
-import core.Analytic;
-import core.Block;
-import core.Card;
-import core.Cite;
-import io.componentio.ComponentIOManager;
-import io.iocontrollers.IOController;
-import io.iocontrollers.mongodb.MongoDBIOController;
+import org.debatetool.core.Analytic;
+import org.debatetool.core.Block;
+import org.debatetool.core.Card;
+import org.debatetool.core.Cite;
+import org.debatetool.io.componentio.ComponentIOManager;
+import org.debatetool.io.iocontrollers.IOController;
+import org.debatetool.io.iocontrollers.mongodb.MongoDBIOController;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
