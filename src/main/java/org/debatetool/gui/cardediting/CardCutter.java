@@ -81,7 +81,7 @@ public class CardCutter extends CardViewer {
             @Override
             public void changed(ObservableValue observableValue, Object o, Object t1) {
                 if (TagChoiceAction.class.isInstance(t1)){
-                    String name = IOUtil.getSafeNameAgainstList("New Tag", tagChoice.getItems());
+                    String name = MainGui.getSafeNameAgainstList("New Tag", tagChoice.getItems());
                     tagChoice.getItems().add(tagChoice.getItems().size()-1, name);
                     tagChoice.getSelectionModel().select(tagChoice.getItems().size()-2);
                     tagChoice.getEditor().requestFocus();

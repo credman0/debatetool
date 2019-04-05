@@ -300,11 +300,11 @@ public class MainGui {
                                 if (cell.isEmpty()){
 
                                     // if we are on an empty cell, create a top-level directory
-                                    name  = IOUtil.getSafeNameAgainstTreeItemList(baseName, root.getChildren());
+                                    name  = MainGui.getSafeNameAgainstTreeItemList(baseName, root.getChildren());
                                     root.getChildren().add(new LocationTreeItem(new LocationTreeItemContent(name)));
                                     effectivePath = new ArrayList<>();
                                 }else{
-                                    name  = IOUtil.getSafeNameAgainstTreeItemList(baseName, currentNode.getChildren());
+                                    name  = MainGui.getSafeNameAgainstTreeItemList(baseName, currentNode.getChildren());
                                     currentNode.getChildren().add(new LocationTreeItem(new LocationTreeItemContent(name)));
                                     effectivePath = getCurrentNode().getPath();
                                 }
@@ -321,7 +321,7 @@ public class MainGui {
                                 // if the list was "empty", it will have one null element we want to remove
                                 currentNode.getChildren().removeIf(
                                         locationTreeItemContentTreeItem -> locationTreeItemContentTreeItem.getValue()==null);
-                                String name  = IOUtil.getSafeNameAgainstTreeItemList("New Block", currentNode.getChildren());
+                                String name  = MainGui.getSafeNameAgainstTreeItemList("New Block", currentNode.getChildren());
                                 Block newBlock = new Block(getCurrentNode().getPath(), name);
                                 currentNode.getChildren().add(new LocationTreeItem(new LocationTreeItemContent(newBlock)));
                                 IOController.getIoController().getStructureIOManager().addContent(getCurrentNode().getPath(), newBlock);
@@ -342,7 +342,7 @@ public class MainGui {
                                 // if the list was "empty", it will have one null element we want to remove
                                 currentNode.getChildren().removeIf(
                                         locationTreeItemContentTreeItem -> locationTreeItemContentTreeItem.getValue()==null);
-                                String name  = IOUtil.getSafeNameAgainstTreeItemList("New Speech", currentNode.getChildren());
+                                String name  = MainGui.getSafeNameAgainstTreeItemList("New Speech", currentNode.getChildren());
                                 Speech newSpeech = new Speech(getCurrentNode().getPath(),name);
                                 currentNode.getChildren().add(new LocationTreeItem(new LocationTreeItemContent(newSpeech)));
                                 IOController.getIoController().getStructureIOManager().addContent(getCurrentNode().getPath(), newSpeech);
@@ -373,7 +373,7 @@ public class MainGui {
                                         if (name == null){
                                             return;
                                         }
-                                        name  = IOUtil.getSafeNameAgainstTreeItemList(name,  currentNode.getChildren());
+                                        name  = MainGui.getSafeNameAgainstTreeItemList(name,  currentNode.getChildren());
 
                                         List<String> path = currentNode.getPath();
                                         path.remove(path.size() - 1);
@@ -403,7 +403,7 @@ public class MainGui {
                                         }else{
                                             name = baseNameResult.get();
                                         }
-                                        name  = IOUtil.getSafeNameAgainstTreeItemList(name, cell.getTreeTableRow().getTreeItem().getParent().getChildren());
+                                        name  = MainGui.getSafeNameAgainstTreeItemList(name, cell.getTreeTableRow().getTreeItem().getParent().getChildren());
                                         byte[] oldHash = cellBlock.getHash();
                                         cellBlock.setName(name);
                                         try {
@@ -436,7 +436,7 @@ public class MainGui {
                                         }else{
                                             name = baseNameResult.get();
                                         }
-                                        name  = IOUtil.getSafeNameAgainstTreeItemList(name, cell.getTreeTableRow().getTreeItem().getParent().getChildren());
+                                        name  = MainGui.getSafeNameAgainstTreeItemList(name, cell.getTreeTableRow().getTreeItem().getParent().getChildren());
                                         byte[] oldHash = cellSpeech.getHash();
                                         cellSpeech.setName(name);
                                         try {
@@ -677,5 +677,34 @@ public class MainGui {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    /**
+     * Find a name that is not in the list, by taking base and adding numbers until it is not contained
+     * @param base base name to append to
+     * @param list list to check against
+     * @return a name of the form <base>(\d)?
+     */
+    public static String getSafeNameAgainstList(String base, List<String> list){
+        String trialName = base;
+        int index = 1;
+        while (list.contains(trialName)){
+            trialName = base + " (" + index +")";
+            index++;
+        }
+        return trialName;
+    }
+
+    public static String getSafeNameAgainstTreeItemList(String base, List<TreeItem<LocationTreeItemContent>> list){
+        if (base==null){
+            return null;
+        }
+        String trialName = base;
+        int index = 1;
+        while (IOUtil.listContainsString(list,trialName)){
+            trialName = base + " (" + index +")";
+            index++;
+        }
+        return trialName;
     }
 }
