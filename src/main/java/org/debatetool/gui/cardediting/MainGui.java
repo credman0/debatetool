@@ -650,16 +650,41 @@ public class MainGui {
         open(editHistory.get(editHistoryIndex.get()),false);
     }
 
-    public void adminAuthenticate(ActionEvent actionEvent) {
-        boolean success = IOController.getIoController().getAdminManager().authenticateAsAdmin();
+    public void adminAuthenticate() {
+        Pair<String, String> credentialStrings = LoginDialog.showDialog();
+        if (credentialStrings == null){
+            return;
+        }
+        boolean success = IOController.getIoController().getAdminManager().authenticateAsAdmin(SettingsHandler.getSetting("mongod_ip"), Integer.parseInt(SettingsHandler.getSetting("mongod_port")), credentialStrings.getKey(), credentialStrings.getValue());
         if (success){
             authAdminMenuItem.setDisable(true);
             createUserMenuItem.setDisable(false);
+        }else{
+            new Alert(Alert.AlertType.ERROR, "Authentication failed!", ButtonType.OK).showAndWait();
         }
     }
 
     public void adminCreateUser(ActionEvent actionEvent) {
-        boolean success = IOController.getIoController().getAdminManager().createUser();
+        String username;
+        String password;
+
+        TextInputDialog dialog = new TextInputDialog("user");
+        dialog.setTitle("Username selection");
+        dialog.setHeaderText("Please select a username");
+        Optional<String> result = dialog.showAndWait();
+        if (!result.isPresent()){
+            return;
+        }
+        username = result.get();
+        dialog = new TextInputDialog("");
+        dialog.setTitle("Password selection");
+        dialog.setHeaderText("Please select a password");
+        result = dialog.showAndWait();
+        if (!result.isPresent() || result.get().equals("")) {
+            return;
+        }
+        password = result.get();
+        boolean success = IOController.getIoController().getAdminManager().createUser(username,password);
     }
 
     public static Optional<String> showTextDialog(String title, String header, String defaultText){
