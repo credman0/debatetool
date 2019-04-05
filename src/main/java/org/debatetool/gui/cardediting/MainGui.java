@@ -3,7 +3,9 @@ package org.debatetool.gui.cardediting;
 import com.jfoenix.controls.JFXChipView;
 import com.jfoenix.controls.JFXSpinner;
 import com.jfoenix.controls.JFXToggleButton;
+import javafx.util.Pair;
 import org.debatetool.core.*;
+import org.debatetool.gui.LoginDialog;
 import org.debatetool.gui.SettingsHandler;
 import org.debatetool.gui.locationtree.LocationTreeItem;
 import org.debatetool.gui.locationtree.LocationTreeItemContent;
@@ -108,6 +110,7 @@ public class MainGui {
         backButton.disableProperty().bind(Bindings.lessThanOrEqual(editHistoryIndex,0));
         forwardButton.disableProperty().bind(Bindings.greaterThanOrEqual(editHistoryIndex,Bindings.subtract(Bindings.size(editHistory),1)));
         activeGUI = this;
+        attemptLogin();
         populateDirectoryView();
         componentViewer = new ComponentViewer();
         componentViewer.init(viewerPane);
@@ -160,6 +163,18 @@ public class MainGui {
                 componentViewer.updateEdit();
             }
         });
+
+    }
+
+    private void attemptLogin(){
+        Pair<String, String> credentialStrings = LoginDialog.showDialog();
+        if (credentialStrings == null){
+            attemptLogin();
+        }
+        boolean success = IOController.getIoController().attemptAuthenticate(SettingsHandler.getSetting("mongod_ip"), Integer.parseInt(SettingsHandler.getSetting("mongod_port")), credentialStrings.getKey(), credentialStrings.getValue());
+        if (!success){
+            attemptLogin();
+        }
     }
 
     private void open(HashIdentifiedSpeechComponent component, boolean track){
