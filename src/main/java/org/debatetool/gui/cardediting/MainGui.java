@@ -8,7 +8,6 @@ import org.debatetool.gui.SettingsHandler;
 import org.debatetool.gui.locationtree.LocationTreeItem;
 import org.debatetool.gui.locationtree.LocationTreeItemContent;
 import org.debatetool.gui.speechtools.SpeechComponentCellFactory;
-import org.debatetool.io.IOUtil;
 import org.debatetool.io.filters.Filter;
 import org.debatetool.io.iocontrollers.IOController;
 import javafx.beans.binding.Bindings;
@@ -40,6 +39,7 @@ import javafx.stage.Stage;
 import javafx.util.Callback;
 import org.debatetool.scripting.JythonScripter;
 
+import javax.annotation.Nonnull;
 import java.awt.*;
 import java.io.IOException;
 import java.net.URI;
@@ -72,6 +72,15 @@ public class MainGui {
 
     public static MainGui getActiveGUI() {
         return activeGUI;
+    }
+
+    public static boolean listContainsString(List<TreeItem<LocationTreeItemContent>> list, @Nonnull String name){
+        for (TreeItem<LocationTreeItemContent> treeItem: list){
+            if (name.equals(treeItem.getValue().toString())){
+                return true;
+            }
+        }
+        return false;
     }
 
     public void refreshDirectories(){
@@ -701,7 +710,7 @@ public class MainGui {
         }
         String trialName = base;
         int index = 1;
-        while (IOUtil.listContainsString(list,trialName)){
+        while (listContainsString(list,trialName)){
             trialName = base + " (" + index +")";
             index++;
         }
