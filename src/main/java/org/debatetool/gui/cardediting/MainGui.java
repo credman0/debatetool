@@ -10,6 +10,7 @@ import org.debatetool.gui.SettingsHandler;
 import org.debatetool.gui.locationtree.LocationTreeItem;
 import org.debatetool.gui.locationtree.LocationTreeItemContent;
 import org.debatetool.gui.speechtools.SpeechComponentCellFactory;
+import org.debatetool.io.accounts.DBLockResponse;
 import org.debatetool.io.filters.Filter;
 import org.debatetool.io.iocontrollers.IOController;
 import javafx.beans.binding.Bindings;
@@ -178,8 +179,10 @@ public class MainGui {
     }
 
     private void open(HashIdentifiedSpeechComponent component, boolean track){
-        if (!IOController.getIoController().getDBLock().tryLock(component.getHash())){
-            System.out.println("lock failed");
+        DBLockResponse response = IOController.getIoController().getDBLock().tryLock(component.getHash());
+        if (response.getResultType()!=DBLockResponse.ResultType.SUCCESS){
+            Alert alert = new Alert(Alert.AlertType.ERROR, "That file is already being edited by " + response.getMessage()+". If you think that this message is a mistake, the lock should time out (default - 10 minutes).");
+            alert.showAndWait();
             return;
         }
         // TODO change this to onyl the currnet document
