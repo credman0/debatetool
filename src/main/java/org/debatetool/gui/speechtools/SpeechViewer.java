@@ -1,6 +1,7 @@
 package org.debatetool.gui.speechtools;
 
 import org.debatetool.core.Speech;
+import org.debatetool.core.html.HtmlEncoder;
 import org.debatetool.gui.SettingsHandler;
 import org.debatetool.gui.cardediting.MainGui;
 import javafx.application.Platform;
@@ -97,7 +98,7 @@ public class SpeechViewer {
         public void changed(ObservableValue<? extends Worker.State> observableValue, Worker.State oldState, Worker.State newState) {
             if (newState == Worker.State.SUCCEEDED) {
                 webview.getEngine().executeScript("document.getElementById('style').sheet.cssRules[0].style.backgroundColor = '"+ SettingsHandler.getColorTag()+"';");
-                webview.getEngine().executeScript("document.getElementById('textarea').innerHTML = \""+content+"\";");
+                webview.getEngine().executeScript("document.getElementById('textarea').innerHTML = \""+ HtmlEncoder.encode(content)+"\";");
                 // put the resizing code in a runLater because otherwise for some reason the size is way too large
                 // adapted from http://java-no-makanaikata.blogspot.com/2012/10/javafx-webview-size-trick.html
                 Platform.runLater(new Runnable(){

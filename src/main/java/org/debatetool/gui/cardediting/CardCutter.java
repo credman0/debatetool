@@ -3,6 +3,7 @@ package org.debatetool.gui.cardediting;
 import com.sun.javafx.webkit.WebConsoleListener;
 import org.debatetool.core.Card;
 import org.debatetool.core.CardOverlay;
+import org.debatetool.core.html.HtmlEncoder;
 import org.debatetool.gui.SettingsHandler;
 import org.debatetool.io.IOUtil;
 import org.debatetool.io.iocontrollers.IOController;
@@ -216,7 +217,7 @@ public class CardCutter extends CardViewer {
         }
         CardOverlay combinedOverlay = CardOverlay.combineOverlays(getActiveUnderlineOverlay(),getActiveHighlightOverlay());
         cardTextArea.getEngine().executeScript("document.getElementById('style').sheet.cssRules[0].style.backgroundColor = '"+ SettingsHandler.getColorTag()+"';");
-        cardTextArea.getEngine().executeScript("document.getElementById('textarea').innerHTML = \""+combinedOverlay.generateHTML(text)+"\";");
+        cardTextArea.getEngine().executeScript("document.getElementById('textarea').innerHTML = \""+ HtmlEncoder.encode(combinedOverlay.generateHTML(text))+"\";");
     }
 
     private byte getActiveOverlayType(){
