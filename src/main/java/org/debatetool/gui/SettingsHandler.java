@@ -66,13 +66,9 @@ public class SettingsHandler {
 
         preferencesFx =
                 PreferencesFx.of(SettingsHandler.class,
-                        Category.of("Mongo Database Settings",
-                                Group.of("Preferences",
-                                        Setting.of("Color", colorChoices, color)),
-                                Group.of("Server",
-                                        Setting.of("Mongodb IP", mongoIP),
-                                        Setting.of("Mongodb Port", mongoPort)
-                                )
+                        Category.of("Preferences",
+                                Group.of("Display",
+                                        Setting.of("Color", colorChoices, color))
                         )
                 ).addEventHandler(PreferencesFxEvent.EVENT_PREFERENCES_SAVED, new EventHandler<PreferencesFxEvent>() {
                     @Override
@@ -107,26 +103,26 @@ public class SettingsHandler {
         return properties.getProperty(name);
     }
 
+    public static Object setSetting(String name, String value){
+        return properties.setProperty(name,value);
+    }
+
+    public static void store() throws IOException {
+
+        OutputStream out = new FileOutputStream("config.properties");
+        properties.store(out, null);
+        out.close();
+    }
+
     private static void saveChanges() throws IOException {
         boolean changed = false;
-        String mongoIPProperty = properties.getProperty("mongod_ip");
-        if (mongoIPProperty==null || !mongoIP.getValue().equals(mongoIPProperty)) {
-            properties.put("mongod_ip", mongoIP.getValue());
-            changed = true;
-        }
-        String mongoPortProperty = properties.getProperty("mongod_port");
-        if (mongoPortProperty==null || !mongoPort.getValue().equals(mongoIPProperty)) {
-            properties.put("mongod_port", mongoPort.getValue());
-            changed = true;
-        }
         String colorProperty = properties.getProperty("color", STHighlightColor.CYAN.toString());
         if (colorProperty==null || !color.getValue().equals(colorProperty)) {
             properties.put("color", color.getValue());
             changed = true;
         }
         if (changed) {
-            OutputStream out = new FileOutputStream("config.properties");
-            properties.store(out, null);
+            store();
         }
     }
 }

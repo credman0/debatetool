@@ -579,7 +579,9 @@ public class MainGui {
         componentViewer.save(currentNode.getPath());
         currentNode.reloadChildren();
         // TODO don't need to do a full reload here
-        openedNode.reloadChildren();
+        if (openedNode!=null){
+            openedNode.reloadChildren();
+        }
     }
 
     public void newCardAction(){

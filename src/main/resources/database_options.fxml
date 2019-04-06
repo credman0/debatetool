@@ -6,28 +6,18 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ButtonType?>
 <?import javafx.scene.control.PasswordField?>
-<?import javafx.scene.layout.BorderPane?>
-<?import javafx.scene.control.Button?>
 <DialogPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
-            fx:controller="org.debatetool.gui.LoginDialog"
+            fx:controller="org.debatetool.gui.DatabaseOptionsDialog"
             fx:id="pane"
             prefHeight="400.0" prefWidth="600.0">
 <content>
-    <BorderPane>
-        <center>
-            <VBox>
-                <Label text="Username:"/>
-                <TextField fx:id="usernameField"/>
-                <Label text="Password:"/>
-                <PasswordField fx:id="passwordField"/>
-            </VBox>
-        </center>
-        <bottom>
-            <Button text="Database Settings" onAction="#showDatabaseSettings"/>
-        </bottom>
-    </BorderPane>
-
+    <VBox>
+        <Label text="Address:"/>
+        <TextField fx:id="addressField"/>
+        <Label text="Port:"/>
+        <TextField fx:id="portField"/>
+    </VBox>
 </content>
     <buttonTypes>
         <ButtonType fx:constant="OK" />
