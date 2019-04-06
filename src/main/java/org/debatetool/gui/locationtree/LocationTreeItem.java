@@ -18,6 +18,7 @@ import java.util.List;
 
 public class LocationTreeItem extends TreeItem<LocationTreeItemContent> {
     private boolean childrenLoaded = false ;
+    private boolean updating = false;
     public final static Image DIRECTORY_CLOSED = new Image(LocationTreeItem.class.getResource("/icons/Places-folder-icon.png").toExternalForm());
     public final static Image DIRECTORY_OPEN = new Image(LocationTreeItem.class.getResource("/icons/Places-folder-empty-icon.png").toExternalForm());
     public final static Image LETTER_B = new Image(LocationTreeItem.class.getResource("/icons/Letter-B-blue-icon.png").toExternalForm());
@@ -49,9 +50,10 @@ public class LocationTreeItem extends TreeItem<LocationTreeItemContent> {
 
     @Override
     public ObservableList<TreeItem<LocationTreeItemContent>> getChildren(){
-        if (childrenLoaded){
+        if (childrenLoaded || updating){
             return super.getChildren();
         }
+        updating = true;
         childrenLoaded = true;
         // cannot be accessed from within trhead if not declared here
         ObservableList<TreeItem<LocationTreeItemContent>> superChildren = super.getChildren();
@@ -76,6 +78,7 @@ public class LocationTreeItem extends TreeItem<LocationTreeItemContent> {
                 }
                 MainGui.getActiveGUI().getScene().getRoot().setCursor(Cursor.DEFAULT);
                 superChildren.addAll(children);
+                updating = false;
                 return null;
             }
         };
@@ -87,6 +90,9 @@ public class LocationTreeItem extends TreeItem<LocationTreeItemContent> {
     }
 
     public void reloadChildren(){
+        if(updating){
+            return;
+        }
         getChildren().clear();
         childrenLoaded = false;
         if (isExpanded()){
