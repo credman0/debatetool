@@ -1,5 +1,6 @@
 package org.debatetool.gui.cardediting;
 
+import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXChipView;
 import com.jfoenix.controls.JFXSpinner;
 import com.jfoenix.controls.JFXToggleButton;
@@ -32,6 +33,7 @@ import javafx.stage.Stage;
 import javafx.util.Callback;
 import javafx.util.Pair;
 import org.debatetool.core.*;
+import org.debatetool.gui.timer.DebateTimer;
 import org.debatetool.gui.LoginDialog;
 import org.debatetool.gui.SettingsHandler;
 import org.debatetool.gui.locationtree.LocationTreeItem;
@@ -51,6 +53,7 @@ import java.util.List;
 import java.util.*;
 
 public class MainGui {
+    @FXML private JFXButton timerButton;
     @FXML private MenuItem authAdminMenuItem;
     @FXML private MenuItem createUserMenuItem;
     @FXML private JFXToggleButton editToggle;
@@ -759,5 +762,13 @@ public class MainGui {
             index++;
         }
         return trialName;
+    }
+
+    public void spawnTimer(ActionEvent actionEvent) {
+        try {
+            DebateTimer.openTimer(getScene().getWindow(), timerButton.disableProperty());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

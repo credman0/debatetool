@@ -9,6 +9,8 @@
 <?import javafx.scene.text.Text?>
 <?import java.lang.String?>
 <?import com.jfoenix.controls.JFXToggleButton?>
+<?import com.jfoenix.controls.JFXButton?>
+<?import javafx.geometry.Insets?>
 <BorderPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
             fx:controller="org.debatetool.gui.cardediting.MainGui"
@@ -62,9 +64,17 @@
                     </Menu>
                 </menus>
             </MenuBar>
-            <HBox>
-                <JFXToggleButton fx:id="editToggle" text="Edit Mode"/>
-            </HBox>
+            <GridPane>
+                <children>
+                    <JFXToggleButton fx:id="editToggle" text="Edit Mode" GridPane.columnIndex="0" GridPane.rowIndex="0" focusTraversable="false"/>
+                    <JFXButton text="Timer" onAction="#spawnTimer" buttonType="RAISED" fx:id="timerButton"
+                               style="-fx-text-fill:WHITE;-fx-background-color:#5264AE;-fx-font-size:14px;" GridPane.columnIndex="1" GridPane.rowIndex="0" focusTraversable="false"/>
+                </children>
+                <columnConstraints>
+                    <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="20.0" prefWidth="100.0" />
+                    <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="20.0" prefWidth="100.0" />
+                </columnConstraints>
+            </GridPane>
         </VBox>
     </top>
     <center>
