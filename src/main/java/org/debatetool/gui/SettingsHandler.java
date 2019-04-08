@@ -84,6 +84,9 @@ public class SettingsHandler {
 
     public static String getColorTag(){
         String color = getSetting("color");
+        if (color == null){
+            color = "green";
+        }
         if (color.equals("green")){
             return "#00e310";
         }else if (color.equals("cyan")){
