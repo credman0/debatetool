@@ -3,16 +3,6 @@ package org.debatetool.gui.cardediting;
 import com.jfoenix.controls.JFXChipView;
 import com.jfoenix.controls.JFXSpinner;
 import com.jfoenix.controls.JFXToggleButton;
-import javafx.util.Pair;
-import org.debatetool.core.*;
-import org.debatetool.gui.LoginDialog;
-import org.debatetool.gui.SettingsHandler;
-import org.debatetool.gui.locationtree.LocationTreeItem;
-import org.debatetool.gui.locationtree.LocationTreeItemContent;
-import org.debatetool.gui.speechtools.SpeechComponentCellFactory;
-import org.debatetool.io.accounts.DBLockResponse;
-import org.debatetool.io.filters.Filter;
-import org.debatetool.io.iocontrollers.IOController;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -40,9 +30,18 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Callback;
+import javafx.util.Pair;
+import org.debatetool.core.*;
+import org.debatetool.gui.LoginDialog;
+import org.debatetool.gui.SettingsHandler;
+import org.debatetool.gui.locationtree.LocationTreeItem;
+import org.debatetool.gui.locationtree.LocationTreeItemContent;
+import org.debatetool.gui.speechtools.SpeechComponentCellFactory;
+import org.debatetool.io.accounts.DBLockResponse;
+import org.debatetool.io.filters.Filter;
+import org.debatetool.io.iocontrollers.IOController;
 import org.debatetool.scripting.JythonScripter;
 
-import javax.annotation.Nonnull;
 import java.awt.*;
 import java.io.IOException;
 import java.net.URI;
@@ -77,7 +76,7 @@ public class MainGui {
         return activeGUI;
     }
 
-    public static boolean listContainsString(List<TreeItem<LocationTreeItemContent>> list, @Nonnull String name){
+    public static boolean listContainsString(List<TreeItem<LocationTreeItemContent>> list, String name){
         for (TreeItem<LocationTreeItemContent> treeItem: list){
             if (name.equals(treeItem.getValue().toString())){
                 return true;

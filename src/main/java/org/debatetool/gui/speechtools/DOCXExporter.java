@@ -18,9 +18,11 @@ public class DOCXExporter {
         document.close();
     }
 
-    final static String TAG_REGEX = "<(\\/)?([^>]+)>";
+    final static String TAG_REGEX = "<(\\/)?([^>]+)>|&#(\\d+);";
     final static Pattern TAG_PATTERN = Pattern.compile(TAG_REGEX);
-    // The html/xml parsing libraries have failed me, so here I am doing it by hand...
+    /**
+     * The html/xml parsing libraries have failed me, so here I am doing it by hand...
+     */
     private static void parseSpeech(String html, XWPFDocument document){
         XWPFParagraph paragraph = document.createParagraph();
         Matcher matcher = TAG_PATTERN.matcher(html);
@@ -31,6 +33,8 @@ public class DOCXExporter {
         int prevEnd = 0;
         while (prevEnd < html.length()){
             XWPFRun tmpRun = paragraph.createRun();
+            tmpRun.setFontFamily("Arial");
+            tmpRun.setFontSize(8);
             if (highlight>0){
                 tmpRun.setTextHighlightColor(SettingsHandler.getSetting("color"));
                 tmpRun.setFontSize(13);
@@ -44,13 +48,22 @@ public class DOCXExporter {
                 tmpRun.setBold(true);
             }
 
+            String text;
             if (matcher.find()){
-                tmpRun.setText(html.substring(prevEnd,matcher.start()));
+                text = html.substring(prevEnd,matcher.start());
                 prevEnd = matcher.end();
             }else{
                 tmpRun.setText(html.substring(prevEnd,html.length()-1));
                 break;
             }
+
+            if (matcher.group(3)!=null){
+                text+=((char)Integer.parseInt(matcher.group(3)));
+                tmpRun.setText(text);
+                continue;
+            }
+
+            tmpRun.setText(text);
 
             if (matcher.group(2).equals("br")){
                 tmpRun.addBreak();

@@ -64,11 +64,11 @@ public class SpeechViewer {
     }
 
     public String getHtml(){
-        return speech.getDisplayContent();
+        return speech.getExportDisplayContent(SettingsHandler.getExportAnalytics());
     }
 
     private void generateContents(){
-        String contents = getHtml();
+        String contents = speech.getDisplayContent();
         webview.getEngine().load(WEBVIEW_HTML);
         webview.getEngine().getLoadWorker().stateProperty().addListener(new ContentLoader(contents));
         webview.setDisable(true);

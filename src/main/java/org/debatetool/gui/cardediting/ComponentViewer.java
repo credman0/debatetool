@@ -98,8 +98,11 @@ public class ComponentViewer {
     }
 
     public void exportToDOCX() throws IOException {
-        if (currentViewMode!=ViewType.SPEECH || editMode.get()){
+        if (currentViewMode!=ViewType.SPEECH){
             return;
+        }
+        if (editMode.get()){
+            speechViewer.open(speechEditor.getSpeech());
         }
         Optional<String> name = showTextDialog("DOCX Export", "Choose a name", speechViewer.getSpeech().getName());
         String nameString = name.isPresent() ? name.get() : "output.docx";

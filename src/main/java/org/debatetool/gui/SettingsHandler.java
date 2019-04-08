@@ -5,10 +5,7 @@ import com.dlsc.preferencesfx.PreferencesFxEvent;
 import com.dlsc.preferencesfx.model.Category;
 import com.dlsc.preferencesfx.model.Group;
 import com.dlsc.preferencesfx.model.Setting;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
+import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
@@ -23,6 +20,7 @@ public class SettingsHandler {
     private static StringProperty mongoPort = new SimpleStringProperty("");
     private static final String DEFAULT_MONGO_PORT = "27017";
     private static ObjectProperty color = new SimpleObjectProperty("");
+    private static BooleanProperty exportAnalytics = new SimpleBooleanProperty(true);
     private static Properties properties = new Properties();
     private static PreferencesFx preferencesFx;
     static{
@@ -57,7 +55,14 @@ public class SettingsHandler {
             mongoIP.setValue(ipString);
         }
 
-        color.set(properties.getProperty("color", STHighlightColor.CYAN.toString()));
+        String colorString = properties.getProperty("color");
+        if(colorString==null){
+            color.set(STHighlightColor.CYAN.toString());
+            properties.setProperty("color", STHighlightColor.CYAN.toString());
+        }else{
+            color.setValue(colorString);
+        }
+        exportAnalytics.set(Boolean.parseBoolean(properties.getProperty("exportAnalytics", "true")));
 
         ObservableList<String> colorChoices = FXCollections.observableArrayList();
         colorChoices.add(STHighlightColor.CYAN.toString());
@@ -68,7 +73,9 @@ public class SettingsHandler {
                 PreferencesFx.of(SettingsHandler.class,
                         Category.of("Preferences",
                                 Group.of("Display",
-                                        Setting.of("Color", colorChoices, color))
+                                        Setting.of("Color", colorChoices, color)),
+                                Group.of("Export",
+                                        Setting.of("Export Analytics", exportAnalytics))
                         )
                 ).addEventHandler(PreferencesFxEvent.EVENT_PREFERENCES_SAVED, new EventHandler<PreferencesFxEvent>() {
                     @Override
@@ -80,6 +87,9 @@ public class SettingsHandler {
                         }
                     }
                 });
+        /*
+
+         */
     }
 
     public static String getColorTag(){
@@ -124,8 +134,17 @@ public class SettingsHandler {
             properties.put("color", color.getValue());
             changed = true;
         }
+        boolean exportAnalyticsProperty = Boolean.parseBoolean(properties.getProperty("exportAnalytics", "true"));
+        if (exportAnalyticsProperty!=exportAnalytics.get()) {
+            properties.put("exportAnalytics", exportAnalytics.getValue().toString());
+            changed = true;
+        }
         if (changed) {
             store();
         }
+    }
+
+    public static boolean getExportAnalytics() {
+        return Boolean.parseBoolean(properties.getProperty("exportAnalytics", "true"));
     }
 }
