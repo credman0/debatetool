@@ -47,6 +47,7 @@ public class CardCutter extends CardViewer {
     private ObservableList<CardOverlay> highlightingOverlayList = FXCollections.checkedObservableList(FXCollections.observableArrayList(), CardOverlay.class);
     private ObservableList<CardOverlay> underliningOverlayList = FXCollections.checkedObservableList(FXCollections.observableArrayList(), CardOverlay.class);
     private ObservableList<String> tagsList = FXCollections.checkedObservableList(FXCollections.observableArrayList(), String.class);
+    private Card card;
 
     public void init(){
         cardTextArea.setContextMenuEnabled(false);
@@ -240,6 +241,16 @@ public class CardCutter extends CardViewer {
 
     private CardOverlay getActiveUnderlineOverlay(){
         return underlineChoice.getValue();
+    }
+
+    @Override
+    protected Card getCard() {
+        return card;
+    }
+
+    @Override
+    protected void setCard(Card card) {
+        this.card = card;
     }
 
     @Override

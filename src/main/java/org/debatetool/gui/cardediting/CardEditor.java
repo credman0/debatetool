@@ -16,29 +16,15 @@ public class CardEditor extends CardViewer{
     @FXML protected TextField additionalField;
     @FXML protected TextArea cardTextArea;
 
-    public void init(){
-        authorField.textProperty().addListener((observableValue, s, t1) -> {
-            getCard().setCite(authorField.getText(), dateField.getText(), additionalField.getText());
-        });
-        dateField.textProperty().addListener((observableValue, s, t1) -> {
-            getCard().setCite(authorField.getText(), dateField.getText(), additionalField.getText());
-        });
-        additionalField.textProperty().addListener((observableValue, s, t1) -> {
-            getCard().setCite(authorField.getText(), dateField.getText(), additionalField.getText());
-        });
-        cardTextArea.textProperty().addListener(
-                (observable, oldValue, newValue) -> {
-                    // verify only legal characters are used in card text
-                    ((StringProperty)observable).setValue(Card.cleanForCard(newValue));
+    public void init(){}
 
-                    getCard().setText(observable.getValue());
-                }
-        );
+    @Override
+    protected Card getCard() {
+        return new Card(new Cite(authorField.getText(), dateField.getText(), additionalField.getText()), cardTextArea.getText());
     }
 
     @Override
-    public void open(Card card){
-        super.open(card);
+    protected void setCard(Card card) {
         Cite cite = card.getCite();
         authorField.setText(cite.getAuthor());
         dateField.setText(cite.getDate());

@@ -351,7 +351,7 @@ public class MainGui {
                                 currentNode.getChildren().removeIf(
                                         locationTreeItemContentTreeItem -> locationTreeItemContentTreeItem.getValue()==null);
                                 String name  = MainGui.getSafeNameAgainstTreeItemList("New Block", currentNode.getChildren());
-                                Block newBlock = new Block(getCurrentNode().getPath(), name);
+                                Block newBlock = new Block(name);
                                 currentNode.getChildren().add(new LocationTreeItem(new LocationTreeItemContent(newBlock)));
                                 IOController.getIoController().getStructureIOManager().addContent(getCurrentNode().getPath(), newBlock);
                                 try {
@@ -372,7 +372,7 @@ public class MainGui {
                                 currentNode.getChildren().removeIf(
                                         locationTreeItemContentTreeItem -> locationTreeItemContentTreeItem.getValue()==null);
                                 String name  = MainGui.getSafeNameAgainstTreeItemList("New Speech", currentNode.getChildren());
-                                Speech newSpeech = new Speech(getCurrentNode().getPath(),name);
+                                Speech newSpeech = new Speech(name);
                                 currentNode.getChildren().add(new LocationTreeItem(new LocationTreeItemContent(newSpeech)));
                                 IOController.getIoController().getStructureIOManager().addContent(getCurrentNode().getPath(), newSpeech);
                                 try {
@@ -437,7 +437,6 @@ public class MainGui {
                                         cellBlock.setName(name);
                                         try {
                                             IOController.getIoController().getComponentIOManager().storeSpeechComponent(cellBlock);
-                                            IOController.getIoController().getStructureIOManager().replaceContent(cellBlock.getPath(), oldHash, cellBlock.getHash());
                                         } catch (IOException e) {
                                             e.printStackTrace();
                                         }
@@ -466,11 +465,9 @@ public class MainGui {
                                             name = baseNameResult.get();
                                         }
                                         name  = MainGui.getSafeNameAgainstTreeItemList(name, cell.getTreeTableRow().getTreeItem().getParent().getChildren());
-                                        byte[] oldHash = cellSpeech.getHash();
                                         cellSpeech.setName(name);
                                         try {
                                             IOController.getIoController().getComponentIOManager().storeSpeechComponent(cellSpeech);
-                                            IOController.getIoController().getStructureIOManager().replaceContent(cellSpeech.getPath(), oldHash, cellSpeech.getHash());
                                         } catch (IOException e) {
                                             e.printStackTrace();
                                         }

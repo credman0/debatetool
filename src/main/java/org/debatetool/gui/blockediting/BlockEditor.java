@@ -188,8 +188,6 @@ public class BlockEditor {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-        List<String> fullpath = block.getPath();
     }
 
     private void updateBlockContents(){
