@@ -15,22 +15,25 @@
 
 package org.debatetool.gui.timer;
 
+import javafx.beans.property.LongProperty;
+import javafx.beans.property.SimpleLongProperty;
+
 import java.text.DecimalFormat;
 
 public class DebateTime {
-    private long time;
+    private SimpleLongProperty time = new SimpleLongProperty();
     private String name;
 
     public static DecimalFormat secondsFormat = new DecimalFormat("00");
 
     public DebateTime(String name, long time){
         this.name = name;
-        this.time = time;
+        this.time.set(time);
     }
 
     public String timeToString(){
-        long minutes = time/(60*1000);
-        long remainder = time%(60*1000);
+        long minutes = time.get()/(60*1000);
+        long remainder = time.get()%(60*1000);
         long seconds = remainder/1000;
         return minutes+":"+secondsFormat.format(seconds);
     }
@@ -48,10 +51,14 @@ public class DebateTime {
     }
 
     public long getTime() {
-        return time;
+        return time.get();
     }
 
     public void setTime(long time) {
-        this.time = time;
+        this.time.set(time);
+    }
+
+    public LongProperty getTimeProperty(){
+        return time;
     }
 }

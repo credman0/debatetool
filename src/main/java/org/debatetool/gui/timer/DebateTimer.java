@@ -18,6 +18,7 @@ package org.debatetool.gui.timer;
 import com.jfoenix.controls.JFXListView;
 import com.jfoenix.controls.JFXTabPane;
 import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
@@ -31,6 +32,7 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.stage.Window;
 import javafx.stage.WindowEvent;
+import org.debatetool.gui.SettingsHandler;
 
 import java.io.IOException;
 
@@ -41,15 +43,9 @@ public class DebateTimer {
     public BorderPane negPrepPane;
     public BorderPane affPrepPane;
     public JFXListView <DebateTime> timesListView;
-    private ObservableList<DebateTime> debateTimes = FXCollections.observableArrayList();
 
     public void init() throws IOException {
-        // TODO settings for custom times
-        debateTimes.add(new DebateTime("Constructive", 540*1000));
-        debateTimes.add(new DebateTime("Rebuttal", 360*1000));
-        debateTimes.add(new DebateTime("CrossEx", 180*1000));
-        timesListView.setItems(debateTimes);
-
+        timesListView.setItems(SettingsHandler.getTimeList());
 
         FXMLLoader stopwatchLoader = new FXMLLoader(Stopwatch.class.getClassLoader().getResource("stopwatch.fxml"));
         stopwatchLoader.load();
@@ -70,23 +66,23 @@ public class DebateTimer {
         stopwatchLoader = new FXMLLoader(Stopwatch.class.getClassLoader().getResource("stopwatch.fxml"));
         stopwatchLoader.load();
         Stopwatch negPrepTimer = stopwatchLoader.getController();
-        negPrepTimer.setTimerDuration(600*1000);
+        negPrepTimer.setTimerDuration(SettingsHandler.getPrepTime().getTime());
         negPrepTimer.resetTimer();
         negPrepPane.setCenter(negPrepTimer.getPane());
 
         stopwatchLoader = new FXMLLoader(Stopwatch.class.getClassLoader().getResource("stopwatch.fxml"));
         stopwatchLoader.load();
         Stopwatch affPrepTimer = stopwatchLoader.getController();
-        affPrepTimer.setTimerDuration(600*1000);
+        affPrepTimer.setTimerDuration(SettingsHandler.getPrepTime().getTime());
         affPrepTimer.resetTimer();
         affPrepPane.setCenter(affPrepTimer.getPane());
     }
 
-    public static void openTimer(Window parentWindow, BooleanProperty blockOthersProperty) throws IOException {
-        blockOthersProperty.setValue(true);
+    public static void openTimer(Window parentWindow, SimpleObjectProperty <DebateTimer> timerProperty) throws IOException {
         FXMLLoader timerLoader = new FXMLLoader(DebateTimer.class.getClassLoader().getResource("timer.fxml"));
         timerLoader.load();
         DebateTimer timer = timerLoader.getController();
+        timerProperty.setValue(timer);
         timer.init();
         Scene scene = new Scene(timer.pane);
         Stage newWindow = new Stage();
@@ -97,7 +93,7 @@ public class DebateTimer {
         newWindow.setOnCloseRequest(new EventHandler<WindowEvent>() {
             @Override
             public void handle(WindowEvent windowEvent) {
-                blockOthersProperty.setValue(false);
+                timerProperty.setValue(null);
             }
         });
         newWindow.show();

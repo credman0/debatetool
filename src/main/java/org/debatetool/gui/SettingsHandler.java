@@ -24,11 +24,17 @@ import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
+import org.debatetool.gui.timer.DebateTime;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.STHighlightColor;
 
 import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 
+/**
+ * This entire class is a mess and probably needs to be replaced, most likely when I replace preferencesFX (aka never)
+ */
 public class SettingsHandler {
     private static StringProperty mongoIP = new SimpleStringProperty("");
     private static final String DEFAULT_MONGO_IP = "127.0.0.1";
@@ -36,6 +42,9 @@ public class SettingsHandler {
     private static final String DEFAULT_MONGO_PORT = "27017";
     private static ObjectProperty color = new SimpleObjectProperty("");
     private static BooleanProperty exportAnalytics = new SimpleBooleanProperty(true);
+    private static ObservableList<DebateTime> timeList = FXCollections.observableArrayList();
+    private static ObservableList<IntegerProperty> modifiableTimesList = FXCollections.observableArrayList();
+    private static DebateTime prepTime = new DebateTime("Prep", 600*1000);
     private static Properties properties = new Properties();
     private static PreferencesFx preferencesFx;
     static{
@@ -51,6 +60,34 @@ public class SettingsHandler {
         }else{
             properties = new Properties();
         }
+        timeList.add(new DebateTime("Constructive", 540*1000));
+        timeList.add(new DebateTime("Rebuttal", 360*1000));
+        timeList.add(new DebateTime("CrossEx", 180*1000));
+        for (DebateTime time:timeList){
+            String timeString = properties.getProperty(time.getName().toLowerCase()+"_time");
+            if (timeString==null) {
+                properties.setProperty(time.getName().toLowerCase()+"_time", String.valueOf(time.getTime()));
+            }else{
+                time.setTime(Long.parseLong(timeString));
+            }
+        }
+
+        for (DebateTime time:timeList){
+            SimpleIntegerProperty property = new SimpleIntegerProperty();
+            property.set((int) (time.getTime()/1000));
+            modifiableTimesList.add(property);
+        }
+
+        String timeString = properties.getProperty(prepTime.getName().toLowerCase()+"_time");
+        if (timeString==null) {
+            properties.setProperty(prepTime.getName().toLowerCase()+"_time", String.valueOf(prepTime.getTime()));
+        }else{
+            prepTime.setTime(Long.parseLong(timeString));
+        }
+
+        SimpleIntegerProperty property = new SimpleIntegerProperty();
+        property.set((int) (prepTime.getTime()/1000));
+        modifiableTimesList.add(property);
 
         String portString = properties.getProperty("mongod_port");
         if (portString == null){
@@ -86,11 +123,18 @@ public class SettingsHandler {
 
         preferencesFx =
                 PreferencesFx.of(SettingsHandler.class,
-                        Category.of("Preferences",
+                        Category.of("General",
                                 Group.of("Display",
                                         Setting.of("Color", colorChoices, color)),
                                 Group.of("Export",
-                                        Setting.of("Export Analytics", exportAnalytics))
+                                        Setting.of("Export Analytics", exportAnalytics))),
+                                Category.of("Timer",
+                                        Group.of("Times (Seconds)",
+                                                Setting.of(timeList.get(0).getName(), modifiableTimesList.get(0)),
+                                                Setting.of(timeList.get(1).getName(), modifiableTimesList.get(1)),
+                                                Setting.of(timeList.get(2).getName(), modifiableTimesList.get(2)),
+                                                Setting.of(prepTime.getName(), modifiableTimesList.get(3)))
+
                         )
                 ).addEventHandler(PreferencesFxEvent.EVENT_PREFERENCES_SAVED, new EventHandler<PreferencesFxEvent>() {
                     @Override
@@ -154,9 +198,33 @@ public class SettingsHandler {
             properties.put("exportAnalytics", exportAnalytics.getValue().toString());
             changed = true;
         }
+        for (int i = 0; i < timeList.size(); i++){
+            DebateTime time = timeList.get(i);
+            String timeString = properties.getProperty(time.getName().toLowerCase()+"_time");
+            if (Long.parseLong(timeString)!=(modifiableTimesList.get(i).get()*1000)){
+                time.setTime(modifiableTimesList.get(i).get()*1000);
+                properties.setProperty(time.getName().toLowerCase()+"_time", String.valueOf(time.getTime()));
+                changed = true;
+            }
+        }
+        String timeString = properties.getProperty(prepTime.getName().toLowerCase()+"_time");
+        // timelist.size() is one past the end of the timeList aka the last modifiable time
+        if (Long.parseLong(timeString)!=(modifiableTimesList.get(timeList.size()).get()*1000)){
+            prepTime.setTime(modifiableTimesList.get(timeList.size()).get()*1000);
+            properties.setProperty(prepTime.getName().toLowerCase()+"_time", String.valueOf(prepTime.getTime()));
+            changed = true;
+        }
         if (changed) {
             store();
         }
+    }
+
+    public static ObservableList<DebateTime> getTimeList(){
+        return timeList;
+    }
+
+    public static DebateTime getPrepTime(){
+        return prepTime;
     }
 
     public static boolean getExportAnalytics() {

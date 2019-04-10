@@ -42,15 +42,15 @@ public class ComponentViewer {
     private BorderPane viewerPane;
     private BlockEditor blockEditor;
     private SimpleBooleanProperty editMode = new SimpleBooleanProperty(false);
-    private SimpleBooleanProperty blockExports = new SimpleBooleanProperty(false);
+    private SimpleBooleanProperty preventContainerActions = new SimpleBooleanProperty(true);
     private enum ViewType {BLOCK, CARD, SPEECH};
     private ViewType currentViewMode = ViewType.CARD;
 
     public void bindEditMode(Property<Boolean> property){
         property.bindBidirectional(editMode);
     }
-    public void bindBlockContainerActions(Property<Boolean> property){
-        property.bindBidirectional(blockExports);
+    public void bindPreventContainerActions(Property<Boolean> property){
+        property.bindBidirectional(preventContainerActions);
     }
 
     public void open(HashIdentifiedSpeechComponent component){
@@ -240,12 +240,12 @@ public class ComponentViewer {
     public void updateViewerPane(){
         switch (currentViewMode) {
             case BLOCK:
-                blockExports.set(false);
+                preventContainerActions.set(false);
                 viewerPane.setCenter(blockEditor.getPane());
                 break;
 
             case CARD:
-                blockExports.set(true);
+                preventContainerActions.set(true);
                 if (editMode.get()) {
                     viewerPane.setCenter(cardCutter.getPane());
                 } else {
@@ -254,7 +254,7 @@ public class ComponentViewer {
                 break;
 
             case SPEECH:
-                blockExports.set(false);
+                preventContainerActions.set(false);
                 if (editMode.get()) {
                     viewerPane.setCenter(speechEditor.getPane());
                 } else {

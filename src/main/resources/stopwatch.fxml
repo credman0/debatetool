@@ -42,7 +42,7 @@
             </Text>
             <HBox alignment="CENTER">
                     <JFXButton text="Start" onAction="#toggleTimer" buttonType="RAISED" fx:id="toggleButton"
-                               style="-fx-text-fill:WHITE;-fx-background-color:#5264AE;-fx-font-size:18x;"/>
+                               style="-fx-text-fill:WHITE;-fx-background-color:#5264AE;-fx-font-size:18px;"/>
                     <JFXButton text="Reset" onAction="#resetTimer" buttonType="FLAT"
                                style="-fx-text-fill:BLACK;-fx-background-color:#dddddd;-fx-font-size:18px;"/>
             </HBox>

@@ -21,6 +21,7 @@ import com.jfoenix.controls.JFXSpinner;
 import com.jfoenix.controls.JFXToggleButton;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ChangeListener;
@@ -49,6 +50,7 @@ import javafx.util.Callback;
 import javafx.util.Pair;
 import org.debatetool.core.*;
 import org.debatetool.gui.speechtools.FullscreenView;
+import org.debatetool.gui.timer.DebateTime;
 import org.debatetool.gui.timer.DebateTimer;
 import org.debatetool.gui.LoginDialog;
 import org.debatetool.gui.SettingsHandler;
@@ -90,6 +92,7 @@ public class MainGui {
     private SpeechComponent openedComponent;
     private ObservableList<HashIdentifiedSpeechComponent> editHistory = FXCollections.observableArrayList();
     private SimpleIntegerProperty editHistoryIndex = new SimpleIntegerProperty(this, "editHistoryIndex", -1);
+    private SimpleObjectProperty<DebateTimer> timerProperty = new SimpleObjectProperty<>(null);
 
     private static MainGui activeGUI;
 
@@ -178,8 +181,8 @@ public class MainGui {
         });
 
         componentViewer.bindEditMode(editToggle.selectedProperty());
-        componentViewer.bindBlockContainerActions(exportDocxMenuItem.disableProperty());
-        componentViewer.bindBlockContainerActions(showFullscreenMenuItem.disableProperty());
+        componentViewer.bindPreventContainerActions(exportDocxMenuItem.disableProperty());
+        componentViewer.bindPreventContainerActions(showFullscreenMenuItem.disableProperty());
         editToggle.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
@@ -187,6 +190,7 @@ public class MainGui {
             }
         });
 
+        timerButton.disableProperty().bind(timerProperty.isNotNull());
     }
 
     private void attemptLogin(){
@@ -767,7 +771,7 @@ public class MainGui {
 
     public void spawnTimer(ActionEvent actionEvent) {
         try {
-            DebateTimer.openTimer(getScene().getWindow(), timerButton.disableProperty());
+            DebateTimer.openTimer(getScene().getWindow(), timerProperty);
         } catch (IOException e) {
             e.printStackTrace();
         }
