@@ -5,6 +5,7 @@ import org.debatetool.core.Cite;
 import org.debatetool.io.componentio.ComponentIOManager;
 import org.debatetool.io.iocontrollers.IOController;
 import org.debatetool.io.iocontrollers.mongodb.MongoDBIOController;
+import org.junit.AfterClass;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -17,6 +18,7 @@ class MongoDBCardIOManagerTest {
 
     @BeforeClass
     public void setUp(){
+        IOController.getIoController().attemptAuthenticate("127.0.0.1", 27017, null,null);
         ClassLoader classLoader = getClass().getClassLoader();
         File file = new File(classLoader.getResource("testCardText.txt").getFile());
         String text = null;
@@ -33,8 +35,8 @@ class MongoDBCardIOManagerTest {
 
     @Test
     public void writeReadTest (){
-        try (IOController controller = new MongoDBIOController()) {
-            ComponentIOManager manager = controller.getComponentIOManager();
+        try {
+            ComponentIOManager manager = IOController.getIoController().getComponentIOManager();
             manager.deleteSpeechComponent(card.getHash());
             manager.storeSpeechComponent(card);
             Card recoveredCard = (Card) manager.retrieveSpeechComponent(card.getHash());
@@ -48,16 +50,25 @@ class MongoDBCardIOManagerTest {
 
     @Test
     public void doubleWriteReadTest(){
-        try (IOController controller = new MongoDBIOController()) {
-            ComponentIOManager manager = controller.getComponentIOManager();
+        try  {
+            ComponentIOManager manager = IOController.getIoController().getComponentIOManager();
             manager.deleteSpeechComponent(card.getHash());
             manager.deleteSpeechComponent(card2.getHash());
             manager.storeSpeechComponent(card);
             manager.storeSpeechComponent(card2);
             Card recoveredCard = (Card) manager.retrieveSpeechComponent(card.getHash());
             Card recoveredCard2 = (Card) manager.retrieveSpeechComponent(card2.getHash());
-            Assert.assertEquals(card.getText(), recoveredCard.getText());
-            Assert.assertEquals(card2.getText(), recoveredCard2.getText());
+            Assert.assertEquals(card, recoveredCard);
+            Assert.assertEquals(card2, recoveredCard2);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @AfterClass
+    public void tearDown(){
+        try {
+            IOController.getIoController().close();
         } catch (IOException e) {
             e.printStackTrace();
         }

@@ -7,6 +7,7 @@ import org.debatetool.core.Cite;
 import org.debatetool.io.componentio.ComponentIOManager;
 import org.debatetool.io.iocontrollers.IOController;
 import org.debatetool.io.iocontrollers.mongodb.MongoDBIOController;
+import org.junit.AfterClass;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -20,6 +21,7 @@ class MongoDBBlockIOManagerTest {
 
     @BeforeClass
     public void setUp(){
+        IOController.getIoController().attemptAuthenticate("127.0.0.1", 27017, null,null);
         ClassLoader classLoader = getClass().getClassLoader();
         File file = new File(classLoader.getResource("testCardText.txt").getFile());
         String text = null;
@@ -37,25 +39,32 @@ class MongoDBBlockIOManagerTest {
         testChildDirPath.add("test_child_dir");
         Card card1 = new Card(new Cite("Smith", "2010", "Renowned writer of cards"), text);
         Card card2 = new Card(new Cite("Smith", "2010", "Renowned writer of cards"), text+"AAA");
-        block = new Block(testChildDirPath, "Test Block");
+        block = new Block("Test Block");
         block.addComponent(card1);
         block.addComponent(card2);
         block.addComponent(new Analytic(ANALYTIC_TEXT));
-        IOController.getIoController().getStructureIOManager().addContent(testChildDirPath, block.getHash());
+        IOController.getIoController().getStructureIOManager().addContent(testChildDirPath, block);
+        IOController.getIoController().getStructureIOManager().addContent(testChildDirPath, card1);
+        IOController.getIoController().getStructureIOManager().addContent(testChildDirPath, card2);
     }
 
     @Test
-    public void writeReadTest (){
-        try (IOController controller = new MongoDBIOController()) {
-            ComponentIOManager manager = controller.getComponentIOManager();
+    public void writeReadTest () {
+        try {
+            ComponentIOManager manager = IOController.getIoController().getComponentIOManager();
             manager.storeSpeechComponent(block);
             Block recovered = (Block) manager.retrieveSpeechComponent(block.getHash());
             recovered.load();
-            Assert.assertEquals(recovered.getLabel(), block.getLabel());
-            Assert.assertEquals(recovered.size(), block.size());
-            for (int i = 0; i < block.size(); i++){
-                Assert.assertEquals(block.getComponent(i).getDisplayContent(), recovered.getComponent(i).getDisplayContent());
-            }
+            Assert.assertEquals(recovered,block);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @AfterClass
+    public void tearDown(){
+        try {
+            IOController.getIoController().close();
         } catch (IOException e) {
             e.printStackTrace();
         }
