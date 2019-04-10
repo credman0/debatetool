@@ -315,25 +315,20 @@ public class MainGui {
                             @Override
                             public void handle(ActionEvent actionEvent) {
                                 List<String> effectivePath;
-                                String name;
                                 // if the list was "empty", it will have one null element we want to remove
                                 currentNode.getChildren().removeIf(
                                         locationTreeItemContentTreeItem -> locationTreeItemContentTreeItem.getValue()==null);
-                                String baseName;
-                                Optional<String> baseNameResult = showTextDialog("Directory name","Enter a name for the directory", "New Directory");
-                                if (!baseNameResult.isPresent()){
-                                    baseName = "New Directory";
-                                }else{
-                                    baseName = baseNameResult.get();
+                                Optional<String> result = showTextDialog("Directory Name", "Enter a new directory name.", "New Directory");
+                                String name = result.isPresent()? result.get() : null;
+                                if (name == null){
+                                    return;
                                 }
                                 if (cell.isEmpty()){
 
                                     // if we are on an empty cell, create a top-level directory
-                                    name  = MainGui.getSafeNameAgainstTreeItemList(baseName, root.getChildren());
                                     root.getChildren().add(new LocationTreeItem(new LocationTreeItemContent(name)));
                                     effectivePath = new ArrayList<>();
-                                }else{
-                                    name  = MainGui.getSafeNameAgainstTreeItemList(baseName, currentNode.getChildren());
+                                }else{;
                                     currentNode.getChildren().add(new LocationTreeItem(new LocationTreeItemContent(name)));
                                     effectivePath = getCurrentNode().getPath();
                                 }
@@ -350,7 +345,11 @@ public class MainGui {
                                 // if the list was "empty", it will have one null element we want to remove
                                 currentNode.getChildren().removeIf(
                                         locationTreeItemContentTreeItem -> locationTreeItemContentTreeItem.getValue()==null);
-                                String name  = MainGui.getSafeNameAgainstTreeItemList("New Block", currentNode.getChildren());
+                                Optional<String> result = showTextDialog("Block Name", "Enter a new block name.", "New Block");
+                                String name = result.isPresent()? result.get() : null;
+                                if (name == null){
+                                    return;
+                                }
                                 Block newBlock = new Block(name);
                                 currentNode.getChildren().add(new LocationTreeItem(new LocationTreeItemContent(newBlock)));
                                 IOController.getIoController().getStructureIOManager().addContent(getCurrentNode().getPath(), newBlock);
@@ -371,7 +370,11 @@ public class MainGui {
                                 // if the list was "empty", it will have one null element we want to remove
                                 currentNode.getChildren().removeIf(
                                         locationTreeItemContentTreeItem -> locationTreeItemContentTreeItem.getValue()==null);
-                                String name  = MainGui.getSafeNameAgainstTreeItemList("New Speech", currentNode.getChildren());
+                                Optional<String> result = showTextDialog("Speech Name", "Enter a new speech name.", "New Speech");
+                                String name = result.isPresent()? result.get() : null;
+                                if (name == null){
+                                    return;
+                                }
                                 Speech newSpeech = new Speech(name);
                                 currentNode.getChildren().add(new LocationTreeItem(new LocationTreeItemContent(newSpeech)));
                                 IOController.getIoController().getStructureIOManager().addContent(getCurrentNode().getPath(), newSpeech);
@@ -387,10 +390,6 @@ public class MainGui {
 
                         if (!cell.isEmpty()){
                             if (cell.getTreeTableRow().getTreeItem().getValue().getSpeechComponent()==null) {
-                                //TODO reimplement directory rename (solve #38)
-
-                                // Add directory actions only to directories
-                                /*
                                 localMenu.getItems().add(new SeparatorMenuItem());
 
                                 MenuItem changeDirectoryName = new MenuItem("Change Directory Name");
@@ -398,11 +397,11 @@ public class MainGui {
                                     @Override
                                     public void handle(ActionEvent actionEvent) {
                                         localMenu.hide();
-                                        String name = JOptionPane.showInputDialog("Enter name");
+                                        Optional<String> result = showTextDialog("Directory Rename", "Enter a new name for the directory.", getCurrentNode().getValue().getDisplay());
+                                        String name = result.isPresent()? result.get() : null;
                                         if (name == null){
                                             return;
                                         }
-                                        name  = MainGui.getSafeNameAgainstTreeItemList(name,  currentNode.getChildren());
 
                                         List<String> path = currentNode.getPath();
                                         path.remove(path.size() - 1);
@@ -413,7 +412,7 @@ public class MainGui {
                                     }
                                 });
                                 localMenu.getItems().add(changeDirectoryName);
-                                */
+
                             }
                             // add block rename action only to block
                             if ((cell.getTreeTableRow().getTreeItem().getValue().getSpeechComponent() != null) && Block.class.isInstance(cell.getTreeTableRow().getTreeItem().getValue().getSpeechComponent())) {
@@ -426,13 +425,12 @@ public class MainGui {
                                         localMenu.hide();
                                         Block cellBlock = (Block) cell.getTreeTableRow().getTreeItem().getValue().getSpeechComponent();
                                         String name;
-                                        Optional<String> baseNameResult = showTextDialog("Block Rename","Enter a new name for the block", cellBlock.getName());
+                                        Optional<String> baseNameResult = showTextDialog("Block Rename","Enter a new name for the block.", cellBlock.getName());
                                         if (!baseNameResult.isPresent()){
                                             return;
                                         }else{
                                             name = baseNameResult.get();
                                         }
-                                        name  = MainGui.getSafeNameAgainstTreeItemList(name, cell.getTreeTableRow().getTreeItem().getParent().getChildren());
                                         byte[] oldHash = cellBlock.getHash();
                                         cellBlock.setName(name);
                                         try {
@@ -458,13 +456,12 @@ public class MainGui {
                                         localMenu.hide();
                                         Speech cellSpeech = (Speech) cell.getTreeTableRow().getTreeItem().getValue().getSpeechComponent();
                                         String name;
-                                        Optional<String> baseNameResult = showTextDialog("Speech Rename","Enter a new name for the speech", cellSpeech.getName());
+                                        Optional<String> baseNameResult = showTextDialog("Speech Rename","Enter a new name for the speech.", cellSpeech.getName());
                                         if (!baseNameResult.isPresent()){
                                             return;
                                         }else{
                                             name = baseNameResult.get();
                                         }
-                                        name  = MainGui.getSafeNameAgainstTreeItemList(name, cell.getTreeTableRow().getTreeItem().getParent().getChildren());
                                         cellSpeech.setName(name);
                                         try {
                                             IOController.getIoController().getComponentIOManager().storeSpeechComponent(cellSpeech);
@@ -742,19 +739,6 @@ public class MainGui {
         String trialName = base;
         int index = 1;
         while (list.contains(trialName)){
-            trialName = base + " (" + index +")";
-            index++;
-        }
-        return trialName;
-    }
-
-    public static String getSafeNameAgainstTreeItemList(String base, List<TreeItem<LocationTreeItemContent>> list){
-        if (base==null){
-            return null;
-        }
-        String trialName = base;
-        int index = 1;
-        while (listContainsString(list,trialName)){
             trialName = base + " (" + index +")";
             index++;
         }
