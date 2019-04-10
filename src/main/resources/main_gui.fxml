@@ -23,7 +23,7 @@
                         <items>
                             <MenuItem text="New Card" onAction="#newCardAction" accelerator="SHORTCUT+N"/>
                             <MenuItem text="Save Card" onAction="#save" accelerator="SHORTCUT+S"/>
-                            <MenuItem text="Export to DOCX" onAction="#docxExport"/>
+                            <MenuItem text="Export to DOCX" onAction="#docxExport" fx:id="exportDocxMenuItem"/>
                             <SeparatorMenuItem/>
                             <MenuItem text="Exit" onAction="#exit" accelerator="SHORTCUT+Q"/>
                         </items>

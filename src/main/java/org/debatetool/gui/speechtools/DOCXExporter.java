@@ -4,6 +4,7 @@ import org.debatetool.gui.SettingsHandler;
 import org.apache.poi.xwpf.usermodel.*;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.regex.Matcher;
@@ -11,10 +12,14 @@ import java.util.regex.Pattern;
 
 public class DOCXExporter {
     public static void export(String html, String name) throws IOException {
+        export(html, new File("exports/"+name));
+    }
+
+    public static void export(String html, File file) throws IOException {
         XWPFDocument document = new XWPFDocument();
         parseSpeech(html, document);
         new File("exports").mkdir();
-        document.write(new FileOutputStream(new File("exports/"+name)));
+        document.write(new FileOutputStream(file));
         document.close();
     }
 

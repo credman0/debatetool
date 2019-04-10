@@ -198,6 +198,10 @@ public class BlockEditor {
         }
     }
 
+    public Block getBlock() {
+        return block;
+    }
+
     private class ContentLoader implements ChangeListener<Worker.State>{
         private final WebView contentView;
         private final SpeechComponent component;

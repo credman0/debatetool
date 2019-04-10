@@ -53,6 +53,7 @@ import java.util.List;
 import java.util.*;
 
 public class MainGui {
+    @FXML private MenuItem exportDocxMenuItem;
     @FXML private JFXButton timerButton;
     @FXML private MenuItem authAdminMenuItem;
     @FXML private MenuItem createUserMenuItem;
@@ -160,6 +161,7 @@ public class MainGui {
         });
 
         componentViewer.bindEditMode(editToggle.selectedProperty());
+        componentViewer.bindNotExportable(exportDocxMenuItem.disableProperty());
         editToggle.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {

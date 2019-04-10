@@ -1,9 +1,8 @@
 package org.debatetool.gui.cardediting;
 
-import org.debatetool.core.Block;
-import org.debatetool.core.Card;
-import org.debatetool.core.HashIdentifiedSpeechComponent;
-import org.debatetool.core.Speech;
+import javafx.stage.FileChooser;
+import org.debatetool.core.*;
+import org.debatetool.gui.SettingsHandler;
 import org.debatetool.gui.blockediting.BlockEditor;
 import org.debatetool.gui.speechtools.DOCXExporter;
 import org.debatetool.gui.speechtools.SpeechEditor;
@@ -16,11 +15,9 @@ import javafx.scene.Cursor;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.List;
-import java.util.Optional;
-
-import static org.debatetool.gui.cardediting.MainGui.showTextDialog;
 
 public class ComponentViewer {
     private CardEditor cardEditor;
@@ -30,11 +27,15 @@ public class ComponentViewer {
     private BorderPane viewerPane;
     private BlockEditor blockEditor;
     private SimpleBooleanProperty editMode = new SimpleBooleanProperty(false);
+    private SimpleBooleanProperty blockExports = new SimpleBooleanProperty(false);
     private enum ViewType {BLOCK, CARD, SPEECH};
     private ViewType currentViewMode = ViewType.CARD;
 
     public void bindEditMode(Property<Boolean> property){
         property.bindBidirectional(editMode);
+    }
+    public void bindNotExportable(Property<Boolean> property){
+        property.bindBidirectional(blockExports);
     }
 
     public void open(HashIdentifiedSpeechComponent component){
@@ -98,18 +99,24 @@ public class ComponentViewer {
     }
 
     public void exportToDOCX() throws IOException {
-        if (currentViewMode!=ViewType.SPEECH){
-            return;
+        SpeechElementContainer container = null;
+        if (currentViewMode==ViewType.SPEECH){
+            if (editMode.get()){
+                speechViewer.open(speechEditor.getSpeech());
+            }
+            container = speechViewer.getSpeech();
+        }else if (currentViewMode==ViewType.BLOCK){
+            container = blockEditor.getBlock();
         }
-        if (editMode.get()){
-            speechViewer.open(speechEditor.getSpeech());
+
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Export speech to DOCX");
+        fileChooser.setInitialFileName(container.getName()+".docx");
+        File file = fileChooser.showSaveDialog(getPane().getScene().getWindow());
+        if (!file.getName().endsWith(".docx")){
+            file = new File(file.getPath()+".docx");
         }
-        Optional<String> name = showTextDialog("DOCX Export", "Choose a name", speechViewer.getSpeech().getName());
-        String nameString = name.isPresent() ? name.get() : "output.docx";
-        if (!nameString.endsWith(".docx")){
-            nameString = nameString+".docx";
-        }
-        DOCXExporter.export(speechViewer.getHtml(), nameString);
+        DOCXExporter.export(container.getExportDisplayContent(SettingsHandler.getExportAnalytics()), file);
     }
 
     public Pane getPane() {
@@ -212,10 +219,12 @@ public class ComponentViewer {
     public void updateViewerPane(){
         switch (currentViewMode) {
             case BLOCK:
+                blockExports.set(false);
                 viewerPane.setCenter(blockEditor.getPane());
                 break;
 
             case CARD:
+                blockExports.set(true);
                 if (editMode.get()) {
                     viewerPane.setCenter(cardCutter.getPane());
                 } else {
@@ -224,12 +233,12 @@ public class ComponentViewer {
                 break;
 
             case SPEECH:
+                blockExports.set(false);
                 if (editMode.get()) {
                     viewerPane.setCenter(speechEditor.getPane());
                 } else {
                     viewerPane.setCenter(speechViewer.getPane());
                 }
-
                 break;
 
             default:

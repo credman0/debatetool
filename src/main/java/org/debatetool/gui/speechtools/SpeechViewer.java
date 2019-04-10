@@ -63,9 +63,6 @@ public class SpeechViewer {
         generateContents();
     }
 
-    public String getHtml(){
-        return speech.getExportDisplayContent(SettingsHandler.getExportAnalytics());
-    }
 
     private void generateContents(){
         String contents = speech.getDisplayContent();
