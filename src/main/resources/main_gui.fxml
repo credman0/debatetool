@@ -43,9 +43,12 @@
                             <MenuItem text="Exit" onAction="#exit" accelerator="SHORTCUT+Q"/>
                         </items>
                     </Menu>
-                    <Menu text="Edit">
+                    <Menu text="View">
                         <items>
                             <MenuItem text="Toggle Edit Mode" onAction="#toggleEdit" accelerator="SHORTCUT+E"/>
+                            <SeparatorMenuItem/>
+                            <MenuItem text="Refresh" onAction="#refreshDirectories" accelerator="F5"/>
+                            <MenuItem text="Fullscreen" onAction="#showFullscreen" accelerator="SHORTCUT+F" fx:id="showFullscreenMenuItem"/>
                         </items>
                     </Menu>
                     <Menu text="Preferences">

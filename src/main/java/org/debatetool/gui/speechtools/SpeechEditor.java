@@ -91,6 +91,7 @@ public class SpeechEditor {
     }
 
     public Speech getSpeech(){
+        updateSpeechContents();
         return speech;
     }
 

@@ -85,9 +85,9 @@ public class DebateTimer {
         DebateTimer timer = timerLoader.getController();
         timer.init();
         Scene scene = new Scene(timer.pane);
-        scene.setFill(Color.TRANSPARENT);
         Stage newWindow = new Stage();
         newWindow.initOwner(parentWindow);
+        newWindow.setAlwaysOnTop(true);
         newWindow.setTitle("Debate Timer");
         newWindow.setScene(scene);
         newWindow.setOnCloseRequest(new EventHandler<WindowEvent>() {

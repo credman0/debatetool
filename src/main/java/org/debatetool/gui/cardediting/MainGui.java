@@ -48,6 +48,7 @@ import javafx.stage.Stage;
 import javafx.util.Callback;
 import javafx.util.Pair;
 import org.debatetool.core.*;
+import org.debatetool.gui.speechtools.FullscreenView;
 import org.debatetool.gui.timer.DebateTimer;
 import org.debatetool.gui.LoginDialog;
 import org.debatetool.gui.SettingsHandler;
@@ -68,6 +69,7 @@ import java.util.List;
 import java.util.*;
 
 public class MainGui {
+    @FXML private MenuItem showFullscreenMenuItem;
     @FXML private MenuItem exportDocxMenuItem;
     @FXML private JFXButton timerButton;
     @FXML private MenuItem authAdminMenuItem;
@@ -176,7 +178,8 @@ public class MainGui {
         });
 
         componentViewer.bindEditMode(editToggle.selectedProperty());
-        componentViewer.bindNotExportable(exportDocxMenuItem.disableProperty());
+        componentViewer.bindBlockContainerActions(exportDocxMenuItem.disableProperty());
+        componentViewer.bindBlockContainerActions(showFullscreenMenuItem.disableProperty());
         editToggle.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
@@ -765,6 +768,14 @@ public class MainGui {
     public void spawnTimer(ActionEvent actionEvent) {
         try {
             DebateTimer.openTimer(getScene().getWindow(), timerButton.disableProperty());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void showFullscreen(ActionEvent actionEvent) {
+        try {
+            FullscreenView.showFullscreen(getScene().getWindow(), componentViewer.getCurrentSpeechElementContainer());
         } catch (IOException e) {
             e.printStackTrace();
         }

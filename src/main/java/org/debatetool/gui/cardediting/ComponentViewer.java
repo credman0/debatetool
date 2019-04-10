@@ -49,7 +49,7 @@ public class ComponentViewer {
     public void bindEditMode(Property<Boolean> property){
         property.bindBidirectional(editMode);
     }
-    public void bindNotExportable(Property<Boolean> property){
+    public void bindBlockContainerActions(Property<Boolean> property){
         property.bindBidirectional(blockExports);
     }
 
@@ -113,16 +113,22 @@ public class ComponentViewer {
         }
     }
 
-    public void exportToDOCX() throws IOException {
-        SpeechElementContainer container = null;
+    public SpeechElementContainer getCurrentSpeechElementContainer(){
         if (currentViewMode==ViewType.SPEECH){
             if (editMode.get()){
-                speechViewer.open(speechEditor.getSpeech());
+                return speechEditor.getSpeech();
+            }else{
+                return speechViewer.getSpeech();
             }
-            container = speechViewer.getSpeech();
         }else if (currentViewMode==ViewType.BLOCK){
-            container = blockEditor.getBlock();
+            return blockEditor.getBlock();
+        }else{
+            throw new IllegalStateException("Speech Element Container not active");
         }
+    }
+
+    public void exportToDOCX() throws IOException {
+        SpeechElementContainer container = getCurrentSpeechElementContainer();
 
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Export speech to DOCX");
@@ -276,7 +282,7 @@ public class ComponentViewer {
             }
         }else if (currentViewMode==ViewType.SPEECH) {
             if (editMode.get()){
-                speechEditor.open(speechViewer.getSpeech());
+                speechEditor.open((Speech) speechViewer.getSpeech());
             }else{
                 speechViewer.open(speechEditor.getSpeech());
             }

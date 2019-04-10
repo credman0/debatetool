@@ -16,6 +16,7 @@
 package org.debatetool.gui.speechtools;
 
 import org.debatetool.core.Speech;
+import org.debatetool.core.SpeechElementContainer;
 import org.debatetool.core.html.HtmlEncoder;
 import org.debatetool.gui.SettingsHandler;
 import org.debatetool.gui.cardediting.MainGui;
@@ -42,10 +43,10 @@ public class SpeechViewer {
     ScrollPane scrollpane;
     @FXML protected
     BorderPane mainPane;
-    private Speech speech;
+    private SpeechElementContainer speech;
     final static String WEBVIEW_HTML = SpeechViewer.class.getClassLoader().getResource("BlockViewer.html").toExternalForm();
 
-    public void open(Speech speech) {
+    public void open(SpeechElementContainer speech) {
         if (!speech.isLoaded()){
             Task task = new Task() {
                 @Override
@@ -95,7 +96,7 @@ public class SpeechViewer {
         });
     }
 
-    public Speech getSpeech() {
+    public SpeechElementContainer getSpeech() {
         return speech;
     }
 
