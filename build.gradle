@@ -28,24 +28,24 @@ repositories {
 }
 
 dependencies {
-    compile "org.openjfx:javafx-graphics:11.0.2:win"
-    compile "org.openjfx:javafx-graphics:11.0.2:linux"
-    compile "org.openjfx:javafx-graphics:11.0.2:mac"
-    compile "org.openjfx:javafx-media:11.0.2:win"
-    compile "org.openjfx:javafx-media:11.0.2:linux"
-    compile "org.openjfx:javafx-media:11.0.2:mac"
-    compile "org.openjfx:javafx-fxml:11.0.2:win"
-    compile "org.openjfx:javafx-fxml:11.0.2:linux"
-    compile "org.openjfx:javafx-fxml:11.0.2:mac"
-    compile "org.openjfx:javafx-controls:11.0.2:win"
-    compile "org.openjfx:javafx-controls:11.0.2:linux"
-    compile "org.openjfx:javafx-controls:11.0.2:mac"
-    compile "org.openjfx:javafx-web:11.0.2:win"
-    compile "org.openjfx:javafx-web:11.0.2:linux"
-    compile "org.openjfx:javafx-web:11.0.2:mac"
-    compile "org.openjfx:javafx-base:11.0.2:win"
-    compile "org.openjfx:javafx-base:11.0.2:linux"
-    compile "org.openjfx:javafx-base:11.0.2:mac"
+    compile "org.openjfx:javafx-graphics:12:win"
+    compile "org.openjfx:javafx-graphics:12:linux"
+    compile "org.openjfx:javafx-graphics:12:mac"
+    compile "org.openjfx:javafx-media:12:win"
+    compile "org.openjfx:javafx-media:12:linux"
+    compile "org.openjfx:javafx-media:12:mac"
+    compile "org.openjfx:javafx-fxml:12:win"
+    compile "org.openjfx:javafx-fxml:12:linux"
+    compile "org.openjfx:javafx-fxml:12:mac"
+    compile "org.openjfx:javafx-controls:12:win"
+    compile "org.openjfx:javafx-controls:12:linux"
+    compile "org.openjfx:javafx-controls:12:mac"
+    compile "org.openjfx:javafx-web:12:win"
+    compile "org.openjfx:javafx-web:12:linux"
+    compile "org.openjfx:javafx-web:12:mac"
+    compile "org.openjfx:javafx-base:12:win"
+    compile "org.openjfx:javafx-base:12:linux"
+    compile "org.openjfx:javafx-base:12:mac"
 
     compile 'org.mongodb:mongo-java-driver:3.9.0'
     compile 'net.sf.trove4j:trove4j:3.0.3'
@@ -64,7 +64,7 @@ dependencies {
 
 
 group = 'org.debatetool'
-version = '1.0'
+version = '1.0.0'
 sourceCompatibility = '9'
 targetCompatibility = '9'
 
