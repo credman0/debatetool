@@ -44,8 +44,10 @@ public class DebateTimer {
     private ObservableList<DebateTime> debateTimes = FXCollections.observableArrayList();
 
     public void init() throws IOException {
+        // TODO settings for custom times
         debateTimes.add(new DebateTime("Constructive", 540*1000));
         debateTimes.add(new DebateTime("Rebuttal", 360*1000));
+        debateTimes.add(new DebateTime("CrossEx", 180*1000));
         timesListView.setItems(debateTimes);
 
 
@@ -68,12 +70,14 @@ public class DebateTimer {
         stopwatchLoader = new FXMLLoader(Stopwatch.class.getClassLoader().getResource("stopwatch.fxml"));
         stopwatchLoader.load();
         Stopwatch negPrepTimer = stopwatchLoader.getController();
+        negPrepTimer.setTimerDuration(600*1000);
         negPrepTimer.resetTimer();
         negPrepPane.setCenter(negPrepTimer.getPane());
 
         stopwatchLoader = new FXMLLoader(Stopwatch.class.getClassLoader().getResource("stopwatch.fxml"));
         stopwatchLoader.load();
         Stopwatch affPrepTimer = stopwatchLoader.getController();
+        affPrepTimer.setTimerDuration(600*1000);
         affPrepTimer.resetTimer();
         affPrepPane.setCenter(affPrepTimer.getPane());
     }

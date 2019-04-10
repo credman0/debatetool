@@ -15,6 +15,7 @@
 
 package org.debatetool.gui.timer;
 
+import com.jfoenix.controls.JFXButton;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -26,6 +27,8 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 public class Stopwatch {
+    @FXML
+    private JFXButton toggleButton;
     @FXML
     private Text timerContents;
     @FXML
@@ -52,10 +55,12 @@ public class Stopwatch {
 
     public void toggleTimer(ActionEvent actionEvent) {
         if (isRunning){
+            toggleButton.setText("Start");
             timer.cancel();
             isRunning = false;
             timerContents.setDisable(false);
         }else{
+            toggleButton.setText("Stop");
             timer= new Timer(true);
             lastAbsoluteTime = System.currentTimeMillis();
             timerTask = new StopwatchTimerTask();

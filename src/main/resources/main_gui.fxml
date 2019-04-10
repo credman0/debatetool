@@ -38,7 +38,7 @@
                         <items>
                             <MenuItem text="New Card" onAction="#newCardAction" accelerator="SHORTCUT+N"/>
                             <MenuItem text="Save Card" onAction="#save" accelerator="SHORTCUT+S"/>
-                            <MenuItem text="Export to DOCX" onAction="#docxExport" fx:id="exportDocxMenuItem"/>
+                            <MenuItem text="Export to DOCX" onAction="#docxExport" fx:id="exportDocxMenuItem" disable="true"/>
                             <SeparatorMenuItem/>
                             <MenuItem text="Exit" onAction="#exit" accelerator="SHORTCUT+Q"/>
                         </items>
@@ -46,9 +46,8 @@
                     <Menu text="View">
                         <items>
                             <MenuItem text="Toggle Edit Mode" onAction="#toggleEdit" accelerator="SHORTCUT+E"/>
-                            <SeparatorMenuItem/>
                             <MenuItem text="Refresh" onAction="#refreshDirectories" accelerator="F5"/>
-                            <MenuItem text="Fullscreen" onAction="#showFullscreen" accelerator="SHORTCUT+F" fx:id="showFullscreenMenuItem"/>
+                            <MenuItem text="Fullscreen Viewer" onAction="#showFullscreen" accelerator="SHORTCUT+F" fx:id="showFullscreenMenuItem" disable="true"/>
                         </items>
                     </Menu>
                     <Menu text="Preferences">
