@@ -19,6 +19,7 @@ import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXChipView;
 import com.jfoenix.controls.JFXSpinner;
 import com.jfoenix.controls.JFXToggleButton;
+import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -29,6 +30,7 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.event.EventHandler;
@@ -45,6 +47,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.*;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.text.Text;
+import javafx.stage.PopupWindow;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 import javafx.util.Pair;
@@ -334,10 +337,12 @@ public class MainGui {
                         ContextMenu localMenu = new ContextMenu();
 
 
+
                         MenuItem newDirectoryItem = new MenuItem("New Directory");
                         newDirectoryItem.setOnAction(new EventHandler<ActionEvent>() {
                             @Override
                             public void handle(ActionEvent actionEvent) {
+                                localMenu.hide();
                                 List<String> effectivePath;
                                 // if the list was "empty", it will have one null element we want to remove
                                 currentNode.getChildren().removeIf(
@@ -357,7 +362,6 @@ public class MainGui {
                                     effectivePath = getCurrentNode().getPath();
                                 }
                                 IOController.getIoController().getStructureIOManager().addChild(effectivePath, name);
-                                localMenu.hide();
                             }
                         });
                         localMenu.getItems().add(newDirectoryItem);
@@ -366,6 +370,7 @@ public class MainGui {
                         newBlockItem.setOnAction(new EventHandler<ActionEvent>() {
                             @Override
                             public void handle(ActionEvent actionEvent) {
+                                localMenu.hide();
                                 // if the list was "empty", it will have one null element we want to remove
                                 currentNode.getChildren().removeIf(
                                         locationTreeItemContentTreeItem -> locationTreeItemContentTreeItem.getValue()==null);
@@ -381,8 +386,7 @@ public class MainGui {
                                     IOController.getIoController().getComponentIOManager().storeSpeechComponent(newBlock);
                                 } catch (IOException e) {
                                     e.printStackTrace();
-                                    }
-                                    localMenu.hide();
+                                }
                             }
                         });
                         localMenu.getItems().add(newBlockItem);
@@ -391,6 +395,7 @@ public class MainGui {
                         newSpeechItem.setOnAction(new EventHandler<ActionEvent>() {
                             @Override
                             public void handle(ActionEvent actionEvent) {
+                                localMenu.hide();
                                 // if the list was "empty", it will have one null element we want to remove
                                 currentNode.getChildren().removeIf(
                                         locationTreeItemContentTreeItem -> locationTreeItemContentTreeItem.getValue()==null);
@@ -407,14 +412,35 @@ public class MainGui {
                                 } catch (IOException e) {
                                     e.printStackTrace();
                                 }
-                                localMenu.hide();
                             }
                         });
                         localMenu.getItems().add(newSpeechItem);
-
+                        localMenu.getItems().add(new SeparatorMenuItem());
                         if (!cell.isEmpty()){
                             if (cell.getTreeTableRow().getTreeItem().getValue().getSpeechComponent()==null) {
-                                localMenu.getItems().add(new SeparatorMenuItem());
+                                MenuItem removeItem = new MenuItem("Delete");
+                                removeItem.setOnAction(new EventHandler<ActionEvent>() {
+                                    @Override
+                                    public void handle(ActionEvent actionEvent) {
+                                        Task task = new Task<>() {
+                                            @Override
+                                            protected Object call() throws Exception {
+                                                IOController.getIoController().getStructureIOManager().removeNode(currentNode.getPath());
+                                                return null;
+                                            }
+                                        };
+                                        new Thread(task).start();
+                                        Platform.runLater(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                localMenu.hide();
+                                                // force update current tree
+                                                cell.getTreeTableRow().getTreeItem().getParent().getChildren().remove(cell.getTreeTableRow().getTreeItem());
+                                            }
+                                        });
+                                    }
+                                });
+                                localMenu.getItems().add(removeItem);
 
                                 MenuItem changeDirectoryName = new MenuItem("Change Directory Name");
                                 changeDirectoryName.setOnAction(new EventHandler<ActionEvent>() {
@@ -436,12 +462,21 @@ public class MainGui {
                                     }
                                 });
                                 localMenu.getItems().add(changeDirectoryName);
-
+                            }else{
+                                MenuItem removeItem = new MenuItem("Remove");
+                                removeItem.setOnAction(new EventHandler<ActionEvent>() {
+                                    @Override
+                                    public void handle(ActionEvent actionEvent) {
+                                        localMenu.hide();
+                                        IOController.getIoController().getStructureIOManager().removeContent(currentNode.getPath(), cell.getTreeTableRow().getTreeItem().getValue().getSpeechComponent().getHash());
+                                        // force update current tree
+                                        cell.getTreeTableRow().getTreeItem().getParent().getChildren().remove(cell.getTreeTableRow().getTreeItem());
+                                    }
+                                });
+                                localMenu.getItems().add(removeItem);
                             }
                             // add block rename action only to block
                             if ((cell.getTreeTableRow().getTreeItem().getValue().getSpeechComponent() != null) && Block.class.isInstance(cell.getTreeTableRow().getTreeItem().getValue().getSpeechComponent())) {
-                                localMenu.getItems().add(new SeparatorMenuItem());
-
                                 MenuItem changeBlockName = new MenuItem("Rename Block");
                                 changeBlockName.setOnAction(new EventHandler<ActionEvent>() {
                                     @Override
@@ -471,8 +506,6 @@ public class MainGui {
                             }
                             // add speech rename action only to speech
                             if ((cell.getTreeTableRow().getTreeItem().getValue().getSpeechComponent() != null) && Speech.class.isInstance(cell.getTreeTableRow().getTreeItem().getValue().getSpeechComponent())) {
-                                localMenu.getItems().add(new SeparatorMenuItem());
-
                                 MenuItem changeSpeechName = new MenuItem("Rename Speech");
                                 changeSpeechName.setOnAction(new EventHandler<ActionEvent>() {
                                     @Override
@@ -501,8 +534,9 @@ public class MainGui {
 
                             }
                         }
+                        localMenu.setAutoHide(true);
                         cell.setContextMenu(localMenu);
-                        cell.getContextMenu().show(cell.getTreeTableView(),contextMenuEvent.getScreenX(),contextMenuEvent.getScreenY());
+                        cell.getContextMenu().show(getScene().getWindow(),contextMenuEvent.getScreenX(),contextMenuEvent.getScreenY());
                     }
                 });
                 cell.setOnDragDetected(new EventHandler<MouseEvent>() {
