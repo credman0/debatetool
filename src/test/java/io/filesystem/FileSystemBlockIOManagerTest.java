@@ -1,4 +1,19 @@
-package io;
+/*
+ *                               This program is free software: you can redistribute it and/or modify
+ *                                it under the terms of the GNU General Public License as published by
+ *                                the Free Software Foundation, version 3 of the License.
+ *
+ *                                This program is distributed in the hope that it will be useful,
+ *                                but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *                                MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *                                GNU General Public License for more details.
+ *
+ *                                You should have received a copy of the GNU General Public License
+ *                                along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ *                                Copyright (c) 2019 Colin Redman
+ */
+
+package io.filesystem;
 
 import org.debatetool.core.Analytic;
 import org.debatetool.core.Block;
@@ -6,22 +21,20 @@ import org.debatetool.core.Card;
 import org.debatetool.core.Cite;
 import org.debatetool.io.componentio.ComponentIOManager;
 import org.debatetool.io.iocontrollers.IOController;
-import org.debatetool.io.iocontrollers.mongodb.MongoDBIOController;
 import org.junit.AfterClass;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 import java.io.*;
-import java.util.ArrayList;
 
-class MongoDBBlockIOManagerTest {
+class FileSystemBlockIOManagerTest {
     Block block;
     public final String ANALYTIC_TEXT = "This is an analytic";
 
     @BeforeClass
     public void setUp(){
-        IOController.getIoController().attemptAuthenticate("127.0.0.1", 27017, null,null);
+        IOController.getIoController().attemptInitialize("127.0.0.1", 27017, null,null);
         ClassLoader classLoader = getClass().getClassLoader();
         File file = new File(classLoader.getResource("testCardText.txt").getFile());
         String text = null;

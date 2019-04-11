@@ -47,13 +47,11 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.*;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.text.Text;
-import javafx.stage.PopupWindow;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 import javafx.util.Pair;
 import org.debatetool.core.*;
 import org.debatetool.gui.speechtools.FullscreenView;
-import org.debatetool.gui.timer.DebateTime;
 import org.debatetool.gui.timer.DebateTimer;
 import org.debatetool.gui.LoginDialog;
 import org.debatetool.gui.SettingsHandler;
@@ -201,7 +199,7 @@ public class MainGui {
         if (credentialStrings == null){
             attemptLogin();
         }
-        boolean success = IOController.getIoController().attemptAuthenticate(SettingsHandler.getSetting("mongod_ip"), Integer.parseInt(SettingsHandler.getSetting("mongod_port")), credentialStrings.getKey(), credentialStrings.getValue());
+        boolean success = IOController.getIoController().attemptInitialize(SettingsHandler.getSetting("mongod_ip"), Integer.parseInt(SettingsHandler.getSetting("mongod_port")), credentialStrings.getKey(), credentialStrings.getValue());
         if (!success){
             attemptLogin();
         }
