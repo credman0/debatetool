@@ -53,7 +53,7 @@ public class LoginDialog {
         if (rootDirectory!=null){
             fileField.setText(rootDirectory);
         }else{
-            fileField.setText(System.getProperty("user.home")+"/debatefiles");
+            fileField.setText(System.getProperty("user.home")+"/.debatetool/data");
         }
         String useLocal = SettingsHandler.getSetting("use_local");
         if (useLocal!=null){

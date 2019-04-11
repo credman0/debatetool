@@ -15,7 +15,9 @@
 
 package io.filesystem;
 
+import org.apache.logging.log4j.core.util.FileUtils;
 import org.debatetool.core.*;
+import org.debatetool.io.IOUtil;
 import org.debatetool.io.filesystemio.FileSystemIOController;
 import org.debatetool.io.initializers.FileSystemInitializer;
 import org.debatetool.io.iocontrollers.IOController;
@@ -26,7 +28,8 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 import java.io.*;
-import java.nio.file.Paths;
+import java.nio.file.*;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,11 +38,15 @@ class FileSystemStructureIOManagerTest {
     Card card2;
     Block block;
     public final String ANALYTIC_TEXT = "This is an analytic";
+    public final Path DIR_PATH = Paths.get("test_fs_data_dir");
 
     @BeforeClass
     public void setUp() throws IOException {
+        if (DIR_PATH.toFile().exists()){
+            IOUtil.deleteDir(DIR_PATH.toFile());
+        }
         IOController.setIoController(new FileSystemIOController());
-        IOController.getIoController().attemptInitialize(new FileSystemInitializer(Paths.get("test")));
+        IOController.getIoController().attemptInitialize(new FileSystemInitializer(DIR_PATH));
         ClassLoader classLoader = getClass().getClassLoader();
         File file = new File(classLoader.getResource("testCardText.txt").getFile());
         String text = null;
@@ -102,10 +109,10 @@ class FileSystemStructureIOManagerTest {
     @AfterClass
     public void tearDown(){
         try {
+            IOUtil.deleteDir(DIR_PATH.toFile());
             IOController.getIoController().close();
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
-
 }

@@ -19,6 +19,7 @@ import org.debatetool.core.Analytic;
 import org.debatetool.core.Block;
 import org.debatetool.core.Card;
 import org.debatetool.core.Cite;
+import org.debatetool.io.IOUtil;
 import org.debatetool.io.componentio.ComponentIOManager;
 import org.debatetool.io.filesystemio.FileSystemIOController;
 import org.debatetool.io.initializers.FileSystemInitializer;
@@ -30,16 +31,21 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 import java.io.*;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 
 class FileSystemBlockIOManagerTest {
     Block block;
     public final String ANALYTIC_TEXT = "This is an analytic";
+    public final Path DIR_PATH = Paths.get("test_fs_data_dir");
 
     @BeforeClass
     public void setUp() throws IOException {
+        if (DIR_PATH.toFile().exists()){
+            IOUtil.deleteDir(DIR_PATH.toFile());
+        }
         IOController.setIoController(new FileSystemIOController());
-        IOController.getIoController().attemptInitialize(new FileSystemInitializer(Paths.get("test")));
+        IOController.getIoController().attemptInitialize(new FileSystemInitializer(DIR_PATH));
         ClassLoader classLoader = getClass().getClassLoader();
         File file = new File(classLoader.getResource("testCardText.txt").getFile());
         String text = null;
@@ -81,10 +87,10 @@ class FileSystemBlockIOManagerTest {
     @AfterClass
     public void tearDown(){
         try {
+            IOUtil.deleteDir(DIR_PATH.toFile());
             IOController.getIoController().close();
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
-
 }

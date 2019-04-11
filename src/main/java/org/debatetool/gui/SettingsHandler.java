@@ -47,10 +47,11 @@ public class SettingsHandler {
     private static DebateTime prepTime = new DebateTime("Prep", 600*1000);
     private static Properties properties = new Properties();
     private static PreferencesFx preferencesFx;
+    private static File propertiesFile = new File(System.getProperty("user.home")+"/.debatetool/config.properties");
     static{
-        if (new File("config.properties").exists()) {
+        if (propertiesFile.exists()) {
             try {
-                InputStream in = new FileInputStream("config.properties");
+                InputStream in = new FileInputStream(propertiesFile);
                 properties.load(in);
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
@@ -58,6 +59,7 @@ public class SettingsHandler {
                 e.printStackTrace();
             }
         }else{
+            propertiesFile.getParentFile().mkdirs();
             properties = new Properties();
         }
         timeList.add(new DebateTime("Constructive", 540*1000));
@@ -181,7 +183,7 @@ public class SettingsHandler {
 
     public static void store() throws IOException {
 
-        OutputStream out = new FileOutputStream("config.properties");
+        OutputStream out = new FileOutputStream(propertiesFile);
         properties.store(out, null);
         out.close();
     }

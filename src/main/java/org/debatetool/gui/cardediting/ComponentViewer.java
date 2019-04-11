@@ -134,6 +134,9 @@ public class ComponentViewer {
         fileChooser.setTitle("Export speech to DOCX");
         fileChooser.setInitialFileName(container.getName()+".docx");
         File file = fileChooser.showSaveDialog(getPane().getScene().getWindow());
+        if (file==null){
+            return;
+        }
         if (!file.getName().endsWith(".docx")){
             file = new File(file.getPath()+".docx");
         }
