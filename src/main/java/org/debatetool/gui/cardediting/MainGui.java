@@ -60,7 +60,9 @@ import org.debatetool.gui.locationtree.LocationTreeItemContent;
 import org.debatetool.gui.speechtools.SpeechComponentCellFactory;
 import org.debatetool.io.accounts.DBLockResponse;
 import org.debatetool.io.filters.Filter;
+import org.debatetool.io.initializers.DatabaseInitializer;
 import org.debatetool.io.iocontrollers.IOController;
+import org.debatetool.io.iocontrollers.mongodb.MongoDBIOController;
 import org.debatetool.scripting.JythonScripter;
 
 import java.awt.*;
@@ -135,7 +137,11 @@ public class MainGui {
         backButton.disableProperty().bind(Bindings.lessThanOrEqual(editHistoryIndex,0));
         forwardButton.disableProperty().bind(Bindings.greaterThanOrEqual(editHistoryIndex,Bindings.subtract(Bindings.size(editHistory),1)));
         activeGUI = this;
-        attemptLogin();
+        try {
+            attemptLogin();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         populateDirectoryView();
         componentViewer = new ComponentViewer();
         componentViewer.init(viewerPane);
@@ -194,12 +200,13 @@ public class MainGui {
         timerButton.disableProperty().bind(timerProperty.isNotNull());
     }
 
-    private void attemptLogin(){
+    private void attemptLogin() throws IOException {
         Pair<String, String> credentialStrings = LoginDialog.showDialog();
         if (credentialStrings == null){
             attemptLogin();
         }
-        boolean success = IOController.getIoController().attemptInitialize(SettingsHandler.getSetting("mongod_ip"), Integer.parseInt(SettingsHandler.getSetting("mongod_port")), credentialStrings.getKey(), credentialStrings.getValue());
+        IOController.setIoController(new MongoDBIOController());
+        boolean success = IOController.getIoController().attemptInitialize(new DatabaseInitializer(SettingsHandler.getSetting("mongod_ip"), Integer.parseInt(SettingsHandler.getSetting("mongod_port")), credentialStrings.getKey(), credentialStrings.getValue()));
         if (!success){
             attemptLogin();
         }
@@ -379,8 +386,8 @@ public class MainGui {
                                 }
                                 Block newBlock = new Block(name);
                                 currentNode.getChildren().add(new LocationTreeItem(new LocationTreeItemContent(newBlock)));
-                                IOController.getIoController().getStructureIOManager().addContent(getCurrentNode().getPath(), newBlock);
                                 try {
+                                    IOController.getIoController().getStructureIOManager().addContent(getCurrentNode().getPath(), newBlock);
                                     IOController.getIoController().getComponentIOManager().storeSpeechComponent(newBlock);
                                 } catch (IOException e) {
                                     e.printStackTrace();
@@ -404,8 +411,8 @@ public class MainGui {
                                 }
                                 Speech newSpeech = new Speech(name);
                                 currentNode.getChildren().add(new LocationTreeItem(new LocationTreeItemContent(newSpeech)));
-                                IOController.getIoController().getStructureIOManager().addContent(getCurrentNode().getPath(), newSpeech);
                                 try {
+                                    IOController.getIoController().getStructureIOManager().addContent(getCurrentNode().getPath(), newSpeech);
                                     IOController.getIoController().getComponentIOManager().storeSpeechComponent(newSpeech);
                                 } catch (IOException e) {
                                     e.printStackTrace();

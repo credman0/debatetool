@@ -20,7 +20,9 @@ import org.debatetool.core.Block;
 import org.debatetool.core.Card;
 import org.debatetool.core.Cite;
 import org.debatetool.io.componentio.ComponentIOManager;
+import org.debatetool.io.initializers.DatabaseInitializer;
 import org.debatetool.io.iocontrollers.IOController;
+import org.debatetool.io.iocontrollers.mongodb.MongoDBIOController;
 import org.junit.AfterClass;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
@@ -34,7 +36,12 @@ class MongoDBBlockIOManagerTest {
 
     @BeforeClass
     public void setUp(){
-        IOController.getIoController().attemptInitialize("127.0.0.1", 27017, null,null);
+        IOController.setIoController(new MongoDBIOController());
+        try {
+            IOController.getIoController().attemptInitialize(new DatabaseInitializer("127.0.0.1", 27017, null,null));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         ClassLoader classLoader = getClass().getClassLoader();
         File file = new File(classLoader.getResource("testCardText.txt").getFile());
         String text = null;

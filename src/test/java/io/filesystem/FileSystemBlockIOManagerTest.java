@@ -20,21 +20,26 @@ import org.debatetool.core.Block;
 import org.debatetool.core.Card;
 import org.debatetool.core.Cite;
 import org.debatetool.io.componentio.ComponentIOManager;
+import org.debatetool.io.filesystemio.FileSystemIOController;
+import org.debatetool.io.initializers.FileSystemInitializer;
 import org.debatetool.io.iocontrollers.IOController;
+import org.debatetool.io.iocontrollers.mongodb.MongoDBIOController;
 import org.junit.AfterClass;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 import java.io.*;
+import java.nio.file.Paths;
 
 class FileSystemBlockIOManagerTest {
     Block block;
     public final String ANALYTIC_TEXT = "This is an analytic";
 
     @BeforeClass
-    public void setUp(){
-        IOController.getIoController().attemptInitialize("127.0.0.1", 27017, null,null);
+    public void setUp() throws IOException {
+        IOController.setIoController(new FileSystemIOController());
+        IOController.getIoController().attemptInitialize(new FileSystemInitializer(Paths.get("test")));
         ClassLoader classLoader = getClass().getClassLoader();
         File file = new File(classLoader.getResource("testCardText.txt").getFile());
         String text = null;

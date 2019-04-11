@@ -16,6 +16,8 @@
 package io.filesystem;
 
 import org.debatetool.core.*;
+import org.debatetool.io.filesystemio.FileSystemIOController;
+import org.debatetool.io.initializers.FileSystemInitializer;
 import org.debatetool.io.iocontrollers.IOController;
 import org.debatetool.io.structureio.StructureIOManager;
 import org.junit.AfterClass;
@@ -24,6 +26,7 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 import java.io.*;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,8 +37,9 @@ class FileSystemStructureIOManagerTest {
     public final String ANALYTIC_TEXT = "This is an analytic";
 
     @BeforeClass
-    public void setUp(){
-        IOController.getIoController().attemptInitialize("127.0.0.1", 27017, null,null);
+    public void setUp() throws IOException {
+        IOController.setIoController(new FileSystemIOController());
+        IOController.getIoController().attemptInitialize(new FileSystemInitializer(Paths.get("test")));
         ClassLoader classLoader = getClass().getClassLoader();
         File file = new File(classLoader.getResource("testCardText.txt").getFile());
         String text = null;
