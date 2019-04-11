@@ -59,8 +59,11 @@ import org.debatetool.gui.locationtree.LocationTreeItem;
 import org.debatetool.gui.locationtree.LocationTreeItemContent;
 import org.debatetool.gui.speechtools.SpeechComponentCellFactory;
 import org.debatetool.io.accounts.DBLockResponse;
+import org.debatetool.io.filesystemio.FileSystemIOController;
 import org.debatetool.io.filters.Filter;
 import org.debatetool.io.initializers.DatabaseInitializer;
+import org.debatetool.io.initializers.FileSystemInitializer;
+import org.debatetool.io.initializers.IOInitializer;
 import org.debatetool.io.iocontrollers.IOController;
 import org.debatetool.io.iocontrollers.mongodb.MongoDBIOController;
 import org.debatetool.scripting.JythonScripter;
@@ -69,6 +72,7 @@ import java.awt.*;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.*;
@@ -201,14 +205,20 @@ public class MainGui {
     }
 
     private void attemptLogin() throws IOException {
-        Pair<String, String> credentialStrings = LoginDialog.showDialog();
-        if (credentialStrings == null){
-            attemptLogin();
+        IOInitializer initializer = LoginDialog.showDialog();
+        if (initializer == null){
+            System.exit(0);
         }
-        IOController.setIoController(new MongoDBIOController());
-        boolean success = IOController.getIoController().attemptInitialize(new DatabaseInitializer(SettingsHandler.getSetting("mongod_ip"), Integer.parseInt(SettingsHandler.getSetting("mongod_port")), credentialStrings.getKey(), credentialStrings.getValue()));
-        if (!success){
-            attemptLogin();
+        if (initializer instanceof DatabaseInitializer){
+            IOController.setIoController(new MongoDBIOController());
+            boolean success = IOController.getIoController().attemptInitialize(initializer);
+            if (!success){
+                new Alert(Alert.AlertType.ERROR, "Authentication failed! Either the software cannot connect to the database, or the username or password were incorrect.", ButtonType.OK).showAndWait();
+                attemptLogin();
+            }
+        }else{
+            IOController.setIoController(new FileSystemIOController());
+            IOController.getIoController().attemptInitialize(initializer);
         }
     }
 
@@ -349,14 +359,14 @@ public class MainGui {
                             public void handle(ActionEvent actionEvent) {
                                 localMenu.hide();
                                 List<String> effectivePath;
-                                // if the list was "empty", it will have one null element we want to remove
-                                currentNode.getChildren().removeIf(
-                                        locationTreeItemContentTreeItem -> locationTreeItemContentTreeItem.getValue()==null);
                                 Optional<String> result = showTextDialog("Directory Name", "Enter a new directory name.", "New Directory");
                                 String name = result.isPresent()? result.get() : null;
                                 if (name == null){
                                     return;
                                 }
+                                // if the list was "empty", it will have one null element we want to remove
+                                currentNode.getChildren().removeIf(
+                                        locationTreeItemContentTreeItem -> locationTreeItemContentTreeItem.getValue()==null);
                                 if (cell.isEmpty()){
 
                                     // if we are on an empty cell, create a top-level directory
@@ -376,14 +386,14 @@ public class MainGui {
                             @Override
                             public void handle(ActionEvent actionEvent) {
                                 localMenu.hide();
-                                // if the list was "empty", it will have one null element we want to remove
-                                currentNode.getChildren().removeIf(
-                                        locationTreeItemContentTreeItem -> locationTreeItemContentTreeItem.getValue()==null);
                                 Optional<String> result = showTextDialog("Block Name", "Enter a new block name.", "New Block");
                                 String name = result.isPresent()? result.get() : null;
                                 if (name == null){
                                     return;
                                 }
+                                // if the list was "empty", it will have one null element we want to remove
+                                currentNode.getChildren().removeIf(
+                                        locationTreeItemContentTreeItem -> locationTreeItemContentTreeItem.getValue()==null);
                                 Block newBlock = new Block(name);
                                 currentNode.getChildren().add(new LocationTreeItem(new LocationTreeItemContent(newBlock)));
                                 try {
@@ -401,14 +411,14 @@ public class MainGui {
                             @Override
                             public void handle(ActionEvent actionEvent) {
                                 localMenu.hide();
-                                // if the list was "empty", it will have one null element we want to remove
-                                currentNode.getChildren().removeIf(
-                                        locationTreeItemContentTreeItem -> locationTreeItemContentTreeItem.getValue()==null);
                                 Optional<String> result = showTextDialog("Speech Name", "Enter a new speech name.", "New Speech");
                                 String name = result.isPresent()? result.get() : null;
                                 if (name == null){
                                     return;
                                 }
+                                // if the list was "empty", it will have one null element we want to remove
+                                currentNode.getChildren().removeIf(
+                                        locationTreeItemContentTreeItem -> locationTreeItemContentTreeItem.getValue()==null);
                                 Speech newSpeech = new Speech(name);
                                 currentNode.getChildren().add(new LocationTreeItem(new LocationTreeItemContent(newSpeech)));
                                 try {
@@ -421,7 +431,7 @@ public class MainGui {
                         });
                         localMenu.getItems().add(newSpeechItem);
                         localMenu.getItems().add(new SeparatorMenuItem());
-                        if (!cell.isEmpty()){
+                        if (!cell.isEmpty() && cell.getTreeTableRow().getTreeItem().getValue()!=null){
                             if (cell.getTreeTableRow().getTreeItem().getValue().getSpeechComponent()==null) {
                                 MenuItem removeItem = new MenuItem("Delete");
                                 removeItem.setOnAction(new EventHandler<ActionEvent>() {
@@ -715,11 +725,12 @@ public class MainGui {
     }
 
     public void adminAuthenticate() {
-        Pair<String, String> credentialStrings = LoginDialog.showDialog();
-        if (credentialStrings == null){
+        // TODO Change this not to use the same login dialog
+        DatabaseInitializer initializer = (DatabaseInitializer) LoginDialog.showDialog();
+        if (initializer == null){
             return;
         }
-        boolean success = IOController.getIoController().getAdminManager().authenticateAsAdmin(SettingsHandler.getSetting("mongod_ip"), Integer.parseInt(SettingsHandler.getSetting("mongod_port")), credentialStrings.getKey(), credentialStrings.getValue());
+        boolean success = IOController.getIoController().getAdminManager().authenticateAsAdmin(SettingsHandler.getSetting("mongod_ip"), Integer.parseInt(SettingsHandler.getSetting("mongod_port")), initializer.username, initializer.password);
         if (success){
             authAdminMenuItem.setDisable(true);
             createUserMenuItem.setDisable(false);

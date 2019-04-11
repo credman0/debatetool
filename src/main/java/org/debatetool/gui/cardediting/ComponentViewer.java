@@ -291,7 +291,7 @@ public class ComponentViewer {
     }
 
     public void newCard() {
-        editMode.set(true);
+        editMode.set(false);
         currentViewMode = ViewType.CARD;
         updateViewerPane();
     }

@@ -23,6 +23,8 @@
   ~                                Copyright (c) 2019 Colin Redman
   -->
 
+<?import javafx.scene.layout.HBox?>
+<?import com.jfoenix.controls.JFXToggleButton?>
 <DialogPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
             fx:controller="org.debatetool.gui.LoginDialog"
@@ -39,7 +41,11 @@
             </VBox>
         </center>
         <bottom>
-            <Button text="Database Settings" onAction="#showDatabaseSettings"/>
+            <HBox alignment="CENTER_LEFT">
+                <Button text="Database Settings" onAction="#showDatabaseSettings" fx:id="databaseSettingsButton"/>
+                <JFXToggleButton text="Use local filesystem at " fx:id="useLocalFilesystemToggle" selected="true"/>
+                <TextField fx:id="fileField"/>
+            </HBox>
         </bottom>
     </BorderPane>
 

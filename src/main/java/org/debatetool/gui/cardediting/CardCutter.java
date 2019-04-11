@@ -38,6 +38,7 @@ import javafx.scene.web.WebView;
 import netscape.javascript.JSObject;
 import org.debatetool.core.Card;
 import org.debatetool.core.CardOverlay;
+import org.debatetool.core.Cite;
 import org.debatetool.gui.SettingsHandler;
 import org.debatetool.io.iocontrollers.IOController;
 
@@ -62,7 +63,7 @@ public class CardCutter extends CardViewer {
     private ObservableList<CardOverlay> highlightingOverlayList = FXCollections.checkedObservableList(FXCollections.observableArrayList(), CardOverlay.class);
     private ObservableList<CardOverlay> underliningOverlayList = FXCollections.checkedObservableList(FXCollections.observableArrayList(), CardOverlay.class);
     private ObservableList<String> tagsList = FXCollections.checkedObservableList(FXCollections.observableArrayList(), String.class);
-    private Card card;
+    private Card card = new Card(new Cite("","",""),"");
 
     public void init(){
         cardTextArea.setContextMenuEnabled(false);

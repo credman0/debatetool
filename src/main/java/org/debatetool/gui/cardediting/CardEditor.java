@@ -15,6 +15,8 @@
 
 package org.debatetool.gui.cardediting;
 
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import org.debatetool.core.Card;
 import org.debatetool.core.Cite;
 import javafx.beans.property.StringProperty;
@@ -31,7 +33,16 @@ public class CardEditor extends CardViewer{
     @FXML protected TextField additionalField;
     @FXML protected TextArea cardTextArea;
 
-    public void init(){}
+    public void init(){
+        cardTextArea.textProperty().addListener(new ChangeListener<String>() {
+            @Override
+            public void changed(ObservableValue<? extends String> observableValue, String s, String t1) {
+                if (!s.equals(t1)){
+                    ((StringProperty) observableValue).set(Card.cleanForCard(t1));
+                }
+            }
+        });
+    }
 
     @Override
     protected Card getCard() {
