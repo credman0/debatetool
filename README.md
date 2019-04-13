@@ -11,6 +11,8 @@ To compile you will need to have gradle installed, as well as of course a JDK (>
 ## Usage
 The easiest way to try out the software is to just run it using the local filesystem setting (its right on the login dialog, should be set that way by default), so you don't need to set up a database. That will at least let you see the basics of the how the program works without having to set up mongo. The most important thing about actually using the program is the "edit mode" switch in the top left (also modified by a hotkey you can see in the "View" dropdown menu). That is what switches between for example cutting cards and adding text to cards.
 
+Most of the other stuff is done by right clicking in the tree (on the left side) and using the context menu, then drag dropping stuff into speeches/blocks. Cards are created by just adding the text to the card editor (open by default, and also in the file menu) and then when you save them they will be placed in the selected directory.
+
 ## Deploying a database
 In the future, I hope to create a comprehensive guide to deploying a functional database. In the mean time, the gist is this:
 * Install MongoDB and start a server with auth enabled
