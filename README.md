@@ -13,6 +13,14 @@ The easiest way to try out the software is to just run it using the local filesy
 
 Most of the other stuff is done by right clicking in the tree (on the left side) and using the context menu, then drag dropping stuff into speeches/blocks. Cards are created by just adding the text to the card editor (open by default, and also in the file menu) and then when you save them they will be placed in the selected directory.
 
+This isn't really ready for actual use yet. It has bugs I know about, and probably a lot more that I don't. Some of the features are either missing or not quite right. Consider yourselves warned.
+
+## More misc. notes
+* Searching is not implemented for the filesystem storage back end. No particular reason for this, I just didn't do it.
+* The admin login dialog is presently wierd (its the same as the login dialog, but shouldn't be). Just don't mess with the other settings on that screen.
+* Some super bizzare bug came up in my thesis defense that I can't reproduce, but know that if some very strange graphical gliches occur when you try to view particular speeches, you are not alone.
+* Please forgive the lack of documentation and sometimes very strange looking code. 
+
 ## Deploying a database
 In the future, I hope to create a comprehensive guide to deploying a functional database. In the mean time, the gist is this:
 * Install MongoDB and start a server with auth enabled
