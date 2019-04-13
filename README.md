@@ -4,7 +4,12 @@ This project is an attempt to build a cohesive piece of software that helps ease
 ![Screenshot](https://raw.githubusercontent.com/credman0/unnamed-debate-tool/master/wiki/running_application.png)
 
 ## Compilation
-You will need to have gradle installed, as well as of course a JDK (>=JDK 9). Then you should be able to build an executable jar by running ```gradle build jar -xtest```.
+Clone the repository with ```git clone --recursive```. The recursive setting is important because a few of the packages are broken out into submodules. If you clone without that, you will need to run ```git submodule update --init```.
+
+To compile you will need to have gradle installed, as well as of course a JDK (>=JDK 9). Then you should be able to run the code using ```gradle run``` or build a distribution package by running ```gradle build jar -xtest```.
+
+## Usage
+The easiest way to try out the software is to just run it using the local filesystem setting (its right on the login dialog, should be set that way by default), so you don't need to set up a database. That will at least let you see the basics of the how the program works without having to set up mongo. The most important thing about actually using the program is the "edit mode" switch in the top left (also modified by a hotkey you can see in the "View" dropdown menu). That is what switches between for example cutting cards and adding text to cards.
 
 ## Deploying a database
 In the future, I hope to create a comprehensive guide to deploying a functional database. In the mean time, the gist is this:
