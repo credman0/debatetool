@@ -6,6 +6,8 @@ plugins {
     id 'java'
     id 'maven-publish'
     id 'application'
+    id 'org.openjfx.javafxplugin' version '0.0.8'
+    id 'org.beryx.jlink' version '2.12.0'
 }
 
 application {
@@ -16,9 +18,7 @@ mainClassName = 'org.debatetool.main.Main'
 repositories {
     mavenLocal()
     mavenCentral()
-    maven {
-        url = 'http://jcenter.bintray.com'
-    }
+    jcenter();
     maven {
         url = "http://maven.bestsolution.at/efxclipse-releases"
     }
@@ -27,27 +27,11 @@ repositories {
     }
     maven { url "https://jitpack.io" }
 }
-
+javafx {
+    version = "13"
+    modules = [ 'javafx.controls', 'javafx.graphics' , 'javafx.media' , 'javafx.fxml' , 'javafx.web', 'javafx.base']
+}
 dependencies {
-    compile "org.openjfx:javafx-graphics:12:win"
-    compile "org.openjfx:javafx-graphics:12:linux"
-    compile "org.openjfx:javafx-graphics:12:mac"
-    compile "org.openjfx:javafx-media:12:win"
-    compile "org.openjfx:javafx-media:12:linux"
-    compile "org.openjfx:javafx-media:12:mac"
-    compile "org.openjfx:javafx-fxml:12:win"
-    compile "org.openjfx:javafx-fxml:12:linux"
-    compile "org.openjfx:javafx-fxml:12:mac"
-    compile "org.openjfx:javafx-controls:12:win"
-    compile "org.openjfx:javafx-controls:12:linux"
-    compile "org.openjfx:javafx-controls:12:mac"
-    compile "org.openjfx:javafx-web:12:win"
-    compile "org.openjfx:javafx-web:12:linux"
-    compile "org.openjfx:javafx-web:12:mac"
-    compile "org.openjfx:javafx-base:12:win"
-    compile "org.openjfx:javafx-base:12:linux"
-    compile "org.openjfx:javafx-base:12:mac"
-
     // https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-api
     compile group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.11.2'
     // https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-core
@@ -55,10 +39,12 @@ dependencies {
     compile 'org.mongodb:mongo-java-driver:3.9.0'
     compile 'net.sf.trove4j:trove4j:3.0.3'
     compile 'org.jfxtras:jmetro:5.2'
-    compile 'com.jfoenix:jfoenix:9.0.8'
-    compile 'org.controlsfx:controlsfx:11.0.0-RC2'
-    implementation 'com.github.dlemmermann:PreferencesFX:024d7b7'
-    compile 'org.python:jython-standalone:2.7.1b3'
+    compile ('org.controlsfx:controlsfx:11.0.0-RC2') {
+        exclude group: 'org.openjfx'
+    }
+    compile ('com.dlsc.preferencesfx:preferencesfx-core:11.3.0') {
+        exclude group: 'org.openjfx'
+    }
     compile 'org.apache.poi:poi:4.0.1'
     compile 'org.apache.poi:poi-ooxml:4.0.1'
 
@@ -70,8 +56,8 @@ dependencies {
 
 group = 'org.debatetool'
 version = '1.1.2'
-sourceCompatibility = '9'
-targetCompatibility = '9'
+sourceCompatibility = '11'
+targetCompatibility = '11'
 
 applicationDefaultJvmArgs = ["-Djdk.gtk.version=2"]
 
@@ -85,6 +71,13 @@ publishing {
 
 tasks.withType(JavaCompile) {
     options.encoding = 'UTF-8'
+}
+
+jlink {
+    options = ['--strip-debug', '--compress', '2', '--no-header-files', '--no-man-pages']
+    launcher {
+        name = 'hellofx'
+    }
 }
 
 test {

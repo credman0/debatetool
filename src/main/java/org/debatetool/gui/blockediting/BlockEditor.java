@@ -16,7 +16,6 @@
 package org.debatetool.gui.blockediting;
 
 import org.debatetool.core.*;
-import org.debatetool.core.html.HtmlEncoder;
 import org.debatetool.gui.SettingsHandler;
 import org.debatetool.gui.cardediting.MainGui;
 import org.debatetool.gui.speechtools.SpeechComponentCellFactory;
@@ -57,7 +56,7 @@ public class BlockEditor {
     @FXML protected
     GridPane viewerArea;
     Block block;
-    final static String WEBVIEW_HTML = BlockEditor.class.getClassLoader().getResource("BlockViewer.html").toExternalForm();
+    final static String WEBVIEW_HTML = BlockEditor.class.getResource("/fxml/BlockViewer.html").toExternalForm();
 
     public void open(Block block) {
         // TODO try to not reload blocks when unnecessary

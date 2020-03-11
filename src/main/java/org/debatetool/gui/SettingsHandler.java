@@ -20,6 +20,7 @@ import com.dlsc.preferencesfx.PreferencesFxEvent;
 import com.dlsc.preferencesfx.model.Category;
 import com.dlsc.preferencesfx.model.Group;
 import com.dlsc.preferencesfx.model.Setting;
+import com.dlsc.preferencesfx.util.StorageHandler;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -31,6 +32,7 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
+import java.util.prefs.Preferences;
 
 /**
  * This entire class is a mess and probably needs to be replaced, most likely when I replace preferencesFX (aka never)
@@ -46,111 +48,111 @@ public class SettingsHandler {
     private static ObservableList<IntegerProperty> modifiableTimesList = FXCollections.observableArrayList();
     private static DebateTime prepTime = new DebateTime("Prep", 600*1000);
     private static Properties properties = new Properties();
-    private static PreferencesFx preferencesFx;
     private static File propertiesFile = new File(System.getProperty("user.home")+"/.debatetool/config.properties");
+//    private static PreferencesFx preferencesFx;
     static{
-        if (propertiesFile.exists()) {
-            try {
-                InputStream in = new FileInputStream(propertiesFile);
-                properties.load(in);
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }else{
-            propertiesFile.getParentFile().mkdirs();
-            properties = new Properties();
-        }
-        timeList.add(new DebateTime("Constructive", 540*1000));
-        timeList.add(new DebateTime("Rebuttal", 360*1000));
-        timeList.add(new DebateTime("CrossEx", 180*1000));
-        for (DebateTime time:timeList){
-            String timeString = properties.getProperty(time.getName().toLowerCase()+"_time");
-            if (timeString==null) {
-                properties.setProperty(time.getName().toLowerCase()+"_time", String.valueOf(time.getTime()));
-            }else{
-                time.setTime(Long.parseLong(timeString));
-            }
-        }
-
-        for (DebateTime time:timeList){
-            SimpleIntegerProperty property = new SimpleIntegerProperty();
-            property.set((int) (time.getTime()/1000));
-            modifiableTimesList.add(property);
-        }
-
-        String timeString = properties.getProperty(prepTime.getName().toLowerCase()+"_time");
-        if (timeString==null) {
-            properties.setProperty(prepTime.getName().toLowerCase()+"_time", String.valueOf(prepTime.getTime()));
-        }else{
-            prepTime.setTime(Long.parseLong(timeString));
-        }
-
-        SimpleIntegerProperty property = new SimpleIntegerProperty();
-        property.set((int) (prepTime.getTime()/1000));
-        modifiableTimesList.add(property);
-
-        String portString = properties.getProperty("mongod_port");
-        if (portString == null){
-            // TODO standardize default properties somewhere
-            mongoPort.setValue(DEFAULT_MONGO_PORT);
-            properties.setProperty("mongod_port", DEFAULT_MONGO_PORT);
-        }else{
-            mongoPort.setValue(portString);
-        }
-
-        String ipString = properties.getProperty("mongod_ip");
-        if (ipString == null){
-            // TODO standardize default properties somewhere
-            mongoIP.setValue(DEFAULT_MONGO_IP);
-            properties.setProperty("mongod_ip", DEFAULT_MONGO_IP);
-        }else{
-            mongoIP.setValue(ipString);
-        }
-
-        String colorString = properties.getProperty("color");
-        if(colorString==null){
-            color.set(STHighlightColor.CYAN.toString());
-            properties.setProperty("color", STHighlightColor.CYAN.toString());
-        }else{
-            color.setValue(colorString);
-        }
-        exportAnalytics.set(Boolean.parseBoolean(properties.getProperty("exportAnalytics", "true")));
-
-        ObservableList<String> colorChoices = FXCollections.observableArrayList();
-        colorChoices.add(STHighlightColor.CYAN.toString());
-        colorChoices.add(STHighlightColor.YELLOW.toString());
-        colorChoices.add(STHighlightColor.GREEN.toString());
-
-        preferencesFx =
-                PreferencesFx.of(SettingsHandler.class,
-                        Category.of("General",
-                                Group.of("Display",
-                                        Setting.of("Color", colorChoices, color)),
-                                Group.of("Export",
-                                        Setting.of("Export Analytics", exportAnalytics))),
-                                Category.of("Timer",
-                                        Group.of("Times (Seconds)",
-                                                Setting.of(timeList.get(0).getName(), modifiableTimesList.get(0)),
-                                                Setting.of(timeList.get(1).getName(), modifiableTimesList.get(1)),
-                                                Setting.of(timeList.get(2).getName(), modifiableTimesList.get(2)),
-                                                Setting.of(prepTime.getName(), modifiableTimesList.get(3)))
-
-                        )
-                ).addEventHandler(PreferencesFxEvent.EVENT_PREFERENCES_SAVED, new EventHandler<PreferencesFxEvent>() {
-                    @Override
-                    public void handle(PreferencesFxEvent preferencesFxEvent) {
-                        try {
-                            saveChanges();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                });
-        /*
-
-         */
+//        if (propertiesFile.exists()) {
+//            try {
+//                InputStream in = new FileInputStream(propertiesFile);
+//                properties.load(in);
+//            } catch (FileNotFoundException e) {
+//                e.printStackTrace();
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
+//        }else{
+//            propertiesFile.getParentFile().mkdirs();
+//            properties = new Properties();
+//        }
+//        timeList.add(new DebateTime("Constructive", 540*1000));
+//        timeList.add(new DebateTime("Rebuttal", 360*1000));
+//        timeList.add(new DebateTime("CrossEx", 180*1000));
+//        for (DebateTime time:timeList){
+//            String timeString = properties.getProperty(time.getName().toLowerCase()+"_time");
+//            if (timeString==null) {
+//                properties.setProperty(time.getName().toLowerCase()+"_time", String.valueOf(time.getTime()));
+//            }else{
+//                time.setTime(Long.parseLong(timeString));
+//            }
+//        }
+//
+//        for (DebateTime time:timeList){
+//            SimpleIntegerProperty property = new SimpleIntegerProperty();
+//            property.set((int) (time.getTime()/1000));
+//            modifiableTimesList.add(property);
+//        }
+//
+//        String timeString = properties.getProperty(prepTime.getName().toLowerCase()+"_time");
+//        if (timeString==null) {
+//            properties.setProperty(prepTime.getName().toLowerCase()+"_time", String.valueOf(prepTime.getTime()));
+//        }else{
+//            prepTime.setTime(Long.parseLong(timeString));
+//        }
+//
+//        SimpleIntegerProperty property = new SimpleIntegerProperty();
+//        property.set((int) (prepTime.getTime()/1000));
+//        modifiableTimesList.add(property);
+//
+//        String portString = properties.getProperty("mongod_port");
+//        if (portString == null){
+//            // TODO standardize default properties somewhere
+//            mongoPort.setValue(DEFAULT_MONGO_PORT);
+//            properties.setProperty("mongod_port", DEFAULT_MONGO_PORT);
+//        }else{
+//            mongoPort.setValue(portString);
+//        }
+//
+//        String ipString = properties.getProperty("mongod_ip");
+//        if (ipString == null){
+//            // TODO standardize default properties somewhere
+//            mongoIP.setValue(DEFAULT_MONGO_IP);
+//            properties.setProperty("mongod_ip", DEFAULT_MONGO_IP);
+//        }else{
+//            mongoIP.setValue(ipString);
+//        }
+//
+//        String colorString = properties.getProperty("color");
+//        if(colorString==null){
+//            color.set(STHighlightColor.CYAN.toString());
+//            properties.setProperty("color", STHighlightColor.CYAN.toString());
+//        }else{
+//            color.setValue(colorString);
+//        }
+//        exportAnalytics.set(Boolean.parseBoolean(properties.getProperty("exportAnalytics", "true")));
+//
+//        ObservableList<String> colorChoices = FXCollections.observableArrayList();
+//        colorChoices.add(STHighlightColor.CYAN.toString());
+//        colorChoices.add(STHighlightColor.YELLOW.toString());
+//        colorChoices.add(STHighlightColor.GREEN.toString());
+//
+//        preferencesFx =
+//                PreferencesFx.of(SettingsHandler.class,
+//                        Category.of("General",
+//                                Group.of("Display",
+//                                        Setting.of("Color", colorChoices, color)),
+//                                Group.of("Export",
+//                                        Setting.of("Export Analytics", exportAnalytics))),
+//                        Category.of("Timer",
+//                                Group.of("Times (Seconds)",
+//                                        Setting.of(timeList.get(0).getName(), modifiableTimesList.get(0)),
+//                                        Setting.of(timeList.get(1).getName(), modifiableTimesList.get(1)),
+//                                        Setting.of(timeList.get(2).getName(), modifiableTimesList.get(2)),
+//                                        Setting.of(prepTime.getName(), modifiableTimesList.get(3)))
+//
+//                        )
+//                ).addEventHandler(PreferencesFxEvent.EVENT_PREFERENCES_SAVED, new EventHandler<PreferencesFxEvent>() {
+//                    @Override
+//                    public void handle(PreferencesFxEvent preferencesFxEvent) {
+//                        try {
+//                            saveChanges();
+//                        } catch (IOException e) {
+//                            e.printStackTrace();
+//                        }
+//                    }
+//                });
+//        /*
+//
+//         */
     }
 
     public static String getColorTag(){
@@ -170,7 +172,7 @@ public class SettingsHandler {
     }
 
     public static void showDialog(){
-        preferencesFx.show();
+       // preferencesFx.show();
     }
 
     public static String getSetting(String name){

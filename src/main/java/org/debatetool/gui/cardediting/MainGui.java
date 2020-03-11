@@ -15,10 +15,6 @@
 
 package org.debatetool.gui.cardediting;
 
-import com.jfoenix.controls.JFXButton;
-import com.jfoenix.controls.JFXChipView;
-import com.jfoenix.controls.JFXSpinner;
-import com.jfoenix.controls.JFXToggleButton;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleIntegerProperty;
@@ -65,7 +61,6 @@ import org.debatetool.io.initializers.DatabaseInitializer;
 import org.debatetool.io.initializers.IOInitializer;
 import org.debatetool.io.iocontrollers.IOController;
 import org.debatetool.io.iocontrollers.mongodb.MongoDBIOController;
-import org.debatetool.scripting.JythonScripter;
 
 import java.awt.*;
 import java.io.IOException;
@@ -78,14 +73,14 @@ import java.util.*;
 public class MainGui {
     @FXML private MenuItem showFullscreenMenuItem;
     @FXML private MenuItem exportDocxMenuItem;
-    @FXML private JFXButton timerButton;
+    @FXML private Button timerButton;
     @FXML private MenuItem authAdminMenuItem;
     @FXML private MenuItem createUserMenuItem;
-    @FXML private JFXToggleButton editToggle;
+    @FXML private ToggleButton editToggle;
     @FXML private Text viewerLabel;
     @FXML private Button backButton;
     @FXML private Button forwardButton;
-    @FXML private JFXChipView <String> filterChipView;
+    @FXML private ListView <String> filterChipView;
     @FXML private Menu scriptsMenu;
     @FXML private BorderPane viewerPane;
     @FXML private Label currentPathLabel;
@@ -177,17 +172,17 @@ public class MainGui {
             }
         });
 
-        filterChipView.getChips().addListener((ListChangeListener<String>) change ->{
-            while (change.next()){
-                if(change.wasAdded()) {
-                    Filter.addParsed(change.getAddedSubList().get(0), change.getFrom());
-                    refreshDirectories();
-                }else if (change.wasRemoved()){
-                    Filter.removedParsed(change.getFrom());
-                    refreshDirectories();
-                }
-            }
-        });
+//        filterChipView.getChips().addListener((ListChangeListener<String>) change ->{
+//            while (change.next()){
+//                if(change.wasAdded()) {
+//                    Filter.addParsed(change.getAddedSubList().get(0), change.getFrom());
+//                    refreshDirectories();
+//                }else if (change.wasRemoved()){
+//                    Filter.removedParsed(change.getFrom());
+//                    refreshDirectories();
+//                }
+//            }
+//        });
 
         componentViewer.bindEditMode(editToggle.selectedProperty());
         componentViewer.bindPreventContainerActions(exportDocxMenuItem.disableProperty());
@@ -317,7 +312,7 @@ public class MainGui {
                                     @Override
                                     public void changed(ObservableValue<? extends Boolean> observableValue, Boolean aBoolean, Boolean t1) {
                                         if (t1){
-                                            cell1.setGraphic(new JFXSpinner());
+                                            cell1.setGraphic(new Spinner<>());
                                         }else{
                                             if (item.isExpanded()) {
                                                 setIcon(cell1, LocationTreeItem.DIRECTORY_OPEN);
@@ -690,26 +685,26 @@ public class MainGui {
     }
 
     public void refreshScripts() {
-        String[] scripts = JythonScripter.getScripts();
-        if (scripts == null){
-            return;
-        }
-        scriptsMenu.getItems().clear();
-        for (String script:scripts){
-            MenuItem item = new MenuItem(script);
-            item.setOnAction(new EventHandler<ActionEvent>() {
-                @Override
-                public void handle(ActionEvent actionEvent) {
-                    try {
-                        scriptsMenu.hide();
-                        JythonScripter.runScript(script, openedComponent);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-            });
-            scriptsMenu.getItems().add(item);
-        }
+//        String[] scripts = JythonScripter.getScripts();
+//        if (scripts == null){
+//            return;
+//        }
+//        scriptsMenu.getItems().clear();
+//        for (String script:scripts){
+//            MenuItem item = new MenuItem(script);
+//            item.setOnAction(new EventHandler<ActionEvent>() {
+//                @Override
+//                public void handle(ActionEvent actionEvent) {
+//                    try {
+//                        scriptsMenu.hide();
+//                        JythonScripter.runScript(script, openedComponent);
+//                    } catch (IOException e) {
+//                        e.printStackTrace();
+//                    }
+//                }
+//            });
+//            scriptsMenu.getItems().add(item);
+//        }
     }
 
     public void historyBack(ActionEvent actionEvent) {

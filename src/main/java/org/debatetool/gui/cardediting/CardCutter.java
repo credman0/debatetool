@@ -15,7 +15,6 @@
 
 package org.debatetool.gui.cardediting;
 
-import com.sun.javafx.webkit.WebConsoleListener;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -59,7 +58,7 @@ public class CardCutter extends CardViewer {
     private StringProperty date = new SimpleStringProperty();
     private StringProperty additionalInfo = new SimpleStringProperty();
     private String text;
-    private String cutterHTMLUrl = getClass().getClassLoader().getResource("CardCutter.html").toExternalForm();
+    private String cutterHTMLUrl = getClass().getResource("/fxml/CardCutter.html").toExternalForm();
     private ObservableList<CardOverlay> highlightingOverlayList = FXCollections.checkedObservableList(FXCollections.observableArrayList(), CardOverlay.class);
     private ObservableList<CardOverlay> underliningOverlayList = FXCollections.checkedObservableList(FXCollections.observableArrayList(), CardOverlay.class);
     private ObservableList<String> tagsList = FXCollections.checkedObservableList(FXCollections.observableArrayList(), String.class);
@@ -68,12 +67,6 @@ public class CardCutter extends CardViewer {
     public void init(){
         cardTextArea.setContextMenuEnabled(false);
 
-        WebConsoleListener.setDefaultListener(new WebConsoleListener(){
-            @Override
-            public void messageAdded(WebView webView, String message, int lineNumber, String sourceId) {
-                System.out.println("Console: [" + sourceId + ":" + lineNumber + "] " + message);
-            }
-        });
         initHTML();
         highlightChoice.setItems(highlightingOverlayList);
         underlineChoice.setItems(underliningOverlayList);

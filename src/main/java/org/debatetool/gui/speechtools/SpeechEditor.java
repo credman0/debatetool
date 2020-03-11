@@ -16,7 +16,6 @@
 package org.debatetool.gui.speechtools;
 
 import org.debatetool.core.*;
-import org.debatetool.core.html.HtmlEncoder;
 import org.debatetool.gui.SettingsHandler;
 import org.debatetool.gui.cardediting.MainGui;
 import org.debatetool.io.iocontrollers.IOController;
@@ -58,7 +57,7 @@ public class SpeechEditor {
     @FXML protected
     GridPane viewerArea;
     private Speech speech;
-    final static String WEBVIEW_HTML = SpeechEditor.class.getClassLoader().getResource("BlockViewer.html").toExternalForm();
+    final static String WEBVIEW_HTML = SpeechEditor.class.getResource("/fxml/BlockViewer.html").toExternalForm();
 
     public void open(Speech speech) {
         if (this.speech == null || speech.getHash()!=this.speech.getHash()) {

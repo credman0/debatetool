@@ -15,10 +15,10 @@
 
 package org.debatetool.gui.timer;
 
-import com.jfoenix.controls.JFXButton;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.control.ToggleButton;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
@@ -28,7 +28,7 @@ import java.util.TimerTask;
 
 public class Stopwatch {
     @FXML
-    private JFXButton toggleButton;
+    private ToggleButton toggleButton;
     @FXML
     private Text timerContents;
     @FXML

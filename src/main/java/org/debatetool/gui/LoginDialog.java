@@ -15,7 +15,6 @@
 
 package org.debatetool.gui;
 
-import com.jfoenix.controls.JFXToggleButton;
 import javafx.beans.binding.Bindings;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -38,7 +37,7 @@ public class LoginDialog {
     @FXML
     public PasswordField passwordField;
     @FXML
-    public JFXToggleButton useLocalFilesystemToggle;
+    public ToggleButton useLocalFilesystemToggle;
     @FXML
     public Button databaseSettingsButton;
     @FXML
@@ -71,7 +70,7 @@ public class LoginDialog {
     }
 
     public static IOInitializer showDialog() {
-        FXMLLoader dialogLoader = new FXMLLoader(LoginDialog.class.getClassLoader().getResource("login_dialog.fxml"));
+        FXMLLoader dialogLoader = new FXMLLoader(LoginDialog.class.getResource("/fxml/login_dialog.fxml"));
         try {
             dialogLoader.load();
         } catch (IOException e) {

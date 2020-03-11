@@ -83,27 +83,27 @@ public class ComponentViewer {
         this.viewerPane = viewerPane;
         // load the card viewers
         try {
-            FXMLLoader editorLoader = new FXMLLoader(getClass().getClassLoader().getResource("card_editor.fxml"));
+            FXMLLoader editorLoader = new FXMLLoader(getClass().getResource("/fxml/card_editor.fxml"));
             editorLoader.load();
             cardEditor = editorLoader.getController();
             cardEditor.init();
 
-            FXMLLoader cutterLoader = new FXMLLoader(getClass().getClassLoader().getResource("card_cutter.fxml"));
+            FXMLLoader cutterLoader = new FXMLLoader(getClass().getResource("/fxml/card_cutter.fxml"));
             cutterLoader.load();
             cardCutter = cutterLoader.getController();
             cardCutter.init();
 
-            FXMLLoader blockLoader = new FXMLLoader(getClass().getClassLoader().getResource("block_editor.fxml"));
+            FXMLLoader blockLoader = new FXMLLoader(getClass().getResource("/fxml/block_editor.fxml"));
             blockLoader.load();
             blockEditor = blockLoader.getController();
             blockEditor.init();
 
-            FXMLLoader speechEditLoader = new FXMLLoader(getClass().getClassLoader().getResource("speech_editor.fxml"));
+            FXMLLoader speechEditLoader = new FXMLLoader(getClass().getResource("/fxml/speech_editor.fxml"));
             speechEditLoader.load();
             speechEditor = speechEditLoader.getController();
             speechEditor.init();
 
-            FXMLLoader speechViewLoader = new FXMLLoader(getClass().getClassLoader().getResource("speech_viewer.fxml"));
+            FXMLLoader speechViewLoader = new FXMLLoader(getClass().getResource("/fxml/speech_viewer.fxml"));
             speechViewLoader.load();
             speechViewer = speechViewLoader.getController();
 

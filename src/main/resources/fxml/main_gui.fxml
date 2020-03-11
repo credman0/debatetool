@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import com.jfoenix.controls.JFXChipView?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
@@ -8,8 +7,6 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 <?import java.lang.String?>
-<?import com.jfoenix.controls.JFXToggleButton?>
-<?import com.jfoenix.controls.JFXButton?>
 <?import javafx.geometry.Insets?>
 <!--
   ~                               This program is free software: you can redistribute it and/or modify
@@ -23,7 +20,7 @@
   ~
   ~                                You should have received a copy of the GNU General Public License
   ~                                along with this program.  If not, see <https://www.gnu.org/licenses/>.
-  ~                                Copyright (c) 2019 Colin Redman
+  ~                                Copyright (c) 2020 Colin Redman
   -->
 
 <BorderPane xmlns="http://javafx.com/javafx"
@@ -83,8 +80,8 @@
             </MenuBar>
             <GridPane>
                 <children>
-                    <JFXToggleButton fx:id="editToggle" text="Edit Mode" GridPane.columnIndex="0" GridPane.rowIndex="0" focusTraversable="false"/>
-                    <JFXButton text="Timer" onAction="#spawnTimer" buttonType="RAISED" fx:id="timerButton"
+                    <ToggleButton fx:id="editToggle" text="Edit Mode" GridPane.columnIndex="0" GridPane.rowIndex="0" focusTraversable="false"/>
+                    <Button text="Timer" onAction="#spawnTimer" fx:id="timerButton"
                                style="-fx-text-fill:WHITE;-fx-background-color:#5264AE;-fx-font-size:14px;" GridPane.columnIndex="1" GridPane.rowIndex="0" focusTraversable="false"/>
                 </children>
                 <columnConstraints>
@@ -98,7 +95,7 @@
         <SplitPane dividerPositions="0.3">
             <BorderPane>
                 <top>
-                    <JFXChipView fx:id="filterChipView"/>
+                    <ListView fx:id="filterChipView"/>
                 </top>
                 <center>
                     <TreeTableView fx:id="directoryView"/>
@@ -115,7 +112,7 @@
                             <graphic>
                                 <ImageView fitHeight="24" fitWidth="24">
                                     <image>
-                                        <Image url="icons/backword1.png"/>
+                                        <!--Image url="/icons/backword1.png"/-->
                                     </image>
                                 </ImageView>
                             </graphic>
@@ -124,7 +121,7 @@
                             <graphic>
                                 <ImageView fitHeight="24" fitWidth="24">
                                     <image>
-                                        <Image url="icons/forward1.png"/>
+                                        <!--Image url="../icons/forward1.png"/-->
                                     </image>
                                 </ImageView>
                             </graphic>

@@ -34,7 +34,7 @@ public class MainGuiLauncher extends Application {
             @Override
             public void run() {
                 try {
-                    FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("main_gui.fxml"));
+                    FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/main_gui.fxml"));
                     Parent root = loader.load();
                     //root.setStyle();
                     Scene scene = new Scene(root);

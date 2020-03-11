@@ -20,11 +20,11 @@
   ~
   ~                                You should have received a copy of the GNU General Public License
   ~                                along with this program.  If not, see <https://www.gnu.org/licenses/>.
-  ~                                Copyright (c) 2019 Colin Redman
+  ~                                Copyright (c) 2020 Colin Redman
   -->
 
 <?import javafx.scene.layout.HBox?>
-<?import com.jfoenix.controls.JFXToggleButton?>
+<?import javafx.scene.control.ToggleButton?>
 <DialogPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
             fx:controller="org.debatetool.gui.LoginDialog"
@@ -43,7 +43,7 @@
         <bottom>
             <HBox alignment="CENTER_LEFT">
                 <Button text="Database Settings" onAction="#showDatabaseSettings" fx:id="databaseSettingsButton"/>
-                <JFXToggleButton text="Use local filesystem at " fx:id="useLocalFilesystemToggle" selected="true"/>
+                <ToggleButton text="Use local filesystem at " fx:id="useLocalFilesystemToggle" selected="true"/>
                 <TextField fx:id="fileField"/>
             </HBox>
         </bottom>
