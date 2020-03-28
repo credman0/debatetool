@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.DialogPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ButtonType?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.control.Button?>
+<!--
+  ~                               This program is free software: you can redistribute it and/or modify
+  ~                                it under the terms of the GNU General Public License as published by
+  ~                                the Free Software Foundation, version 3 of the License.
+  ~
+  ~                                This program is distributed in the hope that it will be useful,
+  ~                                but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~                                MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~                                GNU General Public License for more details.
+  ~
+  ~                                You should have received a copy of the GNU General Public License
+  ~                                along with this program.  If not, see <https://www.gnu.org/licenses/>.
+  ~                                Copyright (c) 2019 Colin Redman
+  -->
+
+<?import javafx.scene.layout.HBox?>
+<?import com.jfoenix.controls.JFXToggleButton?>
+<DialogPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="org.debatetool.gui.LoginDialog"
+            fx:id="pane"
+            prefHeight="400.0" prefWidth="600.0">
+<content>
+    <BorderPane>
+        <center>
+            <VBox>
+                <Label text="Username:"/>
+                <TextField fx:id="usernameField"/>
+                <Label text="Password:"/>
+                <PasswordField fx:id="passwordField"/>
+            </VBox>
+        </center>
+        <bottom>
+            <HBox alignment="CENTER_LEFT">
+                <Button text="Database Settings" onAction="#showDatabaseSettings" fx:id="databaseSettingsButton"/>
+                <JFXToggleButton text="Use local filesystem at " fx:id="useLocalFilesystemToggle" selected="true"/>
+                <TextField fx:id="fileField"/>
+            </HBox>
+        </bottom>
+    </BorderPane>
+
+</content>
+    <buttonTypes>
+        <ButtonType fx:constant="OK" />
+        <ButtonType fx:constant="CANCEL" />
+    </buttonTypes>
+</DialogPane>

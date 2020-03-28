@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<?import com.jfoenix.controls.JFXTabPane?>
+<?import javafx.scene.text.Text?>
+<?import com.jfoenix.controls.JFXListView?>
+<?import javafx.geometry.Insets?>
+<!--
+  ~                               This program is free software: you can redistribute it and/or modify
+  ~                                it under the terms of the GNU General Public License as published by
+  ~                                the Free Software Foundation, version 3 of the License.
+  ~
+  ~                                This program is distributed in the hope that it will be useful,
+  ~                                but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~                                MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~                                GNU General Public License for more details.
+  ~
+  ~                                You should have received a copy of the GNU General Public License
+  ~                                along with this program.  If not, see <https://www.gnu.org/licenses/>.
+  ~                                Copyright (c) 2019 Colin Redman
+  -->
+
+<JFXTabPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="org.debatetool.gui.timer.DebateTimer"
+            fx:id="pane"
+            prefHeight="300.0" prefWidth="485.4">
+    <Tab text="Speeches">
+        <BorderPane fx:id="tab1Pane">
+            <padding><Insets top="10" right="10" bottom="10" left="10"/></padding>
+            <left>
+                <JFXListView fx:id="timesListView"/>
+            </left>
+        </BorderPane>
+    </Tab>
+    <Tab text="Prep">
+        <JFXTabPane>
+            <Tab text="Neg Prep">
+                <BorderPane fx:id="negPrepPane">
+                </BorderPane>
+            </Tab>
+            <Tab text="Aff Prep">
+                <BorderPane fx:id="affPrepPane">
+                </BorderPane>
+            </Tab>
+        </JFXTabPane>
+    </Tab>
+</JFXTabPane>

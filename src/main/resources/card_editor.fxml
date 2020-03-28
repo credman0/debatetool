@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<!--
+  ~                               This program is free software: you can redistribute it and/or modify
+  ~                                it under the terms of the GNU General Public License as published by
+  ~                                the Free Software Foundation, version 3 of the License.
+  ~
+  ~                                This program is distributed in the hope that it will be useful,
+  ~                                but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~                                MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~                                GNU General Public License for more details.
+  ~
+  ~                                You should have received a copy of the GNU General Public License
+  ~                                along with this program.  If not, see <https://www.gnu.org/licenses/>.
+  ~                                Copyright (c) 2019 Colin Redman
+  -->
+
+<BorderPane
+        fx:id="mainPane"
+        xmlns="http://javafx.com/javafx"
+        xmlns:fx="http://javafx.com/fxml"
+        fx:controller="org.debatetool.gui.cardediting.CardEditor">
+    <top>
+        <GridPane>
+            <columnConstraints>
+                <ColumnConstraints percentWidth="20"  />
+                <ColumnConstraints percentWidth="20" />
+                <ColumnConstraints percentWidth="60" />
+            </columnConstraints>
+            <Label text="Author"
+                   GridPane.columnIndex="0" GridPane.rowIndex="0" GridPane.halignment="CENTER"/>
+
+            <TextField fx:id="authorField"
+                       GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+
+            <Label text="Date"
+                   GridPane.columnIndex="1" GridPane.rowIndex="0" GridPane.halignment="CENTER"/>
+
+            <TextField fx:id="dateField"
+                       GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+
+            <Label text="Other cite info"
+                   GridPane.columnIndex="2" GridPane.rowIndex="0" GridPane.halignment="CENTER"/>
+
+            <TextField fx:id="additionalField"
+                       GridPane.columnIndex="2" GridPane.rowIndex="1"/>
+        </GridPane>
+    </top>
+    <center>
+        <TextArea fx:id="cardTextArea" wrapText="true"/>
+    </center>
+</BorderPane>
+
